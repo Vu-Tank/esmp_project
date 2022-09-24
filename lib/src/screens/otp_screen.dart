@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
@@ -87,6 +88,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     TextButton(
                         onPressed: (){
                           if(_isResendOTP) return;
+                          provider.verifyPhone(widget.phone, context);
                           reSend();
                         },
                         child: Text(_isResendOTP?"Thử lại sau "+ _start.toString()+" s" :"Gửi lại", style: TextStyle(color: Colors.blueAccent, fontSize: 16),) ),
@@ -97,9 +99,11 @@ class _OTPScreenState extends State<OTPScreen> {
                   child: SizedBox(
                     width: double.infinity,
                     height: 56,
-                    child: ElevatedButton(
+                    child: provider.verifyPhoneStatus==Status.Authenticating
+                    ? loading
+                    : ElevatedButton(
                       onPressed: (){
-                        provider.verifyOTP(_otpCode!, context);
+                        provider.verifyOTP(_otpCode!,widget.phone, context);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.blue,

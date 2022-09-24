@@ -1,9 +1,16 @@
+import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/providers/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../utils/shared_preferences.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    UserModel user=Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
         title: Text("Search"),
@@ -11,46 +18,26 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () { 
-              showSearch(context: context, delegate: MySearchDelegate());
+            onPressed: () {
             },
           ),
         ],
       ),
-      body:Container(
-        child: ElevatedButton(
-          child: Text("LogOut"),
-          onPressed: (){
-          },
-        ),
+      body:Column(
+        children: [
+          Center(child: Text('${user.email}'),),
+          Container(
+            child: ElevatedButton(
+              child: Text("LogOut"),
+              onPressed: (){
+                FirebaseAuth.instance.signOut();
+                UserPreferences().removeUser();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
-}
-
-class MySearchDelegate extends SearchDelegate{
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    // TODO: implement buildActions
-    throw UnimplementedError();
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    // TODO: implement buildLeading
-    throw UnimplementedError();
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    throw UnimplementedError();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    throw UnimplementedError();
-  }
-  
 }

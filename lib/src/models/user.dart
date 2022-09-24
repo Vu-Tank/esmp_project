@@ -1,43 +1,36 @@
-class User{
-  final int id;
-  final String name;
-  final String phone;
-  final String imageUrl;
-  final String gender;
-  final String dateOfBirth;
-  final String createDate;
-  final int addressID;
-  final int status;
-  final String token;
+class UserModel{
+   int? userID;
+   String? userName;
+   String? email;
+   String? phone;
+   String? password;
+   String? status;
+   String? token;
+   String? role;
+   String? image;
+   // int? user_AddressID;
 
-  User({required this.id, required this.name, required this.phone, required this.imageUrl,
-        required this.gender, required this.dateOfBirth, required this.status,
-        required this.addressID, required this.createDate, required this.token});
-  factory User.fromJson(Map<String, dynamic> json){
-    return User(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        phone: json['phone'] as String,
-        imageUrl: json['imageUrl'] as String,
-        createDate: json['createDate'] as String,
-        addressID: json['addressID'] as int,
-        dateOfBirth: json['dateOfBirth'] as String,
-        gender: json['gender'] as String,
-        status: json['status'] as int,
-        token: json['token'] as String,
+
+   UserModel({ this.userID,  this.userName, this.email,  this.phone,this.password,
+     this.status,  this.token,  this.role,  this.image});
+
+  factory UserModel.fromJson(Map<String, dynamic> json){
+    return UserModel(
+      userID: json['userID'] as int,
+      userName: json['userName'] as String,
+      email: json['email'] as String,
+      phone: json['phone'] as String,
+      password: json['password'] as String,
+      status: json['status'] as String,
+      token: json['token'] as String,
+      role: json['role'] as String,
+      image: json['image'] as String,
+      // user_AddressID: json['user_AddressID'] as int,
     );
   }
   Map<String, dynamic> toJson(){
     final Map<String, dynamic> data=new Map<String, dynamic>();
-    data['id']=this.id;
-    data['name']=this.name;
-    data['phone']=this.phone;
-    data['imageUrl']=this.imageUrl;
-    data['createDate']=this.createDate;
-    data['addressID']=this.addressID;
-    data['dateOfBirth']=this.dateOfBirth;
-    data['gender']=this.gender;
-    data['status']=this.status;
+    data['userID']=this.userID;
     return data;
   }
 }
