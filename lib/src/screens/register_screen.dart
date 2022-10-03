@@ -49,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 56,
                     child: ElevatedButton.icon(
                       onPressed: provider.phone.value!=null ? (){
-                        provider.verifyPhone(_phone!, context);
+                        provider.verifyPhone(phoneNumber: _phone!, context: context);
                       }:null,
                       label: const Text("Gửi OTP", style: TextStyle(
                             color: Colors.white,

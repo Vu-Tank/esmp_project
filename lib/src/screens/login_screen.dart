@@ -1,10 +1,15 @@
-import 'package:esmp_project/src/repositoty/user_repository.dart';
+
+import 'package:esmp_project/src/models/api_response.dart';
+import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/screens/home_screen.dart';
+import 'package:esmp_project/src/screens/otp_screen.dart';
 import 'package:esmp_project/src/screens/register_screen.dart';
-import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
+import 'package:esmp_project/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/verify_provider.dart';
+import '../repositoty/user_repository.dart';
+import '../utils/widget/showSnackBar.dart';
 import '../utils/widget/widget.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -17,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final verifyProvider= Provider.of<VerifyProvider>(context);
-    String? phone;
+    String? _phone;
     return Scaffold(
       appBar: AppBar(
         title:const Center(child:Text("Login", style: TextStyle(color: Colors.white, fontSize: 18),)),
@@ -36,15 +41,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     size: 100,
                   ),
                 ),
-                //textfiel Phone number
                 TextField(
-                  decoration: buildInputDecoration("Phone number", Icons.phone, verifyProvider.phone.error),
+                  decoration: buildInputDecoration("Số điện thoại", Icons.phone, verifyProvider.phone.error),
                   style: const TextStyle(fontSize: 18, color: Colors.black),
                   keyboardType: TextInputType.phone,
                   onChanged: (String value){
                     verifyProvider.validatePhoneNumber(value);
                     if(verifyProvider.phone.value!=null){
-                      phone=verifyProvider.phone.value;
+                      _phone=verifyProvider.phone.value;
                     }
                   },
                 ),
@@ -58,18 +62,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context)=> const RegisterScreen()));
                           },
-                          child: const Text("Register",style: TextStyle(
+                          child: const Text("Đăng Ký",style: TextStyle(
                             color: Colors.blueAccent,
                             fontSize: 15,
                           ),)
                       ),
-                      // TextButton(
-                      //     onPressed: signUpClick,
-                      //     child: Text("Đăng nhập bằng SMS",style: TextStyle(
-                      //       color: Colors.blueAccent,
-                      //       fontSize: 15,
-                      //     ),)
-                      // ),
                     ],
                   ),
                 ),
@@ -79,15 +76,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: SizedBox(
                     width: double.infinity,
                     height: 56,
-                    child: verifyProvider.loginPhoneStatus==Status.Authenticating
-                      ? loading
-                      : ElevatedButton(
+                    child:verifyProvider.loginPhoneStatus==Status.Authenticating
+                    ? loading
+                    : ElevatedButton(
                       onPressed: verifyProvider.phone.value!=null? () async{
-                        phone=verifyProvider.phone.value;
-                        if(await checkexistUserWithPhone(phone!)){
-                          verifyProvider.verifyPhone(phone!, context);
+                        _phone=Utils.convertToDB(verifyProvider.phone.value!);
+                        ApiResponse apiResponse=await checkexistUserWithPhone(_phone!);
+                        if(apiResponse.isSuccess!){
+                          _phone=Utils.convertToFirebase(_phone!);
+                          print(_phone);
+                          verifyProvider.verifyPhone(
+                              phoneNumber: _phone!,
+                              context: context
+                          );
                         }else{
-                          showSnackBar(context, "Phone number not exist, Please create account!!!!");
+                          showSnackBar(context, apiResponse.message!);
                         }
                       }:null,
                       style: ElevatedButton.styleFrom(
@@ -108,4 +111,5 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 }

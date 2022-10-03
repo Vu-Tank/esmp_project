@@ -25,3 +25,9 @@ Widget loading= Row(
   ],
 );
 
+TextStyle textStyle(){
+  return TextStyle(
+    color: Colors.grey,
+    fontSize: 15,
+  );
+}

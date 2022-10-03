@@ -44,6 +44,9 @@ dependencies:
   permission_handler: ^10.0.1
   shared_preferences: ^2.0.15
   google_maps_flutter: ^2.2.0
+  connectivity_plus: ^2.3.7
+  app_settings: ^4.1.8
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:

@@ -2,13 +2,16 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/providers/google_map_provider.dart';
 import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/request_permission.dart';
+import 'map_screen.dart';
 
 class RegisterInfoScreen extends StatefulWidget {
   const RegisterInfoScreen({Key? key}) : super(key: key);
@@ -20,10 +23,14 @@ class RegisterInfoScreen extends StatefulWidget {
 class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
   File? image;
 
+  // List<String> addressLever1 = <String>['Tp. Hồ Chí Minh', 'Lâm Dồng'];
+  // List<String> addressLever2 = <String>['Tp. Hồ Chí Minh', 'Lâm Dồng'];
+
   @override
   Widget build(BuildContext context) {
     String? name;
     bool isValid = false;
+    final mapProvider = Provider.of<GoogleMapProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Đăng ký"),
@@ -71,27 +78,34 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
                   height: 20,
                 ),
                 //address
-                Stack(
-                  alignment: AlignmentDirectional.centerEnd,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    TextFormField(
-                      enabled: false,
-                      decoration: InputDecoration(
-                        label: Text("Address",
-                            style: TextStyle(color: Colors.grey, fontSize: 18)),
-                        hintText: "Enter your address",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 18),
-                      ),
+                    Text(
+                      "Địa chỉ",
+                      style: TextStyle(color: Colors.grey, fontSize: 18),
                     ),
                     IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/map");
-                      },
-                      icon:
-                          Icon(Icons.my_location, size: 20, color: Colors.grey),
-                    ),
+                        onPressed: () {
+                          mapProvider.updateStatus();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MapScreen()));
+                        },
+                        icon: Icon(Icons.my_location)),
                   ],
                 ),
+                mapProvider.isUpdate
+                    ? Column(
+                  children: <Widget>[
+                    Text('Tỉnh/ Thành phố: ${mapProvider.address.formatted_address.split(',')[mapProvider.address.formatted_address.split(',').length-2]}'),
+                    Text('Quận/ Huyện: ${mapProvider.address.formatted_address.split(',')[mapProvider.address.formatted_address.split(',').length-3]}'),
+                    Text('Phường/ Xã: ${mapProvider.address.formatted_address.split(',')[mapProvider.address.formatted_address.split(',').length-4]}'),
+                  ],
+                )
+                    : SizedBox(),
+
                 //register
                 SizedBox(
                   height: 20,
@@ -120,13 +134,13 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
               size: Size.fromRadius(80),
               child: image != null
                   ? Image.file(
-                      image!,
-                      fit: BoxFit.cover,
-                    )
+                image!,
+                fit: BoxFit.cover,
+              )
                   : Image(
-                      image: AssetImage("assets/avatar1.jpg"),
-                      fit: BoxFit.cover,
-                    ),
+                image: AssetImage("assets/avatar1.jpg"),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           InkWell(

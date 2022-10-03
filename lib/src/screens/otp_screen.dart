@@ -88,7 +88,7 @@ class _OTPScreenState extends State<OTPScreen> {
                     TextButton(
                         onPressed: (){
                           if(_isResendOTP) return;
-                          provider.verifyPhone(widget.phone, context);
+                          provider.verifyPhone(context: context, phoneNumber: widget.phone);
                           reSend();
                         },
                         child: Text(_isResendOTP?"Thử lại sau "+ _start.toString()+" s" :"Gửi lại", style: TextStyle(color: Colors.blueAccent, fontSize: 16),) ),

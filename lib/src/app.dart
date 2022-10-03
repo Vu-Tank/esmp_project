@@ -1,8 +1,11 @@
 import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/providers/connection_provider.dart';
+import 'package:esmp_project/src/providers/google_map_provider.dart';
 import 'package:esmp_project/src/providers/user_provider.dart';
 import 'package:esmp_project/src/providers/verify_provider.dart';
 import 'package:esmp_project/src/screens/home_screen.dart';
 import 'package:esmp_project/src/screens/login_screen.dart';
+import 'package:esmp_project/src/screens/main_screen.dart';
 import 'package:esmp_project/src/screens/map_screen.dart';
 import 'package:esmp_project/src/screens/register_info_screen.dart';
 import 'package:esmp_project/src/screens/register_screen.dart';
@@ -20,8 +23,11 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => VerifyProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context)=> ConnectionProvider()),
+        ChangeNotifierProvider(create: (create)=> GoogleMapProvider()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         // home: FutureBuilder(
         //   future: getUserData(),
         //   builder: (context, snapshot) {

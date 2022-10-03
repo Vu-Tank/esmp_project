@@ -3,6 +3,7 @@ void showSnackBar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(text),
+      duration: Duration(seconds: 10),
     ),
   );
 }

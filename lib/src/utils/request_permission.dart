@@ -56,27 +56,28 @@ Future<bool> requestLocationPermission(BuildContext context) async {
     status = await Permission.location.request();
     if (status.isGranted) {
       return true;
-    } else {
+    } else if(status.isPermanentlyDenied) {
       showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
               title: Text(
-                  'Location permission is Denied. Please go to Setting App!'),
-              content: Text('1.Permissions\n' + '2. Camera\n' + '3. Allow'),
+                  'Quyền Truy cập vị trí bị từ chối. Hãy đén cài đặt ứng dụng!'),
+              content: Text('1.Cấp quyền\n' + '2. Vị trí\n' + '3. Cho phép'),
               actions: [
                 OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+
                   },
-                  child: Text('Cancel'),
+                  child: Text('Thoát'),
                 ),
                 OutlinedButton(
                   onPressed: () {
                     openAppSettings();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Accpet'),
+                  child: Text('Đến cài đặt'),
                 ),
               ],
             );

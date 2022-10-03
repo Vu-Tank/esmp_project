@@ -1,7 +1,9 @@
+import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user_provider.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
 import 'package:esmp_project/src/utils/shared_preferences.dart';
+import 'package:esmp_project/src/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,17 +31,8 @@ class VerifyProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _verificationId = "";
 
-  Status _loginPhoneStatus= Status.NotLoggedIn;
-  Status get loginPhoneStatus=> _loginPhoneStatus;
-  set loginPhoneStatus(Status value){
-    _loginPhoneStatus=value;
-  }
-
-  Status _verifyPhoneStatus = Status.NotVerify;
-  Status get verifyPhoneStatus => _verifyPhoneStatus;
-  set verifyPhoneStatus(Status value) {
-    _verifyPhoneStatus = value;
-  }
+  Status loginPhoneStatus= Status.NotLoggedIn;
+  Status verifyPhoneStatus= Status.NotVerify;
 
   void validatePhoneNumber(String value) {
     String pattern = r'^(0|84|\+84){1}([3|5|7|8|9]){1}([0-9]{8})\b';
@@ -47,45 +40,40 @@ class VerifyProvider extends ChangeNotifier {
     if (!regExp.hasMatch(value)) {
       _phone = ValidationItem(null, "Invalid phone number!");
     } else {
-      if (value.indexOf('0') == 0) {
-        value = value.replaceFirst("0", "+84");
-      } else if (value.indexOf("8") == 0) {
-        value = value.replaceFirst("8", "+8");
-      }
+      value=Utils.convertToFirebase(value);
       _phone = ValidationItem(value, null);
     }
     notifyListeners();
   }
 
-  Future<void> verifyPhone(String phoneNumber, BuildContext context) async {
-    _loginPhoneStatus = Status.Authenticating;
+
+  Future<void> verifyPhone({required String phoneNumber, required BuildContext context}) async {
+    loginPhoneStatus = Status.Authenticating;
     notifyListeners();
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          _loginPhoneStatus = Status.Verified;
+          loginPhoneStatus = Status.Verified;
           notifyListeners();
           await _auth.signInWithCredential(credential);
+          String token = await getIDToken();
         },
         verificationFailed: (error) {
-          _loginPhoneStatus = Status.NotLoggedIn;
+          loginPhoneStatus = Status.NotLoggedIn;
           notifyListeners();
           print("======================================================");
           print("Error: "+error.message!);
           print("======================================================");
         },
         codeSent: ((String verificationId, int? resendToken) async {
-          _loginPhoneStatus = Status.Authenticating;
+          loginPhoneStatus = Status.Authenticating;
           notifyListeners();
           _verificationId = verificationId;
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => OTPScreen(phone: phoneNumber)));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> OTPScreen(phone: phoneNumber)));
         }),
         timeout: Duration(seconds: 20),
         codeAutoRetrievalTimeout: (String verificationId) {
-          _loginPhoneStatus=Status.NotLoggedIn;
+          loginPhoneStatus=Status.NotLoggedIn;
           notifyListeners();
         });
   }
@@ -97,21 +85,23 @@ class VerifyProvider extends ChangeNotifier {
     try {
       await _auth.signInWithCredential(credential);
       String token = await getIDToken();
-      print("Token: "+token);
+      // print(token);
       verifyPhoneStatus = Status.Authenticating;
       notifyListeners();
-      UserModel? user = await login(phoneNumber, token);
-      if (user == null) {
+      ApiResponse apiResponse = await login(phoneNumber, token);
+      if (!apiResponse.isSuccess!) {
         verifyPhoneStatus = Status.NotLoggedIn;
         notifyListeners();
-        Navigator.pushReplacementNamed(context, '/login');
-        showSnackBar(context, "Phone number not exist, Please create account!!!!");
+        // Navigator.pushReplacementNamed(context, '/login');
+        showSnackBar(context, apiResponse.message!);
+
       } else {
         verifyPhoneStatus = Status.Verified;
         notifyListeners();
-        UserPreferences().saveUser(user);
-        Provider.of<UserProvider>(context,listen: false).setUser(user);
-        Navigator.pushReplacementNamed(context, "/home");
+        print((apiResponse.dataResponse as UserModel).userName);
+        // UserPreferences().saveUser(user);
+        // Provider.of<UserProvider>(context,listen: false).setUser(user);
+        // Navigator.pushReplacementNamed(context, "/home");
       }
     } catch (error) {
       verifyPhoneStatus = Status.NotVerify;

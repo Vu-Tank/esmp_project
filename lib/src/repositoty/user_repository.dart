@@ -1,10 +1,10 @@
 
-
 import 'dart:convert';
 import 'dart:developer';
 import 'package:esmp_project/src/constants/url.dart';
+import 'package:esmp_project/src/models/api_response.dart';
+import 'package:esmp_project/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
-
 import '../models/user.dart';
 Future<UserModel?> getUserDetail(String phone, String idToken) async{
   UserModel? user;
@@ -24,9 +24,10 @@ Future<UserModel?> getUserDetail(String phone, String idToken) async{
   }
   return user;
 }
-Future<UserModel?> login(String phone, String firebaseToken) async{
+Future<ApiResponse> login(String phone, String firebaseToken) async{
+  phone=Utils.convertToDB(phone);
+  ApiResponse apiResponse= new ApiResponse();
   try{
-
     final response= await http.post(Uri.parse(AppUrl.login),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
@@ -37,30 +38,46 @@ Future<UserModel?> login(String phone, String firebaseToken) async{
         })
     );
     if(response.statusCode==200){
-      return UserModel.fromJson(json.decode(response.body));
+      var body=json.decode(response.body);
+      // print(body['data']);
+      apiResponse.dataResponse= UserModel.fromJson(body['data']);
+      apiResponse.message=body['message'];
+      apiResponse.isSuccess=body['success'];
+    }else{
+      apiResponse.message= "Lỗi server";
+      apiResponse.isSuccess=false;
     }
   }catch(e){
-    print("Error at login API: $e");
+    print(e.toString());
+    apiResponse.message= e.toString();
+    apiResponse.isSuccess=false;
   }
-  return null;
+  return apiResponse;
 }
-Future<bool> checkexistUserWithPhone(String phone) async{
+Future<ApiResponse> checkexistUserWithPhone(String phone) async{
+  ApiResponse apiResponse= new ApiResponse();
   try{
-    final response= await http.post(Uri.parse(AppUrl.checkExistPhone),
-      body: jsonEncode(<String,dynamic>{
-        'phone':phone,
-        'roleID': 2,
-      })
-    );
+    final queryParams = {
+      'phone': '$phone',
+      'roleID':'2'
+    };
+    String queryString = Uri(queryParameters: queryParams).query;
+    final response= await http.post(Uri.parse(AppUrl.checkExistPhone+'?' + queryString));
+    var body=json.decode(response.body);
     if(response.statusCode==200){
-      var body=json.decode(response.body);
-      bool isExist=body['isExist'];
-      return isExist;
+      apiResponse.dataResponse= body['data'];
+      apiResponse.message=body['message'];
+      apiResponse.isSuccess=body['success'];
+    }else{
+      apiResponse.message= json.decode(response.body)['error'];
+      apiResponse.isSuccess=false;
     }
   }catch (error){
-    print("Error at checkexistUserWithPhone API: $error");
+    print(error.toString());
+    apiResponse.message= error.toString();
+    apiResponse.isSuccess=false;
   }
-  return false;
+  return apiResponse;
 }
 Future<bool> createUser(UserModel user) async{
   var reponse = await http.post(Uri.parse(""),
