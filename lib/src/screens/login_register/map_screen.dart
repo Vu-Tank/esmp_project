@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/providers/google_map_provider.dart';
@@ -17,15 +18,15 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  Completer<GoogleMapController> _controller = Completer();
-  TextEditingController _searchController = TextEditingController();
+  final Completer<GoogleMapController> _controller = Completer();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final mapProvider = Provider.of<GoogleMapProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Bản đồ"),
+        title: const Text("Bản đồ"),
       ),
       body: Column(
         children: <Widget>[
@@ -34,19 +35,21 @@ class _MapScreenState extends State<MapScreen> {
               Expanded(
                   child: TextFormField(
                 textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Tìm kiếm',
                 ),
                 controller: _searchController,
                 onChanged: (String? value) {
-                  print("Search: " + value!);
+                  log("Search: ${value!}");
                 },
               )),
               IconButton(
                   onPressed: () async {
                     LoadingDialog.showLoadingDialog(context, "Đang tìm kiếm");
                     mapProvider
-                        .searchPlace(context, _searchController.text.trim())
+                        .searchPlace((String msg) {
+                          showSnackBar(context, msg);
+                        }, _searchController.text.trim())
                         .then((_) => {
                               _goToPlace(mapProvider.address),
                             })
@@ -54,7 +57,7 @@ class _MapScreenState extends State<MapScreen> {
                               LoadingDialog.hideLoadingDialog(context),
                             });
                   },
-                  icon: Icon(Icons.search)),
+                  icon: const Icon(Icons.search)),
             ],
           ),
           Expanded(
@@ -73,13 +76,13 @@ class _MapScreenState extends State<MapScreen> {
                   },
                   onCameraMove: (CameraPosition newPosition) async {
                     mapProvider.setLocationByMovingMap(GoogleAddress(
-                      formatted_address: mapProvider.address.formatted_address,
+                      formattedAddress: mapProvider.address.formattedAddress,
                       lat: newPosition.target.latitude,
                       lng: newPosition.target.longitude,
                     ));
                   },
                 ),
-                Center(
+                const Center(
                   child: Icon(
                     Icons.location_on,
                     color: Colors.red,
@@ -90,12 +93,14 @@ class _MapScreenState extends State<MapScreen> {
                   bottom: 0,
                   right: 0,
                   child: IconButton(
-                    icon: Icon(Icons.my_location),
+                    icon: const Icon(Icons.my_location),
                     onPressed: () async {
                       if (await requestLocationPermission(context)) {
                         LoadingDialog.showLoadingDialog(
                             context, 'Vui Lòng Đợi');
-                        await mapProvider.goToMyLocation(context);
+                        await mapProvider.goToMyLocation((String msg) {
+                          showSnackBar(context, msg);
+                        });
                         _goToPlace(mapProvider.address).then((_) => {
                               LoadingDialog.hideLoadingDialog(context),
                             });
@@ -108,46 +113,50 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text('Địa chỉ: ${mapProvider.address.formatted_address}'),
-                Text('Vĩ độ: ${mapProvider.address.lat}'),
-                Text('Kinh độ: ${mapProvider.address.lng}'),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        print('Vĩ độ ${mapProvider.address.lat}');
-                        print('Kinh đô: ${mapProvider.address.lng}');
-                        LoadingDialog.showLoadingDialog(
-                            context, "Vui Long Đợi");
-                        mapProvider
-                            .searchLocation(context)
-                            .then((_) => {
-                                  LoadingDialog.hideLoadingDialog(context),
-                                })
-                            .then((_) => {
-                                  if (mapProvider.address.formatted_address
-                                          .split(',')
-                                          .length >=
-                                      4)
-                                    {
-                                      // Navigator.pop(context);
-                                      Navigator.of(context).pop()
-                                    }
-                                  else
-                                    {
-                                      showSnackBar(context,
-                                          "Vui lòng chọn dịa chỉ cụ thể")
-                                    }
-                                });
-                      },
-                      child: Text('Chọn')),
-                ),
-              ],
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Text('Địa chỉ: ${mapProvider.address.formattedAddress}'),
+              Text('Vĩ độ: ${mapProvider.address.lat}'),
+              Text('Kinh độ: ${mapProvider.address.lng}'),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      log('Vĩ độ ${mapProvider.address.lat}');
+                      log('Kinh đô: ${mapProvider.address.lng}');
+                      log(
+                          'address: ${mapProvider.address.formattedAddress}');
+                      LoadingDialog.showLoadingDialog(context, "Vui long đời");
+                      await mapProvider.searchLocation((String msg){
+                        showSnackBar(context, msg);
+                      });
+                      mapProvider.updateStatus();
+                      // mapProvider.checkSelectMap();
+                      if(mounted)LoadingDialog.hideLoadingDialog(context);
+                      if(mounted) Navigator.pop(context);
+                      // try {
+                      //   LoadingDialog.showLoadingDialog(
+                      //       context, "Vui Long Đợi");
+                      //   await mapProvider.searchLocation((String msg) {
+                      //     showSnackBar(context, msg);
+                      //   });
+                      //   if (mapProvider.address.formatted_address
+                      //           .split(',')
+                      //           .length >=
+                      //       4) {
+                      //     mapProvider.checkSelectMap();
+                      //     if(mounted) Navigator.of(context).pop();
+                      //   } else {
+                      //     if(mounted) showSnackBar(context, "Vui lòng chọn dịa chỉ cụ thể");
+                      //   }
+                      // } finally {
+                      //   LoadingDialog.hideLoadingDialog(context);
+                      // }
+                    },
+                    child: const Text('Chọn')),
+              ),
+            ],
           ),
         ],
       ),
@@ -178,7 +187,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _searchController.dispose();
+    super.dispose();
   }
 }

@@ -23,18 +23,23 @@ class AddressModel{
         isActive: json['isActive'] as bool,
     );
   }
+
+  @override
+  String toString() {
+    return 'AddressModel{addressID: $addressID, context: $context, province: $province, district: $district, ward: $ward, latitude: $latitude, longitude: $longitude, isActive: $isActive}';
+  }
 }
 class GoogleAddress{
-  String formatted_address;
+  String formattedAddress;
   double lat;
   double lng;
-  GoogleAddress({required this.formatted_address, required this.lat, required this.lng});
+  GoogleAddress({required this.formattedAddress, required this.lat, required this.lng});
 
   factory GoogleAddress.fromJson(Map<String, dynamic>json){
     return GoogleAddress(
-        formatted_address :json['formatted_address'] as String,
-        lat: json['geometry']['location']['lat'],
-        lng: json['geometry']['location']['lng']
+        formattedAddress :json['formatted_address'] as String,
+        lat: json['geometry']['location']['lat'] as double,
+        lng: json['geometry']['location']['lng'] as double
 
     );
   }

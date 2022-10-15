@@ -35,7 +35,7 @@ class ConnectionProvider extends ChangeNotifier{
                 notifyListeners();
             }
         } on PlatformException catch(e){
-            print("error at initConnectivity: $e");
+            log("error at initConnectivity: $e");
         }
     }
     Future<bool> _updateConnectuinStatus() async{

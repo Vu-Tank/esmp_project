@@ -1,0 +1,36 @@
+{
+  "userID": 2,
+  "userName": "Admin",
+  "email": "admin@gmail.com",
+  "phone": "096619190000",
+  "password": "123456",
+  "dateOfBirth": "2000-10-22T00:00:00",
+  "gender": "Nam",
+  "crete_date": "2022-10-13T00:00:00",
+  "isActive": true,
+  "token": "1",
+  "role": {
+    "roleID": 1,
+    "roleName": "Admin",
+    "isActive": true
+  },
+  "image": {
+    "imageID": 1,
+    "fileName": "adminAvatar",
+    "path": "hhhhhhh",
+    "crete_date": "2022-10-13T00:00:00",
+    "isActive": true
+  },
+  "addresses": [
+    {
+      "addressID": 1,
+      "context": "Số 23,Tôn Đức Thắng",
+      "province": "Hồ Chí Minh",
+      "district": "Gò Vấp",
+      "ward": "phường 5",
+      "latitude": 10.826674,
+      "longitude": 106.689242,
+      "isActive": true
+    }
+  ]
+}

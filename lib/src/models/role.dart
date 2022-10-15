@@ -12,4 +12,9 @@ class Role{
       isActive: json['isActive'] as bool,
     );
   }
+
+  @override
+  String toString() {
+    return 'Role{roleID: $roleID, roleName: $roleName, isActive: $isActive}';
+  }
 }

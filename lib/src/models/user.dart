@@ -7,10 +7,10 @@ class UserModel{
    String? userName;
    String? email;
    String? phone;
-   String? password;
+   // String? password;
    String? dateOfBirth;
    String? gender;
-   String? crete_date;
+   String? creteDate;
    bool? isActive;
    String? token;
    Role? role;
@@ -23,10 +23,10 @@ class UserModel{
       this.userName,
       this.email,
       this.phone,
-      this.password,
+      // this.password,
       this.dateOfBirth,
       this.gender,
-      this.crete_date,
+      this.creteDate,
       this.isActive,
       this.token,
       this.role,
@@ -39,10 +39,10 @@ class UserModel{
       userName: json['userName'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
-      password: json['password'] as String,
+      // password: json['password'] as String?,
       dateOfBirth: json['dateOfBirth'] as String,
       gender: json['gender'] as String,
-      crete_date: json['crete_date'] as String,
+      creteDate: json['crete_date'] as String,
       isActive: json['isActive'] as bool,
       token: json['token'] as String,
       role: Role.fromJson(json['role']),
@@ -51,8 +51,25 @@ class UserModel{
     );
   }
   Map<String, dynamic> toJson(){
-    final Map<String, dynamic> data=new Map<String, dynamic>();
-    data['userID']=this.userID;
+    final Map<String, dynamic> data=<String, dynamic>{};
+    data['userName']=userName;
+    data['email']=email;
+    data['phone']=phone;
+    data['imageName']=image?.fileName;
+    data['imagepath']=image!.path;
+    data['contextAddress']=address?[0].context;
+    data['dateOfBirth']=dateOfBirth;
+    data['gender']=gender;
+    data['latitude']=address![0].latitude;
+    data['longitude']=address![0].longitude;
+    data['province']=address![0].province;
+    data['district']=address![0].district;
+    data['ward']=address![0].ward;
     return data;
+  }
+
+   @override
+  String toString() {
+    return 'UserModel{userID: $userID, userName: $userName, email: $email, phone: $phone, dateOfBirth: $dateOfBirth, gender: $gender, crete_date: $creteDate, isActive: $isActive, token: $token, role: $role, image: $image, address: $address}';
   }
 }

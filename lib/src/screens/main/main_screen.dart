@@ -1,15 +1,12 @@
-import 'package:esmp_project/src/models/user.dart';
+
 import 'package:esmp_project/src/providers/connection_provider.dart';
-import 'package:esmp_project/src/screens/account_screen.dart';
-import 'package:esmp_project/src/screens/cart_screen.dart';
-import 'package:esmp_project/src/screens/chat_screen.dart';
-import 'package:esmp_project/src/screens/shopping_screen.dart';
-import 'package:esmp_project/src/utils/shared_preferences.dart';
+import 'package:esmp_project/src/screens/main/account_screen.dart';
+import 'package:esmp_project/src/screens/main/cart_screen.dart';
+import 'package:esmp_project/src/screens/main/shopping_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../providers/user_provider.dart';
-import '../utils/widget/no_internet.dart';
+import '../../utils/widget/no_internet.dart';
+import 'chat_screen.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -60,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
           _selectedIndex=newPage;
         });
       },
-      children: <Widget>[
+      children: const <Widget>[
         ShoppingScreen(),
         ChatScreen(),
         CartScreen(),
