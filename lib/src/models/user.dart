@@ -7,7 +7,6 @@ class UserModel{
    String? userName;
    String? email;
    String? phone;
-   // String? password;
    String? dateOfBirth;
    String? gender;
    String? creteDate;
@@ -23,7 +22,6 @@ class UserModel{
       this.userName,
       this.email,
       this.phone,
-      // this.password,
       this.dateOfBirth,
       this.gender,
       this.creteDate,
@@ -39,7 +37,6 @@ class UserModel{
       userName: json['userName'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
-      // password: json['password'] as String?,
       dateOfBirth: json['dateOfBirth'] as String,
       gender: json['gender'] as String,
       creteDate: json['crete_date'] as String,

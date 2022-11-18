@@ -1,3 +1,6 @@
+
+import 'dart:developer';
+
 import 'package:esmp_project/src/models/validation_item.dart';
 
 class Validations{
@@ -50,6 +53,32 @@ class Validations{
       validationItem= ValidationItem(null, "Địa chỉ quá dài (Tối đa 100 ký tự)");
     }else{
       validationItem=ValidationItem(value, null);
+    }
+    return validationItem;
+  }
+  static ValidationItem valMinPrice(double? minPrice, double? maxPrice){
+    ValidationItem validationItem= ValidationItem(null, null);
+    if(minPrice!=null){
+      if(minPrice>double.maxFinite){
+        validationItem=ValidationItem(null, 'Giá tối thiểu phải nhỏ hơn ${double.maxFinite}');
+        return validationItem;
+      }else if(maxPrice!=null&& minPrice>maxPrice){
+        // log("aaa");
+        validationItem= ValidationItem(null, 'Giá tối thiểu phải nhỏ hơn giá tối đa');
+        return validationItem;
+      }
+    }
+    validationItem=ValidationItem(minPrice.toString(), null);
+    return validationItem;
+  }
+  static ValidationItem valMaxPrice(double? minPrice, double? maxPrice){
+    ValidationItem validationItem= ValidationItem(null, null);
+    if(maxPrice!=null){
+      if(maxPrice>double.maxFinite){
+        validationItem=ValidationItem(null, 'Giá tối đa phải nhỏ hơn ${double.maxFinite}');
+        return validationItem;
+      }
+      validationItem=ValidationItem(minPrice.toString(), null);
     }
     return validationItem;
   }

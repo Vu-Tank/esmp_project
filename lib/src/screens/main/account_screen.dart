@@ -1,12 +1,14 @@
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/api_response.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:esmp_project/main.dart';
 import 'package:esmp_project/src/models/user.dart';
-import 'package:esmp_project/src/providers/user_provider.dart';
-import 'package:esmp_project/src/repositoty/user_repository.dart';
+import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/address/address_screen.dart';
+import 'package:esmp_project/src/screens/feedback/list_feedback_screen.dart';
 import 'package:esmp_project/src/screens/login_register/register_screen.dart';
-import 'package:esmp_project/src/screens/proifle/profile_screen.dart';
+import 'package:esmp_project/src/screens/order/order.dart';
+import 'package:esmp_project/src/screens/profile/profile_screen.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,15 +27,17 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).viewPadding.top;
     final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            SizedBox(height: height,),
             Container(
-              height: 200,
-              decoration: const BoxDecoration(
-                color: Colors.deepOrangeAccent,
+              height: 140,
+              decoration: BoxDecoration(
+                color: mainColor,
               ),
               child: userProvider.user == null
                   ? notUser()
@@ -80,7 +84,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   onTap: () {
                     if(userProvider.user!=null){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddressScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddressScreen(status: 'view',)));
                     }else{
                       Navigator.push(context, MaterialPageRoute(builder: (context)=> const LoginScreen()));
                     }
@@ -133,7 +137,13 @@ class _AccountScreenState extends State<AccountScreen> {
                             ],
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          if(userProvider.user==null){
+                            Navigator.push(context, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
+                            return;
+                          }
+                          Navigator.push(context, MaterialPageRoute(builder: (ctx)=>OrderMainScreen(index: 0,)));
+                        },
                       ),
                       // row các loại đơn hàng
                       SizedBox(
@@ -159,7 +169,13 @@ class _AccountScreenState extends State<AccountScreen> {
                                       ),
                                     ],
                                   ),
-                                  onTap: () {},
+                                  onTap: () {
+                                    if(userProvider.user==null){
+                                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
+                                      return;
+                                    }
+                                    Navigator.push(context, MaterialPageRoute(builder: (ctx)=>OrderMainScreen(index: 2,)));
+                                  },
                                 ),
                               ),
                             ),
@@ -181,7 +197,13 @@ class _AccountScreenState extends State<AccountScreen> {
                                       ),
                                     ],
                                   ),
-                                  onTap: () {},
+                                  onTap: () {
+                                    if(userProvider.user==null){
+                                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>const LoginScreen()));
+                                      return;
+                                    }
+                                    Navigator.push(context, MaterialPageRoute(builder: (ctx)=>OrderMainScreen(index: 3,)));
+                                  },
                                 ),
                               ),
                             ),
@@ -225,7 +247,13 @@ class _AccountScreenState extends State<AccountScreen> {
                       ],
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    if(userProvider.user==null){
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>const LoginScreen()));
+                      return;
+                    }
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ListFeedBackScreen()));
+                  },
                 ),
                 // chat vs hệ thống
                 InkWell(
@@ -336,9 +364,23 @@ class _AccountScreenState extends State<AccountScreen> {
         ClipOval(
           child: SizedBox.fromSize(
             size: const Size.fromRadius(60),
-            child: Image.network(
-              user.image!.path!,
-              fit: BoxFit.cover,
+            child: CachedNetworkImage(
+              // item.itemImage,
+              // fit: BoxFit.cover,
+              imageUrl: user.image!.path!,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              placeholder: (context, url) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              errorWidget: (context, url, error) =>
+              const Icon(Icons.error),
             ),
           ),
         ),
@@ -348,11 +390,10 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(
               height: 50,
             ),
-            Text('${user.userName}'),
+            Text('${user.userName}', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
             TextButton(onPressed: () {
-              log(user.image.toString());
               Navigator.push(context, MaterialPageRoute(builder: (context)=> const ProfileScreen()));
-            }, child: const Text('Thông tin tài khoản')),
+            }, child: const Text('Thông tin tài khoản', style: TextStyle(fontSize: 16),)),
           ],
         ),
         IconButton(

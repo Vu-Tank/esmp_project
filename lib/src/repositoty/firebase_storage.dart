@@ -7,18 +7,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseStorageService {
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  Future<String?> uploadFile(File file) async {
-    String fileName = file.path.split('/').last;
-    String exFileName=fileName.split('.').last;
-    fileName='${Utils.createFile()}.$exFileName';
+  Future<String?> uploadFile(File file, String fileName) async {
     try {
       Reference storageRef = storage.ref();
-      Reference imagesRef = storageRef.child('images/eSMP$fileName');
+      Reference imagesRef = storageRef.child('images/$fileName');
       await imagesRef.putFile(file);
       String? urlDowload = await imagesRef.getDownloadURL();
       return urlDowload;
     } on FirebaseException catch (e) {
-      log('Load eror: ${e.message!}');
+      log('Load error: ${e.message!}');
       return null;
     }
   }
@@ -35,7 +32,7 @@ class FirebaseStorageService {
         return url;
       }
     } catch (e) {
-      log('erro: ${e.toString()}');
+      log('error: ${e.toString()}');
       return url;
     }
   }

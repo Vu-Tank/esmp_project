@@ -6,6 +6,7 @@ import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/models/validation_item.dart';
+import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/validations.dart';
@@ -104,7 +105,7 @@ class RegisterProvider extends ChangeNotifier {
     _addressMapValid=ValidationItem(null, null);
     notifyListeners();
   }
-  Future<bool> registerUser(String token, Function onSuccess, Function onFailed)async{
+  Future<bool> registerUser(String token,String? uid, Function onSuccess, Function onFailed)async{
     _user.token=token;
     _user.userName=_fullName.value;
     _user.email=_email.value;
@@ -113,6 +114,7 @@ class RegisterProvider extends ChangeNotifier {
     log(apiResponse.message!);
     if(apiResponse.isSuccess!){
       _user=UserModel(gender: _genders.first,address: [_address!], image: _image);
+      CloudFirestoreService(uid: uid).createUserCloud();
       onSuccess();
     }else{
       onFailed(apiResponse.message);

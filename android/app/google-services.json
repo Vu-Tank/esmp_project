@@ -37,6 +37,13 @@
             {
               "client_id": "688134919204-930pfi5huaajk6qkh9pongao1bpmmdoo.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "688134919204-nr93sfok59f9nkf7picgvicd9ftlq8v1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.esmpProject"
+              }
             }
           ]
         }

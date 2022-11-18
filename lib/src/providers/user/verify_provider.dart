@@ -11,8 +11,8 @@ import 'package:esmp_project/src/utils/validations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../models/validation_item.dart';
-import '../screens/login_register/otp_screen.dart';
+import '../../models/validation_item.dart';
+import '../../screens/login_register/otp_screen.dart';
 
 class VerifyProvider extends ChangeNotifier {
   ValidationItem _phone = ValidationItem(null, null);
@@ -40,7 +40,7 @@ class VerifyProvider extends ChangeNotifier {
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential);
+          final user=await _auth.signInWithCredential(credential);
           String token = await getIDToken();
           try {
             if(status=='login'){
@@ -54,7 +54,7 @@ class VerifyProvider extends ChangeNotifier {
                 onLogin!(user);
               }
             }else if(status=='register'){
-              onRegister!(token);
+              onRegister!(token, user.user?.uid);
             }
           } catch (error) {
             onFailed(error.toString());
@@ -82,7 +82,7 @@ class VerifyProvider extends ChangeNotifier {
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: otp);
     try {
-      await _auth.signInWithCredential(credential);
+      final user=await _auth.signInWithCredential(credential);
       String token = await getIDToken();
       String phone = Utils.convertToDB(phoneNumber);
       if (status == 'login') {
@@ -95,7 +95,7 @@ class VerifyProvider extends ChangeNotifier {
           onLogin!(user);
         }
       } else if (status == 'register') {
-        onRegister!(token);
+        onRegister!(token, user.user?.uid);
       }
     } catch (error) {
       if (error

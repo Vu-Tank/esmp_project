@@ -1,17 +1,15 @@
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/screens/login_register/otp_screen.dart';
 import 'package:esmp_project/src/screens/login_register/register_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/user_provider.dart';
-import '../../providers/verify_provider.dart';
-import '../../repositoty/user_repository.dart';
-import '../../utils/widget/showSnackBar.dart';
+import '../../providers/user/user_provider.dart';
+import '../../providers/user/verify_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -34,11 +32,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final verifyProvider = Provider.of<VerifyProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
+        title: Center(
             child: Text(
-          "Login",
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          "Đăng nhập",
+          style: appBarTextStyle,
         )),
+        backgroundColor: mainColor,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -50,14 +49,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 //logo
                 const Padding(
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                  child: FlutterLogo(
-                    size: 100,
-                  ),
+                  child:
+                      Image(image: AssetImage('assets/images/online_shop.png')),
                 ),
                 TextField(
                   decoration: buildInputDecoration(
                       "Số điện thoại", Icons.phone, verifyProvider.phone.error),
-                  style: const TextStyle(fontSize: 18, color: Colors.black),
+                  style: textStyleInput,
                   keyboardType: TextInputType.phone,
                   controller: _phoneController,
                 ),
@@ -95,93 +93,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         if (verifyProvider
                             .validPhoneNumber(_phoneController.text.trim())) {
-                          try {
-                            LoadingDialog.showLoadingDialog(
-                                context, "Vui lòng đợi");
-                            String phone =Utils.convertToFirebase(_phoneController.text.trim());
-                            phone =Utils.convertToDB(phone);
-                            ApiResponse apiResponse =
-                                await UserRepository.checkExistUserWithPhone(
-                                    phone);
-                            log(apiResponse.toString());
-                            if (apiResponse.isSuccess!) {
-                              phone = Utils.convertToFirebase(
-                                  _phoneController.text.trim());
-                              await verifyProvider.verifyPhone(
-                                  phoneNumber: phone,
-                                  context: context,
-                                  status: 'login',
-                                  onFailed: (String msg) {
-                                    showSnackBar(context, msg);
-                                  },
-                                  onLogin: (UserModel user) {
-                                    context.read<UserProvider>().setUser(user);
-                                    Navigator.pushReplacementNamed(
-                                        context, "/main");
-                                  },
-                                  onRegister: () {});
-                              if(mounted){
+                          LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
+                          await verifyProvider.login(
+                              phone: _phoneController.text.trim(),
+                              onSendCode: (String verificationId) {
                                 LoadingDialog.hideLoadingDialog(context);
-                              }
-                            } else {
-                              if (mounted) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OTPScreen(
+                                              verificationId: verificationId,
+                                              phone: Utils.convertToFirebase(_phoneController.text.trim()),
+                                              status: 'login',
+                                            )));
+                              },
+                              onSuccess: (UserModel user) {
                                 LoadingDialog.hideLoadingDialog(context);
-                                showSnackBar(context, apiResponse.message!);
-                              }
-                            }
-                          } catch (error) {
-                            if (mounted) {
-                              LoadingDialog.hideLoadingDialog(context);
-                              showSnackBar(context, error.toString());
-                            }
-                          }
+                                context.read<UserProvider>().setUser(user);
+                                Navigator.pushReplacementNamed(
+                                    context, "/main");
+                              },
+                              onFailed: (String msg) {
+                                LoadingDialog.hideLoadingDialog(context);
+                                showMyAlertDialog(context, msg);
+                              });
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: btnColor,
                         shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(8))),
                       ),
-                      child: const Text("Đăng nhập",
-                          style: TextStyle(color: Colors.white, fontSize: 15)),
+                      child: Text("Đăng nhập", style: btnTextStyle),
                     ),
-                    // child:verifyProvider.loginPhoneStatus==Status.Authenticating
-                    // ? loading
-                    // : ElevatedButton(
-                    //   onPressed: verifyProvider.phone.value!=null? () async{
-                    //     phone=Utils.convertToDB(verifyProvider.phone.value!);
-                    //     ApiResponse apiResponse=await UserRepository.checkExistUserWithPhone(phone!);
-                    //     if(apiResponse.isSuccess!){
-                    //       phone=Utils.convertToFirebase(phone!);
-                    //       await verifyProvider.verifyPhone(
-                    //           phoneNumber: phone!,
-                    //           context: context,
-                    //           status: 'login',
-                    //           onFailed: (String msg){
-                    //             showSnackBar(context, msg);
-                    //           },
-                    //           onLogin: (UserModel user){
-                    //             context.read<UserProvider>().setUser(user);
-                    //             Navigator.pushReplacementNamed(context, "/main");
-                    //           },
-                    //           onRegister: (){
-                    //           }
-                    //       );
-                    //     }else{
-                    //       if(mounted) {
-                    //         showSnackBar(context, apiResponse.message!);
-                    //       }
-                    //     }
-                    //   }:null,
-                    //   style: ElevatedButton.styleFrom(
-                    //     backgroundColor: Colors.blue,
-                    //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-                    //   ),
-                    //   child: const Text("Login", style: TextStyle(
-                    //       color: Colors.white,
-                    //       fontSize: 15
-                    //   )),
-                    // ),
                   ),
                 ),
               ],

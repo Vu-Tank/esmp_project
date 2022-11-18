@@ -3,12 +3,10 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/api_response.dart';
-import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/user.dart';
-import 'package:esmp_project/src/providers/edit_profile_provider.dart';
-import 'package:esmp_project/src/providers/user_provider.dart';
-import 'package:esmp_project/src/repositoty/user_repository.dart';
-import 'package:esmp_project/src/screens/proifle/edit_dialog.dart';
+import 'package:esmp_project/src/providers/user/edit_profile_provider.dart';
+import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/screens/profile/edit_dialog.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../repositoty/firebase_storage.dart';
 import '../../utils/request_permission.dart';
-import '../../utils/utils.dart';
 import '../../utils/widget/showSnackBar.dart';
 import '../../utils/widget/show_modal_bottom_sheet_image.dart';
 
@@ -47,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: appBarTextStyle,
           ),
         ),
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: mainColor,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -58,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.all(10.0),
                 child: ClipOval(
                   child: SizedBox.fromSize(
-                    size: Size.fromRadius(60),
+                    size: const Size.fromRadius(60),
                     child: image != null
                         ? Image.file(
                             image!,
@@ -90,12 +85,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               onTap: () async {
+                log(user.image!.path!);
                 File? result =
                     await showModalBottomSheetImage(context).catchError((e) {
                   showMyAlertDialog(context, e.toString());
                 });
                 if (result != null) {
-                  log(result.toString());
+                  // log(result.toString());
                   if (mounted) {
                     LoadingDialog.showLoadingDialog(context, "Vui Lòng đợi");
                   }
@@ -194,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             '${user.email}',
                             style: textStyleInputChild,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.edit_outlined,
                             color: Colors.grey,
                             size: 18,
@@ -247,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             '${user.gender}',
                             style: textStyleInputChild,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.edit_outlined,
                             color: Colors.grey,
                             size: 18,
@@ -378,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             '+${user.phone}',
                             style: textStyleInputChild,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.edit_off_outlined,
                             color: Colors.grey,
                             size: 18,
@@ -396,7 +392,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Ngày tham gia
             InkWell(
               child: Container(
-                decoration: BoxDecoration(
+                decoration:const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.black12),
                     top: BorderSide(color: Colors.black12),
@@ -416,7 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             user.creteDate!.split('T')[0],
                             style: textStyleInputChild,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.edit_off_outlined,
                             color: Colors.grey,
                             size: 18,

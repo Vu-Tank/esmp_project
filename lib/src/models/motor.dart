@@ -10,6 +10,7 @@ class Motor{
 
   @override
   String toString() {
-    return 'Motor{motorId: $motorId, name: $name, isActive: $isActive}';
+    // return 'Motor{motorId: $motorId, name: $name, isActive: $isActive}';
+    return name;
   }
 }

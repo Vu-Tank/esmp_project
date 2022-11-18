@@ -9,8 +9,8 @@ import 'package:esmp_project/src/repositoty/user_repository.dart';
 import 'package:esmp_project/src/utils/validations.dart';
 import 'package:flutter/material.dart';
 
-import '../repositoty/firebase_storage.dart';
-import '../utils/utils.dart';
+import '../../repositoty/firebase_storage.dart';
+import '../../utils/utils.dart';
 
 class EditProfileProvider extends ChangeNotifier {
   ValidationItem validationItem = ValidationItem(null, null);

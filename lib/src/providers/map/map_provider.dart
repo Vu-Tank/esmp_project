@@ -4,7 +4,7 @@ import 'package:esmp_project/src/models/address.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../repositoty/google_repository.dart';
+import '../../repositoty/google_repository.dart';
 
 class MapProvider extends ChangeNotifier{
   final GoogleAddress _default= GoogleAddress(

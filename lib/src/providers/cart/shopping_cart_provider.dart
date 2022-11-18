@@ -6,8 +6,8 @@ import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/order.dart';
-import '../repositoty/payment_repository.dart';
+import '../../models/order.dart';
+import '../../repositoty/payment_repository.dart';
 
 class ShoppingCartProvider extends ChangeNotifier {
   List<Order>? _order = [];

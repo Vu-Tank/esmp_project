@@ -4,6 +4,7 @@ import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/role.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/api_response.dart';
@@ -25,9 +26,13 @@ class UserPreferences {
     }
     String? token = prefs.getString("token");
     ApiResponse apiResponse = await UserRepository.reFeshToken(userId: userId, token: token!);
+    // final fcmToken = await FirebaseMessaging.instance.getToken();
+    // log(fcmToken.toString());
+    log(apiResponse.message!);
     if(apiResponse.isSuccess!){
       return apiResponse.dataResponse as UserModel;
     }else{
+      removeUser();
       return null;
     }
   }

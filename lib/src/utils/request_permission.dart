@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -39,11 +41,16 @@ Future<bool> requestCameraPermission(BuildContext context) async {
 }
 
 Future<bool> requestPhotosPermission() async {
-  var status = await Permission.photos.status;
+  var status = await Permission.storage.status;
   if (status.isGranted) {
     return true;
-  } else if (status.isDenied) {
-    await Permission.photos.request();
+  } else{
+    log("xin quyền");
+    status=await Permission.storage.request();
+    if(status.isGranted){
+      return true;
+    }
+    log(status.toString());
   }
   return false;
 }

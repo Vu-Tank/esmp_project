@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:esmp_project/src/providers/user_provider.dart';
+import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/screens/address/address_detail_screen.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,8 +9,8 @@ import 'package:provider/provider.dart';
 import '../../models/address.dart';
 
 class AddressScreen extends StatefulWidget {
-  const AddressScreen({Key? key}) : super(key: key);
-
+  const AddressScreen({Key? key, required this.status}) : super(key: key);
+  final String status;
   @override
   State<AddressScreen> createState() => _AddressScreenState();
 }
@@ -24,8 +25,9 @@ class _AddressScreenState extends State<AddressScreen> {
       appBar: AppBar(
         title: Text(
           'Địa Chỉ',
-          style: textStyleInput,
+          style: appBarTextStyle,
         ),
+        backgroundColor: mainColor,
       ),
       body: SingleChildScrollView(
         child: ListView.builder(
@@ -35,30 +37,27 @@ class _AddressScreenState extends State<AddressScreen> {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  log(index.toString());
+                  if(widget.status=='select'){
+                    Navigator.pop(context,list[index]);
+                    return;
+                  }
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> AddressDetailScreen(status: 'edit', address: list[index],)));
                 },
                 child: Card(
-                    child: Table(
-                      children: [
-                        TableRow(
-                          children: [
-                            Text('Tỉnh/ thành phố', style: textStyleInput,),
-                            Text('${list[index].province}', style: textStyleInput,),
-                          ]
-                        ),
-                        TableRow(
-                            children: [
-                              Text('Quận/ huyện', style: textStyleInput,),
-                              Text('${list[index].district}', style: textStyleInput,),
-                            ]
-                        ),
-                        TableRow(
-                            children: [
-                              Text('Phường/ xã', style: textStyleInput,),
-                              Text('${list[index].ward}', style: textStyleInput,),
-                            ]
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          //name và tên
+                          Text('${list[index].userName!} | +${list[index].userPhone}', style: textStyleInput,),
+                          const SizedBox(height: 8,),
+                          Text(list[index].context!, style: textStyleLabelChild,),
+                          const SizedBox(height: 8,),
+                          Text('${list[index].ward}, ${list[index].district}, ${list[index].province}', style: textStyleLabelChild,),
+                          // Divider(color: Colors.black,),
+                        ],
+                      ),
                     ),
                 ),
               );
@@ -66,10 +65,11 @@ class _AddressScreenState extends State<AddressScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: (){
-
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddressDetailScreen(status: 'create')));
         },
         label: Text("Thêm địa chỉ",
-            style: TextStyle(color: Colors.white, fontSize: 15)),
+            style: btnTextStyle),
+        backgroundColor: btnColor,
 
       ),
 
