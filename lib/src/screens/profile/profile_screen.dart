@@ -1,19 +1,27 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/providers/edit_profile_provider.dart';
 import 'package:esmp_project/src/providers/user_provider.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
 import 'package:esmp_project/src/screens/proifle/edit_dialog.dart';
+import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../repositoty/firebase_storage.dart';
 import '../../utils/request_permission.dart';
+import '../../utils/utils.dart';
 import '../../utils/widget/showSnackBar.dart';
+import '../../utils/widget/show_modal_bottom_sheet_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -29,13 +37,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    final editProvider = Provider.of<EditProfileProvider>(context);
     UserModel user = userProvider.user!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Hồ sơ',
-          style: textStyleInput,
+        title: Center(
+          child: Text(
+            'Hồ sơ',
+            style: appBarTextStyle,
+          ),
         ),
+        backgroundColor: Colors.pinkAccent,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -52,38 +64,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             image!,
                             fit: BoxFit.cover,
                           )
-                        : Image.network(
-                            user.image!.path!,
-                            fit: BoxFit.cover,
+                        // : Image.network(
+                        //     user.image!.path!,
+                        //     fit: BoxFit.cover,
+                        //   ),
+                        : CachedNetworkImage(
+                            // item.itemImage,
+                            // fit: BoxFit.cover,
+                            imageUrl: user.image!.path!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                   ),
                 ),
               ),
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: ((builder) => bottomSheet(onSuccess: () async {
-                        if (image != null) {
-                          ApiResponse apiResponse =
-                              await UserRepository.editImage(
-                                  userId: user.userID!,
-                                  token: user.token!,
-                                  path: image!.path,
-                                  fileName: image!.path.split('/').last);
-                          if (apiResponse.isSuccess!) {
-                            ImageModel imageModel =
-                                apiResponse.dataResponse as ImageModel;
-                            userProvider.setUserImage(imageModel);
-                          }
-                        }
-                      })),
-                );
+              onTap: () async {
+                File? result =
+                    await showModalBottomSheetImage(context).catchError((e) {
+                  showMyAlertDialog(context, e.toString());
+                });
+                if (result != null) {
+                  log(result.toString());
+                  if (mounted) {
+                    LoadingDialog.showLoadingDialog(context, "Vui Lòng đợi");
+                  }
+                  await editProvider.editImage(
+                      image: result,
+                      userID: user.userID!,
+                      token: user.token!,
+                      userImage: user.image!.fileName!,
+                      onSuccess: (UserModel user) {
+                        userProvider.setUser(user);
+                        setState(() {
+                          image = result;
+                        });
+                        if (mounted) LoadingDialog.hideLoadingDialog(context);
+                      },
+                      onFailed: (String msg) {
+                        if (mounted) LoadingDialog.hideLoadingDialog(context);
+                        showMyAlertDialog(context, msg);
+                      });
+                }
               },
             ),
             //tên
             InkWell(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.black12),
                     top: BorderSide(color: Colors.black12),
@@ -102,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             '${user.userName}',
                             style: textStyleInputChild,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.edit_outlined,
                             color: Colors.grey,
                             size: 18,
@@ -127,6 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(context);
                   },
                   onFailed: (String msg) {
+                    Navigator.pop(context);
                     showSnackBar(context, msg);
                   },
                   controller: controller,
@@ -136,7 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             //mail
             InkWell(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.black12),
                     top: BorderSide(color: Colors.black12),
@@ -189,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // gender
             InkWell(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.black12),
                     top: BorderSide(color: Colors.black12),
@@ -225,10 +264,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     userId: user.userID!,
                     gender: user.gender!,
                     token: user.token!,
-                    onSuccess: (){
+                    onSuccess: (UserModel user) {
+                      userProvider.setUser(user);
+                      LoadingDialog.hideLoadingDialog(context);
                       Navigator.pop(context);
                     },
-                    onFailed: (String msg){
+                    onFailed: (String msg) {
+                      LoadingDialog.hideLoadingDialog(context);
                       showSnackBar(context, msg);
                     });
               },
@@ -236,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // DOB
             InkWell(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.black12),
                     top: BorderSide(color: Colors.black12),
@@ -255,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             user.dateOfBirth!.split('T')[0],
                             style: textStyleInputChild,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.edit_outlined,
                             color: Colors.grey,
                             size: 18,
@@ -269,8 +311,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () async {
                 DateTime? dob = await showDatePicker(
                   context: context,
-                  initialDate: DateTime(DateTime.now().year - 14,
-                      DateTime.now().month, DateTime.now().day),
+                  initialDate:
+                      DateFormat("yyyy-MM-dd").parse(user.dateOfBirth!),
                   firstDate: DateTime(1900),
                   lastDate: DateTime(DateTime.now().year + 1),
                   helpText: 'Ngày sinh',
@@ -288,11 +330,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                     return false;
                   },
-                );
-                if (dob != null) {
-                } else {
-                  return;
-                }
+                ).then((value) async {
+                  if (value != null) {
+                    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+                    String dob = dateFormat.format(value);
+                    LoadingDialog.showLoadingDialog(context, 'Vui lòng đợi');
+                    ApiResponse apiResponse = await context
+                        .read<EditProfileProvider>()
+                        .updateProfile(
+                            value: dob,
+                            status: 'dob',
+                            token: user.token!,
+                            userId: user.userID!);
+                    if (apiResponse.isSuccess!) {
+                      userProvider
+                          .setUser(apiResponse.dataResponse as UserModel);
+                      if (mounted) LoadingDialog.hideLoadingDialog(context);
+                    } else {
+                      if (mounted) LoadingDialog.hideLoadingDialog(context);
+                      if (mounted) showSnackBar(context, apiResponse.message!);
+                    }
+                  } else {
+                    return;
+                  }
+                });
               },
             ),
             // phone number
@@ -401,9 +462,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextButton.icon(
                 onPressed: () async {
                   if (await requestCameraPermission(context)) {
-                    pickImage(ImageSource.camera);
+                    await pickImage(ImageSource.camera);
                     onSuccess();
-                    Navigator.pop(context);
+                    if (mounted) Navigator.pop(context);
                   }
                 },
                 icon: const Icon(Icons.camera),
@@ -412,8 +473,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextButton.icon(
                 onPressed: () async {
                   if (await requestPhotosPermission()) {
-                    pickImage(ImageSource.gallery);
-                    Navigator.pop(context);
+                    await pickImage(ImageSource.gallery);
+                    onSuccess();
+                    if (mounted) Navigator.pop(context);
+                  } else {
+                    log("ko cấp quyền đc");
                   }
                 },
                 icon: const Icon(Icons.image),

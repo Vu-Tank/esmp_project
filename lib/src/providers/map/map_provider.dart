@@ -1,21 +1,33 @@
+import 'dart:developer';
+
 import 'package:esmp_project/src/models/address.dart';
-import 'package:esmp_project/src/models/validation_item.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../repositoty/google_repository.dart';
-class GoogleMapProvider extends ChangeNotifier{
-  bool isUpdate=false;
+
+class MapProvider extends ChangeNotifier{
+  final GoogleAddress _default= GoogleAddress(
+      formattedAddress: "Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
+      lat: 10.8421949 ,
+      lng:106.823737);
   GoogleAddress _address= GoogleAddress(
-      formattedAddress: "Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh, Vietnam",
+      formattedAddress: "Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh",
       lat: 10.8421949 ,
       lng:106.823737);
 
   GoogleAddress get address => _address;
 
-  late AddressModel addressModel;
-
-
+  void initData(AddressModel? addressModel){
+    if(addressModel!=null){
+      _address.formattedAddress='${addressModel.ward}, ${addressModel.district}, ${addressModel.province}';
+      _address.lat=addressModel.latitude!;
+      _address.lng=addressModel.longitude!;
+    }else{
+      _address=_default;
+    }
+    // log(addressModel!.toString());
+  }
   Future<void> goToMyLocation(Function onFiled) async {
     Position? position = await GoogleMapService().getCurrent();
     if(position!=null){
@@ -41,37 +53,17 @@ class GoogleMapProvider extends ChangeNotifier{
   }
   void setLocationByMovingMap(GoogleAddress address) {
     _address = address;
-    // print('Vĩ độ: ${address.lat}');
-    // print('Kinh đô: ${address.lng}');
-    notifyListeners();
-  }
-  ValidationItem _mapStatus= ValidationItem(null, null);
-
-  ValidationItem get mapStatus => _mapStatus;
-
-  void checkSelectMap(){
-    if(isUpdate){
-      _mapStatus= ValidationItem(null, null);
-    }else{
-      _mapStatus=ValidationItem(null, "Vui Lòng chọn địa chỉ");
-    }
     notifyListeners();
   }
   Future<void> searchLocation(Function onFailed) async {
-      String? placeId = await GoogleMapService().getPlaceIdFromLoation(address.lat, address.lng);
-      if(placeId !=null){
-        _address= (await GoogleMapService().getPlace(placeId))!;
-        notifyListeners();
-      }else{
-        onFailed('Không thể định vị. Vui Lòng thử lại');
-      }
+    String? placeId = await GoogleMapService().getPlaceIdFromLoation(address.lat, address.lng);
+    if(placeId !=null){
+      _address= (await GoogleMapService().getPlace(placeId))!;
+      notifyListeners();
+    }else{
+      onFailed('Không thể định vị. Vui Lòng thử lại');
+    }
   }
-  void updateStatus(){
-    isUpdate=true;
-    addressModel=getAddress()!;
-    notifyListeners();
-  }
-
   AddressModel? getAddress() {
     AddressModel addressModel= AddressModel();
     if(_address.formattedAddress.split(',').length>=3) {

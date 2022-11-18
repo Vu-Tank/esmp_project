@@ -2,6 +2,7 @@ import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/models/validation_item.dart';
 import 'package:esmp_project/src/providers/edit_profile_provider.dart';
+import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,12 @@ class EditDialog {
             ),
             actions: [
               TextButton(
+                  onPressed: () {
+                    controller.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Thoát', style: TextStyle(fontSize: 16, color: mainColor),)),
+              TextButton(
                   onPressed: () async {
                     editProvider.validItem(
                         value: controller.text, status: status);
@@ -56,12 +63,7 @@ class EditDialog {
                       }
                     }
                   },
-                  child: Text('Xác Nhận')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Thoát')),
+                  child: Text('Xác Nhận', style: TextStyle(fontSize: 16, color: mainColor),)),
             ],
           );
         },
@@ -77,6 +79,7 @@ class EditDialog {
       showDialog(
         context: context,
         builder: (context) {
+          final editProvider = Provider.of<EditProfileProvider>(context);
           return AlertDialog(
             alignment: Alignment.center,
             title: Center(
@@ -101,7 +104,15 @@ class EditDialog {
                     style: textStyleInput,
                   ),
                 ),
-                onTap: () {},
+                onTap: () async{
+                  LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
+                  ApiResponse apiResponse=await editProvider.updateProfile(value: 'Nam', status: 'gender', token: token, userId: userId);
+                  if(apiResponse.isSuccess!){
+                    onSuccess(apiResponse.dataResponse as UserModel);
+                  }else{
+                    onFailed(apiResponse.message!);
+                  }
+                },
               ),
               InkWell(
                 child: Container(
@@ -118,7 +129,15 @@ class EditDialog {
                     style: textStyleInput,
                   ),
                 ),
-                onTap: () {},
+                onTap: () async{
+                  LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
+                  ApiResponse apiResponse=await editProvider.updateProfile(value: 'Nữ', status: 'gender', token: token, userId: userId);
+                  if(apiResponse.isSuccess!){
+                    onSuccess(apiResponse.dataResponse as UserModel);
+                  }else{
+                    onFailed(apiResponse.message!);
+                  }
+                },
               ),
               InkWell(
                 child: Container(
@@ -135,7 +154,15 @@ class EditDialog {
                     style: textStyleInput,
                   ),
                 ),
-                onTap: () {},
+                onTap: () async{
+                  LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
+                  ApiResponse apiResponse=await editProvider.updateProfile(value: 'Khác', status: 'gender', token: token, userId: userId);
+                  if(apiResponse.isSuccess!){
+                    onSuccess(apiResponse.dataResponse as UserModel);
+                  }else{
+                    onFailed(apiResponse.message!);
+                  }
+                },
               ),
             ],
           );
