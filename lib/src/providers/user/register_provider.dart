@@ -114,7 +114,7 @@ class RegisterProvider extends ChangeNotifier {
     log(apiResponse.message!);
     if(apiResponse.isSuccess!){
       _user=UserModel(gender: _genders.first,address: [_address!], image: _image);
-      CloudFirestoreService(uid: uid).createUserCloud();
+      CloudFirestoreService(uid: uid).createUserCloud(userName: _user.userName!, imageUrl: _user.image!.path!);
       onSuccess();
     }else{
       onFailed(apiResponse.message);

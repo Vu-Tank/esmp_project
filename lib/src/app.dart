@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/providers/chat/chat_list_ptovider.dart';
 import 'package:esmp_project/src/providers/user/address_provider.dart';
 import 'package:esmp_project/src/providers/internet/connection_provider.dart';
 import 'package:esmp_project/src/providers/user/edit_profile_provider.dart';
@@ -74,6 +75,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => ItemDetailProvider()),
         ChangeNotifierProvider(create: (context) => RatedProvider()),
         ChangeNotifierProvider(create: (context) => NotYetFeedbackProvider()),
+        ChangeNotifierProvider(create: (context) => ChatListProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -32,6 +32,7 @@ class UserPreferences {
     if(apiResponse.isSuccess!){
       return apiResponse.dataResponse as UserModel;
     }else{
+      log("error getUser: ${apiResponse.message}");
       removeUser();
       return null;
     }

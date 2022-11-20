@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/main.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/screens/address/address_screen.dart';
 import 'package:esmp_project/src/screens/feedback/list_feedback_screen.dart';
 import 'package:esmp_project/src/screens/login_register/register_screen.dart';
@@ -33,7 +34,9 @@ class _AccountScreenState extends State<AccountScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            SizedBox(height: height,),
+            SizedBox(
+              height: height,
+            ),
             Container(
               height: 140,
               decoration: BoxDecoration(
@@ -83,10 +86,18 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ),
                   onTap: () {
-                    if(userProvider.user!=null){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddressScreen(status: 'view',)));
-                    }else{
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> const LoginScreen()));
+                    if (userProvider.user != null) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AddressScreen(
+                                    status: 'view',
+                                  )));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()));
                     }
                   },
                 ),
@@ -138,11 +149,19 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                         ),
                         onTap: () {
-                          if(userProvider.user==null){
-                            Navigator.push(context, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
+                          if (userProvider.user == null) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (ctx) => LoginScreen()));
                             return;
                           }
-                          Navigator.push(context, MaterialPageRoute(builder: (ctx)=>OrderMainScreen(index: 0,)));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => OrderMainScreen(
+                                        index: 0,
+                                      )));
                         },
                       ),
                       // row các loại đơn hàng
@@ -156,8 +175,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               child: Expanded(
                                 child: InkWell(
                                   child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Icon(
                                         Icons.move_to_inbox_outlined,
@@ -170,11 +188,19 @@ class _AccountScreenState extends State<AccountScreen> {
                                     ],
                                   ),
                                   onTap: () {
-                                    if(userProvider.user==null){
-                                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
+                                    if (userProvider.user == null) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (ctx) => LoginScreen()));
                                       return;
                                     }
-                                    Navigator.push(context, MaterialPageRoute(builder: (ctx)=>OrderMainScreen(index: 2,)));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (ctx) => OrderMainScreen(
+                                                  index: 2,
+                                                )));
                                   },
                                 ),
                               ),
@@ -184,8 +210,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               child: Expanded(
                                 child: InkWell(
                                   child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Icon(
                                         Icons.local_shipping_outlined,
@@ -198,11 +223,20 @@ class _AccountScreenState extends State<AccountScreen> {
                                     ],
                                   ),
                                   onTap: () {
-                                    if(userProvider.user==null){
-                                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>const LoginScreen()));
+                                    if (userProvider.user == null) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (ctx) =>
+                                                  const LoginScreen()));
                                       return;
                                     }
-                                    Navigator.push(context, MaterialPageRoute(builder: (ctx)=>OrderMainScreen(index: 3,)));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (ctx) => OrderMainScreen(
+                                                  index: 3,
+                                                )));
                                   },
                                 ),
                               ),
@@ -248,11 +282,17 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ),
                   onTap: () {
-                    if(userProvider.user==null){
-                      Navigator.push(context, MaterialPageRoute(builder: (ctx)=>const LoginScreen()));
+                    if (userProvider.user == null) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => const LoginScreen()));
                       return;
                     }
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ListFeedBackScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListFeedBackScreen()));
                   },
                 ),
                 // chat vs hệ thống
@@ -289,7 +329,34 @@ class _AccountScreenState extends State<AccountScreen> {
                       ],
                     ),
                   ),
-                  onTap: () async{
+                  onTap: () async {
+                    // await CloudFirestoreService(
+                    //         uid: 'ObI3k1Q22Jbe449DokdrdNYIcrQ2')
+                    //     .createUserCloud(
+                    //         userName: 'huỳnh anh vũ', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/esmp-4b85e.appspot.com/o/images%2F26-1c483a2e-86ed-48f3-b318-f85b96ccc65e?alt=media&token=29c33223-dd19-4607-b45d-1c85930a40b0').then((value){
+                    //           showMyAlertDialog(context, 'msg');
+                    // });
+                    await CloudFirestoreService(
+                            uid: FirebaseAuth.instance.currentUser!.uid)
+                        .checkExistRoom('ObI3k1Q22Jbe449DokdrdNYIcrQ2')
+                        .then((value) async {
+                      if (value) {
+                        showMyAlertDialog(context, "Mở chat screen");
+                      } else {
+                        await CloudFirestoreService(
+                                uid: FirebaseAuth.instance.currentUser!.uid)
+                            .createRoom(
+                                otherUid: 'ObI3k1Q22Jbe449DokdrdNYIcrQ2')
+                            .then((value) {
+                          showMyAlertDialog(context, 'Thành công');
+                        }).catchError((error) {
+                          showMyAlertDialog(context, error.toString());
+                        });
+                      }
+                    }).catchError((error) {
+                      log(error.toString());
+                      showMyAlertDialog(context, error.toString());
+                    });
                   },
                 ),
                 //điều khoản đối vs khách hàng
@@ -348,8 +415,10 @@ class _AccountScreenState extends State<AccountScreen> {
             child: const Text('Đăng nhập')),
         OutlinedButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const RegisterScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const RegisterScreen()));
             },
             child: const Text('Đăng Ký')),
       ],
@@ -379,8 +448,7 @@ class _AccountScreenState extends State<AccountScreen> {
               placeholder: (context, url) => const Center(
                 child: CircularProgressIndicator(),
               ),
-              errorWidget: (context, url, error) =>
-              const Icon(Icons.error),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           ),
         ),
@@ -390,10 +458,19 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(
               height: 50,
             ),
-            Text('${user.userName}', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
-            TextButton(onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> const ProfileScreen()));
-            }, child: const Text('Thông tin tài khoản', style: TextStyle(fontSize: 16),)),
+            Text('${user.userName}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfileScreen()));
+                },
+                child: const Text(
+                  'Thông tin tài khoản',
+                  style: TextStyle(fontSize: 16),
+                )),
           ],
         ),
         IconButton(
