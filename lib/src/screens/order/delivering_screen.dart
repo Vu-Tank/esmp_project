@@ -1,7 +1,8 @@
-import 'package:esmp_project/src/providers/order/old_order_provider.dart';
+import 'package:esmp_project/src/providers/order/delivering_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/screens/order/old_item_widget.dart';
+import 'package:esmp_project/src/screens/order/order_detail_screen.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,16 +17,15 @@ class DeliveringScreen extends StatefulWidget {
 class _DeliveringScreenState extends State<DeliveringScreen> {
   final controller = ScrollController();
   late bool _isLoading;
-
   @override
   void initState() {
     // TODO: implement initState
-    final orderProvider = Provider.of<OldOrderProvider>(context, listen: false);
+    final orderProvider = Provider.of<DeliveringProvider>(context, listen: false);
     final user = context.read<UserProvider>().user;
     _isLoading = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       orderProvider
-          .initData(status: 4, userID: user!.userID!, token: user.token!)
+          .initData(userID: user!.userID!, token: user.token!)
           .then((value) => _isLoading = false)
           .catchError((error) {
         showMyAlertDialog(context, error.toString());
@@ -33,14 +33,13 @@ class _DeliveringScreenState extends State<DeliveringScreen> {
     });
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
-        context.read<OldOrderProvider>().addOrder().catchError((error) {
+        context.read<DeliveringProvider>().addOrder().catchError((error) {
           showMyAlertDialog(context, error.toString());
         });
       }
     });
     super.initState();
   }
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -50,7 +49,7 @@ class _DeliveringScreenState extends State<DeliveringScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orderProvider = Provider.of<OldOrderProvider>(context);
+    final orderProvider = Provider.of<DeliveringProvider>(context);
     return FutureBuilder(builder: (context, snapshot) {
       final user = context.read<UserProvider>().user;
       return Scaffold(
@@ -77,9 +76,23 @@ class _DeliveringScreenState extends State<DeliveringScreen> {
               controller: controller,
               itemBuilder: (context, index) {
                 if (index < orderProvider.orders.length) {
-                  return OldOrder(
-                    order: orderProvider.orders[index],
-                    status: '4',
+                  return InkWell(
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrderDetailScreen(
+                                order: orderProvider.orders[index],
+                                status: orderProvider.status.toString(),
+                              ))).then((value)async{
+                        if(value!=null){
+                        }
+                      });
+                    },
+                    child: OldOrder(
+                      order: orderProvider.orders[index],
+                      status: orderProvider.status.toString(),
+                    ),
                   );
                 } else {
                   return Padding(

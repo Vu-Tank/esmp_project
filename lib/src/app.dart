@@ -3,6 +3,12 @@ import 'dart:developer';
 
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/chat/chat_list_ptovider.dart';
+import 'package:esmp_project/src/providers/order/canceled_provider.dart';
+import 'package:esmp_project/src/providers/order/delivered_provider.dart';
+import 'package:esmp_project/src/providers/order/delivering_provider.dart';
+import 'package:esmp_project/src/providers/order/received_ship_provider.dart';
+import 'package:esmp_project/src/providers/order/waiting_for_confirmation_provider.dart';
+import 'package:esmp_project/src/providers/order/waiting_for_the_goods_provider.dart';
 import 'package:esmp_project/src/providers/user/address_provider.dart';
 import 'package:esmp_project/src/providers/internet/connection_provider.dart';
 import 'package:esmp_project/src/providers/user/edit_profile_provider.dart';
@@ -13,7 +19,6 @@ import 'package:esmp_project/src/providers/item/items_provider.dart';
 import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/map/map_provider.dart';
 import 'package:esmp_project/src/providers/feedback/not_yet_feedback_provider.dart';
-import 'package:esmp_project/src/providers/order/old_order_provider.dart';
 import 'package:esmp_project/src/providers/feedback/rated_provider.dart';
 import 'package:esmp_project/src/providers/user/register_provider.dart';
 import 'package:esmp_project/src/providers/shop/shop_provider.dart';
@@ -70,12 +75,17 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => ItemProvider()),
         ChangeNotifierProvider(create: (context) => ShoppingCartProvider()),
         ChangeNotifierProvider(create: (context) => StoreProvider()),
-        ChangeNotifierProvider(create: (context) => OldOrderProvider()),
         ChangeNotifierProvider(create: (context) => FeedbackProvider()),
         ChangeNotifierProvider(create: (context) => ItemDetailProvider()),
         ChangeNotifierProvider(create: (context) => RatedProvider()),
         ChangeNotifierProvider(create: (context) => NotYetFeedbackProvider()),
         ChangeNotifierProvider(create: (context) => ChatListProvider()),
+        ChangeNotifierProvider(create: (context) => WaitingForTheGoodsProvider()),
+        ChangeNotifierProvider(create: (context) => WaitingForConfirmationProvider()),
+        ChangeNotifierProvider(create: (context) => ReceivedShipProvider()),
+        ChangeNotifierProvider(create: (context) => DeliveringProvider()),
+        ChangeNotifierProvider(create: (context) => DeliveredProvider()),
+        ChangeNotifierProvider(create: (context) => CanceledProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

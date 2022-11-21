@@ -28,8 +28,9 @@ class UserPreferences {
     ApiResponse apiResponse = await UserRepository.reFeshToken(userId: userId, token: token!);
     // final fcmToken = await FirebaseMessaging.instance.getToken();
     // log(fcmToken.toString());
-    log(apiResponse.message!);
+    // log(apiResponse.message!);
     if(apiResponse.isSuccess!){
+      log("getUser: ${apiResponse.message}");
       return apiResponse.dataResponse as UserModel;
     }else{
       log("error getUser: ${apiResponse.message}");

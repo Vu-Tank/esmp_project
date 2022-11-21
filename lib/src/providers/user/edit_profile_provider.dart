@@ -5,8 +5,10 @@ import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/models/validation_item.dart';
+import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
 import 'package:esmp_project/src/utils/validations.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../repositoty/firebase_storage.dart';
@@ -39,6 +41,9 @@ class EditProfileProvider extends ChangeNotifier {
       case 'userName':
         apiResponse = await UserRepository.updateUserName(
             userName: value, token: token, userId: userId);
+        if(apiResponse.isSuccess!){
+          await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid).updateUserName(value);
+        }
         validationItem = ValidationItem(null, null);
         break;
       case 'email':

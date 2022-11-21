@@ -61,7 +61,7 @@ class OrderRepository {
         },
       ).timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
-      log(body.toString());
+      // log(body.toString());
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
         apiResponse.isSuccess = body['success'];

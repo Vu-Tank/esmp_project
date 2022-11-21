@@ -25,6 +25,8 @@ class Order {
   List<OrderDetail> details;
   StatusOrder orderStatus;
   OrderShip? orderShip;
+  String? reason;
+  String? pickTime;
 
   Order(
       {required this.orderID,
@@ -46,7 +48,9 @@ class Order {
       required this.name,
       required this.details,
       required this.orderStatus,
-      this.orderShip});
+      this.orderShip,
+      this.reason,
+      this.pickTime});
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
@@ -69,7 +73,9 @@ class Order {
         name: json['name'] as String,
         details: (json['details'] as List).map((orderDetail) => OrderDetail.fromJson(orderDetail)).toList(),
         orderStatus: StatusOrder.fromJson(json['orderStatus']),
-        orderShip: (json['orderShip']==null)?null:OrderShip.fromJson(json['orderShip'])
+        orderShip: (json['orderShip']==null)?null:OrderShip.fromJson(json['orderShip']),
+        reason: json['reason'],
+        pickTime: json['pick_Time'],
     );
   }
   double getPrice(){

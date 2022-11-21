@@ -25,17 +25,19 @@ class CloudFirestoreService {
     return userCollection.doc(uid).snapshots();
   }
 
-  Future<Stream<List<Future<RoomChat>>>> getRoomsStream() async {
+  // Future<Stream<List<Future<RoomChat>>>> getRoomsStream() async {
+  getRoomsStream() async {
     List<String> roomsId = [];
     DocumentSnapshot user = await userCollection.doc(uid).get();
     if (user.exists) {
+      log(user['userName']);
       // final data=user.data();
+      if((user['rooms']as List).isEmpty) return null;
       for (var element in (user['rooms'] as List)) {
         roomsId.add(element.toString());
       }
+      log(roomsId.toString());
     }
-    log(roomsId.toString());
-    log(user['userName']);
     // roomCollection
     //     .where('roomID', whereIn: roomsId)
     //     .snapshots()
@@ -73,7 +75,7 @@ class CloudFirestoreService {
     final result= roomCollection
         .where('roomID', whereIn: roomsId)
         .snapshots()
-        .map((room) => room.docs.map((data) async {
+        .map((room) => room.docs.map((data){
               String roomID = data['roomID'].toString();
               String createDate = data['createDate'].toString();
               String recentMessage = data['recentMessage'].toString();
@@ -88,20 +90,34 @@ class CloudFirestoreService {
               } else {
                 receiverUid = data['members']['user1'].toString();
               }
-              await userCollection.doc(receiverUid).get().then((value) {
-                if (value.exists) {
-                   receiverName = value['userName'].toString();
-                   receiverImageUrl = value['imageUrl'].toString();
+              return userCollection.doc(receiverUid).snapshots().map((user){
+                if (user.exists) {
+                       receiverName = user['userName'].toString();
+                       receiverImageUrl = user['imageUrl'].toString();
                 }
+                return RoomChat(
+                    roomID: roomID,
+                    createDate: createDate,
+                    time: time,
+                    recentMessage: recentMessage,
+                    recentMessageSender: recentMessageSender,
+                    receiverName: receiverName,
+                    receiverImageUrl: receiverImageUrl);
               });
-              return RoomChat(
-                  roomID: roomID,
-                  createDate: createDate,
-                  time: time,
-                  recentMessage: recentMessage,
-                  recentMessageSender: recentMessageSender,
-                  receiverName: receiverName,
-                  receiverImageUrl: receiverImageUrl);
+              // await userCollection.doc(receiverUid).get().then((value) {
+              //   if (value.exists) {
+              //      receiverName = value['userName'].toString();
+              //      receiverImageUrl = value['imageUrl'].toString();
+              //   }
+              // });
+              // return RoomChat(
+              //     roomID: roomID,
+              //     createDate: createDate,
+              //     time: time,
+              //     recentMessage: recentMessage,
+              //     recentMessageSender: recentMessageSender,
+              //     receiverName: receiverName,
+              //     receiverImageUrl: receiverImageUrl);
             }).toList());
     return result;
   }
@@ -221,7 +237,16 @@ class CloudFirestoreService {
     });
     return result;
   }
-
+  updateUserName(String userName)async{
+    return userCollection.doc(uid).update({
+      'userName':userName,
+    });
+  }
+  updateUserImage(String imageUrl)async{
+    return userCollection.doc(uid).update({
+      'imageUrl':imageUrl,
+    });
+  }
   Future sendMessage(
       String roomId, Map<String, dynamic> chatMessageData) async {
     roomCollection.doc(roomId).collection("messages").add(chatMessageData);

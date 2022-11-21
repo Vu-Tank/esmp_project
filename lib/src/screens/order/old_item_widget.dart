@@ -3,14 +3,19 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/order.dart';
 import 'package:esmp_project/src/models/order_detail.dart';
+import 'package:esmp_project/src/providers/order/waiting_for_confirmation_provider.dart';
+import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/order/order_detail_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OldOrder extends StatelessWidget {
-  const OldOrder({Key? key, required this.order, required this.status}) : super(key: key);
+  const OldOrder({Key? key, required this.order, required this.status})
+      : super(key: key);
   final Order order;
   final String status;
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -18,13 +23,12 @@ class OldOrder extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        child: InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> OrderDetailScreen(order: order, status: status,)));
-          },
           child: Column(
             children: <Widget>[
-              Text('${order.store.storeName}-Mã đơn hàng: ${order.orderID}', maxLines: 1,),
+              Text(
+                '${order.store.storeName}-Mã đơn hàng: ${order.orderID}',
+                maxLines: 1,
+              ),
               const SizedBox(
                 height: 8.0,
               ),
@@ -67,7 +71,9 @@ class OldOrder extends StatelessWidget {
                                       const Icon(Icons.error),
                                 ),
                               ),
-                              const SizedBox(height: 8.0,),
+                              const SizedBox(
+                                height: 8.0,
+                              ),
                               //ten
                               Expanded(
                                   child: Column(
@@ -95,8 +101,8 @@ class OldOrder extends StatelessWidget {
                                                     detail.pricePurchase),
                                                 style: const TextStyle(
                                                   color: Colors.grey,
-                                                  decoration:
-                                                      TextDecoration.lineThrough,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
                                                 ),
                                               ),
                                               const TextSpan(text: "-"),
@@ -104,7 +110,8 @@ class OldOrder extends StatelessWidget {
                                                 text: Utils.convertPriceVND(detail
                                                         .pricePurchase *
                                                     (1 -
-                                                        detail.discountPurchase)),
+                                                        detail
+                                                            .discountPurchase)),
                                               ),
                                             ]))
                                           : Text(Utils.convertPriceVND(
@@ -132,7 +139,7 @@ class OldOrder extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
-class Utils{
-  static String convertToFirebase(String value){
+class Utils {
+  static String convertToFirebase(String value) {
     if (value.indexOf('0') == 0) {
       value = value.replaceFirst("0", "+84");
     } else if (value.indexOf("8") == 0) {
@@ -10,29 +10,35 @@ class Utils{
     }
     return value;
   }
-  static String convertToDB(String value){
+
+  static String convertToDB(String value) {
     if (value.indexOf('0') == 0) {
       value = value.replaceFirst("0", "+84");
     } else if (value.indexOf("8") == 0) {
       value = value.replaceFirst("8", "+8");
     }
-    if(value.indexOf('+')==0){
-      value=value.replaceFirst("+", "");
+    if (value.indexOf('+') == 0) {
+      value = value.replaceFirst("+", "");
     }
     return value;
   }
-  static String convertPriceVND(double value){
-    String price="";
+
+  static String convertPriceVND(double value) {
+    String price = "";
     var f = NumberFormat("###,###", "en_US");
-    price='đ ${f.format(value)}';
+    price = 'đ ${f.format(value)}';
     return price;
   }
-  static String createFile(){
-    DateTime time= DateTime.now();
-    String name=time.toString().trim().replaceAllMapped(new RegExp(r'\D'), (match) {
-      return '';});
+
+  static String createFile() {
+    DateTime time = DateTime.now();
+    String name =
+        time.toString().trim().replaceAllMapped(new RegExp(r'\D'), (match) {
+      return '';
+    });
     return name;
   }
+
   static void removeNullAndEmptyParams(Map<String, dynamic> mapToEdit) {
 // Remove all null values; they cause validation errors
     final keys = mapToEdit.keys.toList(growable: false);
@@ -44,11 +50,12 @@ class Utils{
         if (value.isEmpty) {
           mapToEdit.remove(key);
         }
-      } else if (value is Map<String,dynamic>) {
+      } else if (value is Map<String, dynamic>) {
         removeNullAndEmptyParams(value);
       }
     }
   }
+
   static Future<Position> determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -84,5 +91,25 @@ class Utils{
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
+  }
+
+  static String getTime(String timeString) {
+    if (timeString.isEmpty) {
+      return '';
+    }
+    DateTime now = DateTime.now();
+    DateFormat format = DateFormat('yyyy-MM-dd HH:mm:ss');
+    DateTime time = format.parse(timeString);
+    if (now.day == time.day &&
+        now.month == time.month &&
+        now.year == time.year) {
+      return '${time.hour}:${time.minute}';
+    // } else if (false) {
+    //   return time.weekday.toString();
+    }else if(now.year==time.year){
+      return '${time.day} thg ${time.month}';
+    }else{
+      return '${time.day} thg ${time.month}, ${time.year}';
+    }
   }
 }

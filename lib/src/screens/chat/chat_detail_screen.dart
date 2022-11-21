@@ -70,18 +70,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             alignment: Alignment.bottomCenter,
             width: MediaQuery.of(context).size.width,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               width: MediaQuery.of(context).size.width,
-              color: mainColor,
+              // color: mainColor,
               child: Row(children: [
                 Expanded(
-                    child: TextFormField(
+                    child: TextField(
                   controller: messageController,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.black),
+                  onSubmitted: (_){
+                    sendMessage();
+                  },
                   decoration: const InputDecoration(
                     hintText: "nhắn tin",
-                    hintStyle: TextStyle(color: Colors.white, fontSize: 16),
-                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 16),
+                    border: OutlineInputBorder(
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(30))),
                   ),
                 )),
                 const SizedBox(
@@ -134,8 +139,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 return MessageTile(
                     message: snapshot.data.docs[index]['message'],
                     sender: snapshot.data.docs[index]['sender'],
+                    time: snapshot.data.docs[index]['time'],
                     sentByMe: FirebaseAuth.instance.currentUser!.uid ==
-                        snapshot.data.docs[index]['sender']);
+                        snapshot.data.docs[index]['sender'],
+                    showTime: (int height){
+                      if (_controller.hasClients) {
+                        _controller.jumpTo(_controller.offset+height);
+                      }
+                    },
+                );
               },
             );
           } else {

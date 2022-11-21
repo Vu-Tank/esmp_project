@@ -1,7 +1,8 @@
 import 'dart:developer';
 
 import 'package:esmp_project/src/models/api_response.dart';
-import 'package:esmp_project/src/providers/order/old_order_provider.dart';
+import 'package:esmp_project/src/models/user.dart';
+import 'package:esmp_project/src/providers/order/waiting_for_confirmation_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:esmp_project/src/screens/order/order.dart';
@@ -48,25 +49,27 @@ class _CanceledOrderScreenState extends State<CanceledOrderScreen> {
               controller: ScrollController(),
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
-              itemBuilder: (context, index) =>
-                  Container(
-                    height: 50,
-                    color: Colors.white,
-                    child: RadioListTile(title: Text(_selectionReason[index]),
-                      value: _selectionReason[index],
-                      groupValue: _value,
-                      onChanged: (value) {
-                        if (value != null) {
-                          log(value);
-                          setState(() {
-                            _value = value;
-                          });
-                        }
-                      },
-                    ),
-                  ),
+              itemBuilder: (context, index) => Container(
+                height: 50,
+                color: Colors.white,
+                child: RadioListTile(
+                  title: Text(_selectionReason[index]),
+                  value: _selectionReason[index],
+                  groupValue: _value,
+                  onChanged: (value) {
+                    if (value != null) {
+                      log(value);
+                      setState(() {
+                        _value = value;
+                      });
+                    }
+                  },
+                ),
+              ),
             ),
-            const SizedBox(height: 10.0,),
+            const SizedBox(
+              height: 10.0,
+            ),
             SizedBox(
               width: double.infinity,
               height: 53,
@@ -79,18 +82,17 @@ class _CanceledOrderScreenState extends State<CanceledOrderScreen> {
                   ),
                   onPressed: () async {
                     LoadingDialog.showLoadingDialog(context, 'Vui lòng đợi');
-                    await context.read<OldOrderProvider>().cancelOrder(
+                    UserModel user=context.read<UserProvider>().user!;
+                    await context.read<WaitingForConfirmationProvider>().cancelOrder(
                         orderID: widget.orderID,
                         reason: _value,
-                        token: context
-                            .read<UserProvider>()
-                            .user!
-                            .token!,
-                        onSuccess: (){
+                        token: user.token!,
+                        onSuccess: () async{
                           LoadingDialog.hideLoadingDialog(context);
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const OrderMainScreen(index: 0)));
+                          Navigator.pop(context);
+                          Navigator.pop(context,'remove');
                         },
-                        onFailed: (String msg){
+                        onFailed: (String msg) {
                           LoadingDialog.hideLoadingDialog(context);
                           showMyAlertDialog(context, msg);
                         });

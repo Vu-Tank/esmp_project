@@ -5,7 +5,8 @@ import 'package:esmp_project/src/models/order.dart';
 import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:flutter/material.dart';
 
-class OldOrderProvider extends ChangeNotifier {
+class WaitingForConfirmationProvider extends ChangeNotifier{
+  final int status=1;
   int _currentPage = 0;
   bool _hasMore = true;
   final int _limited = 25;
@@ -15,19 +16,16 @@ class OldOrderProvider extends ChangeNotifier {
 
   List<Order> get orders => _orders;
   late int _currentUserID;
-  late int _currentStatus;
   late String _currentToken;
 
   Future<void> initData(
-      {required int status, required int userID, required String token}) async {
+      {required int userID, required String token}) async {
     _currentUserID = userID;
-    _currentStatus = status;
     _currentToken = token;
     ApiResponse apiResponse = await OrderRepository.getOldOrder(
         userID: userID, page: 1, shipOrderStatus: status, token: token);
-    // log(apiResponse.toString());
     if (apiResponse.isSuccess!) {
-      // log(apiResponse.dataResponse.toString());
+      _orders.clear();
       _orders = apiResponse.dataResponse as List<Order>;
       if (_orders.length < _limited) {
         _hasMore = false;
@@ -48,7 +46,7 @@ class OldOrderProvider extends ChangeNotifier {
       ApiResponse apiResponse = await OrderRepository.getOldOrder(
           userID: _currentUserID,
           page: _currentPage + 1,
-          shipOrderStatus: _currentStatus,
+          shipOrderStatus: status,
           token: _currentToken);
       log(apiResponse.toString());
       if (apiResponse.isSuccess!) {
@@ -68,7 +66,6 @@ class OldOrderProvider extends ChangeNotifier {
       }
     }
   }
-
   Future<void> cancelOrder({
     required int orderID,
     required String reason,

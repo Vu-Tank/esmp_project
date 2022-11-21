@@ -6,9 +6,11 @@ import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user/edit_profile_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/screens/profile/edit_dialog.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -101,6 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       token: user.token!,
                       userImage: user.image!.fileName!,
                       onSuccess: (UserModel user) {
+                        CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid).updateUserImage(user.image!.path!);
                         userProvider.setUser(user);
                         setState(() {
                           image = result;

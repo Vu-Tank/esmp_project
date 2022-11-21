@@ -331,9 +331,9 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   onTap: () async {
                     // await CloudFirestoreService(
-                    //         uid: 'ObI3k1Q22Jbe449DokdrdNYIcrQ2')
+                    //         uid: FirebaseAuth.instance.currentUser!.uid)
                     //     .createUserCloud(
-                    //         userName: 'huỳnh anh vũ', imageUrl: 'https://firebasestorage.googleapis.com/v0/b/esmp-4b85e.appspot.com/o/images%2F26-1c483a2e-86ed-48f3-b318-f85b96ccc65e?alt=media&token=29c33223-dd19-4607-b45d-1c85930a40b0').then((value){
+                    //         userName: userProvider.user!.userName!, imageUrl: userProvider.user!.image!.path!).then((value){
                     //           showMyAlertDialog(context, 'msg');
                     // });
                     await CloudFirestoreService(

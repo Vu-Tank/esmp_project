@@ -61,7 +61,15 @@ class VerifyProvider extends ChangeNotifier {
           }
         },
         verificationFailed: (error) {
-          onFailed(error.message);
+          log("error code: ${error.code}");
+          log("error message: ${error.message}");
+          String? err;
+          if(error.code=='too-many-requests'){
+            err='Chúng tôi đã chặn tất cả các yêu cầu từ thiết bị này do hoạt động bất thường. Thử lại sau.';
+          }else{
+            err=error.message;
+          }
+          onFailed(err);
         },
         codeSent: ((String verificationId, int? resendToken) async {
           onSendCode(verificationId);

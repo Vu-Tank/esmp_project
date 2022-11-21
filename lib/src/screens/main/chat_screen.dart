@@ -8,6 +8,7 @@ import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/screens/chat/chat_detail_screen.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
+import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = false;
 
   @override
-  void initState(){
+  void initState() {
     // TODO: implement initState
     super.initState();
     _isLoading = true;
@@ -52,11 +53,12 @@ class _ChatScreenState extends State<ChatScreen> {
         CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
             .getRoomsStream()
             .then((value) {
-          setState(() {
-            _isLoading = false;
-            rooms = value;
-            log("message");
-          });
+          if(mounted){
+            setState(() {
+              _isLoading = false;
+              rooms = value;
+            });
+          }
         }).catchError((e) {
           log(e.toString());
         });
@@ -105,18 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Text('Đăng nhập'),
               ),
             )
-          // : _isLoading
-          //     ? const Center(
-          //         child: CircularProgressIndicator(),
-          //       )
-          :
-          // child:ListView(
-          //     scrollDirection: Axis.vertical,
-          //     shrinkWrap: true,
-          //     children:<Widget>[
-          //     ],
-          //   ),
-          _isLoading
+          : _isLoading
               ? Center(
                   child: CircularProgressIndicator(),
                 )
@@ -139,18 +130,59 @@ class _ChatScreenState extends State<ChatScreen> {
                         } else {
                           if (snapshot.hasData) {
                             if (snapshot.data != null) {
-                              log('snapshot: ${snapshot.data.toString()}');
-                              // List<RoomChat> list =
-                              //     snapshot.data as List<RoomChat>;
-                              // if (list.isNotEmpty) {
-                              //   return Center(
-                              //       child: Text(list.length.toString()));
-                              // } else {
-                              //   return noRoom();
-                              // }
-                              return Center(
-                                  child: Text(
-                                      'snapshot: ${snapshot.data.toString()}'));
+                              List<Stream<RoomChat>> listRoom =
+                                  snapshot.data as List<Stream<RoomChat>>;
+                              return ListView.builder(
+                                itemCount: listRoom.length + 1,
+                                itemBuilder: (context, index) {
+                                  if (index < listRoom.length) {
+                                    return StreamBuilder(
+                                        stream: listRoom[index],
+                                        builder: (context, snapshot) {
+                                          switch (snapshot.connectionState) {
+                                            case ConnectionState.waiting:
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            default:
+                                              if (snapshot.hasError) {
+                                                return Text(
+                                                  snapshot.error.toString(),
+                                                  style: textStyleError,
+                                                );
+                                              } else {
+                                                if (snapshot.hasData) {
+                                                  if (snapshot.data != null) {
+                                                    final room = snapshot.data!;
+                                                    return _chatRoom(room);
+                                                  } else {
+                                                    return Text(
+                                                      'Không thể tải romchat này',
+                                                      style: textStyleError,
+                                                    );
+                                                  }
+                                                } else {
+                                                  return Text(
+                                                    'Không thể tải romchat này',
+                                                    style: textStyleError,
+                                                  );
+                                                }
+                                              }
+                                          }
+                                        });
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 32),
+                                      child: Center(
+                                        child: Text(
+                                            'Có ${listRoom.length} kết quả'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              );
                             } else {
                               log('null');
                               return noRoom();
@@ -192,11 +224,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   _chatRoom(RoomChat roomChat) {
-    return SizedBox(
-      width: double.infinity,
-      height: 70,
-      child: InkWell(
-        child: Card(
+    // return SizedBox(
+    //   width: double.infinity,
+    //   height: 70,
+    //   child: InkWell(
+    return InkWell(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               ClipOval(
@@ -225,34 +260,44 @@ class _ChatScreenState extends State<ChatScreen> {
               const SizedBox(
                 width: 5.0,
               ),
-              Column(
-                children: <Widget>[
-                  Text(
-                    roomChat.receiverName,
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                    style: textStyleInput,
-                  ),
-                  Text(
-                    roomChat.recentMessage,
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                    style: textStyleInput,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      roomChat.receiverName,
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                      style: textStyleInput,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${(roomChat.recentMessageSender==FirebaseAuth.instance.currentUser!.uid)?'Bạn: ':''}${roomChat.recentMessage}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textStyleLabel,
+                          ),
+                        ),
+                        Text(Utils.getTime(roomChat.time)),
+                      ],
+                    )
+                  ],
+                ),
               )
             ],
           ),
         ),
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatDetailScreen(
-                        roomChat: roomChat,
-                      )));
-        },
       ),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatDetailScreen(
+                      roomChat: roomChat,
+                    )));
+      },
     );
   }
 

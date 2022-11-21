@@ -39,9 +39,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Đơn hàng ${order.orderShip!.status}',
-                    style: textStyleInput,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Trạng thái: ${order.orderShip!.status}',
+                        style: textStyleInput,
+                      ),
+                      if(widget.status=='-1')Text(
+                        'Nguyên nhân: ${order.reason}',
+                        style: textStyleInput,
+                      ),
+                      if(widget.status=='-1')Text(
+                        'Thời gian: ${order.pickTime}',
+                        style: textStyleInput,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -404,16 +417,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           children: <Widget>[
                             Text(
                               'Mã đơn hàng',
-                              style: textStyleInput,
+                              style: textStyleLabelChild.copyWith(color: Colors.black),
                             ),
                             const SizedBox(
                               height: 5.0,
                             ),
                             Text(
                               'Mã giao hàng\n',
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.fade,
-                              style: textStyleInput,
+                              style: textStyleLabelChild.copyWith(color: Colors.black),
                             ),
                             const SizedBox(
                               height: 5.0,
@@ -432,15 +445,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           children: <Widget>[
                             Text(
                               order.orderID.toString(),
-                              style: textStyleInput,
+                              style: textStyleLabelChild.copyWith(color: Colors.black),
                             ),
                             const SizedBox(
                               height: 5.0,
                             ),
                             Text(
-                              '\n${order.orderShip!.labelID.toString()}',
-                              style: textStyleInput,
-                              maxLines: 2,
+                              '${order.orderShip!.labelID.toString()}\n',
+                              style: textStyleLabelChild.copyWith(color: Colors.black),
+                              maxLines: 1,
                               overflow: TextOverflow.fade,
                             ),
                             const SizedBox(
@@ -472,7 +485,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(8))),
               ),
-              onPressed: () {
+              onPressed: () async{
                 Navigator.push(
                     context,
                     MaterialPageRoute(
