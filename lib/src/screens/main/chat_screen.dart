@@ -14,7 +14,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/chat/chat_list_ptovider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -34,7 +33,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _isLoading = true;
     UserModel? user = context.read<UserProvider>().user;
     if (user != null) {
-      final chatProvider = context.read<ChatListProvider>();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // chatProvider
         //     .initRoom(FirebaseAuth.instance.currentUser!.uid)
@@ -86,7 +84,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     UserModel? user = context.read<UserProvider>().user;
-    final chatProvider = Provider.of<ChatListProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -133,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               List<Stream<RoomChat>> listRoom =
                                   snapshot.data as List<Stream<RoomChat>>;
                               return ListView.builder(
-                                itemCount: listRoom.length + 1,
+                                itemCount: listRoom.length+1,
                                 itemBuilder: (context, index) {
                                   if (index < listRoom.length) {
                                     return StreamBuilder(

@@ -273,7 +273,9 @@ class _FilterSearchDialogState extends State<FilterSearchDialog> {
                   TableRow(
                     children: <Widget>[
                       Text('Vị trí', style: textStyleInput,),
-                      SizedBox(child: OutlinedButton(
+                      SizedBox(
+                        height: 50,
+                          child: OutlinedButton(
                         onPressed: ()async{
                           AddressModel? address= await Navigator.push(context, MaterialPageRoute(builder: (context)=> GoogleMapScreen(status: 'search')));
                           if(address!=null){
@@ -281,7 +283,7 @@ class _FilterSearchDialogState extends State<FilterSearchDialog> {
                           }
                         },
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: filter.address==null? Colors.white: Colors.green,
+                          backgroundColor: filter.address==null? Colors.white: mainColor,
                         ),
                         child: Text('Chọn',style: textStyleInput,),
                       ))
@@ -298,9 +300,11 @@ class _FilterSearchDialogState extends State<FilterSearchDialog> {
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: 'Tối thiểu',
+
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
                         errorText: filter.minPriceValid.error,
                         errorStyle: textStyleError
                       ),
@@ -329,13 +333,14 @@ class _FilterSearchDialogState extends State<FilterSearchDialog> {
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: 'Tối đa',
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
                         errorText: filter.maxPriceValid.error,
                         errorStyle: textStyleError
                       ),
-                      maxLength: 10,
+                      maxLength: 9,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp('[0-9]')),
                       ],
@@ -361,7 +366,14 @@ class _FilterSearchDialogState extends State<FilterSearchDialog> {
                       onPressed: () {
                         filter.reset();
                         Navigator.pop(context,null);
-                      }, child: Text('Thiết lập lại')),
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(width: 1.0, color: btnColor),
+                        shape:RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                      child: Text('Thiết lập lại', style: btnTextStyle.copyWith(color: btnColor),)),
                   ElevatedButton(
                       onPressed: ()async {
                         if(_maxController.text.trim().isNotEmpty){
@@ -377,7 +389,14 @@ class _FilterSearchDialogState extends State<FilterSearchDialog> {
                         log('ok');
                         Navigator.pop(context,filter.getSearchModel());
 
-                      }, child: Text('Áp dụng')),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: btnColor,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(20))),
+                      ),
+                      child: Text('Áp dụng',style: btnTextStyle,)),
                 ],
               ),
             ],

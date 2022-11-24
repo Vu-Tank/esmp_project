@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:esmp_project/src/models/user.dart';
-import 'package:esmp_project/src/providers/chat/chat_list_ptovider.dart';
 import 'package:esmp_project/src/providers/order/canceled_provider.dart';
 import 'package:esmp_project/src/providers/order/delivered_provider.dart';
 import 'package:esmp_project/src/providers/order/delivering_provider.dart';
@@ -36,6 +35,7 @@ import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 class MyApp extends StatefulWidget {
@@ -45,13 +45,42 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+  AndroidNotificationChannel channel =const AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    // 'This channel is used for important notifications.', // description
+    importance: Importance.high,
+  );
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    requestPermission();
-    getTokenFCM();
+    var initialzationSettingsAndroid =
+    const AndroidInitializationSettings('online_shop');
+    var initializationSettings =
+    InitializationSettings(android: initialzationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    DateTime time=DateTime.now();
+    FirebaseMessaging.onMessage.listen((message){
+      log('Got a message whilst in the FOREGROUND!: ${time.toString()}');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                icon: android.smallIcon,
+              ),
+            ));
+      }
+    });
   }
   @override
   void dispose() {
@@ -79,7 +108,6 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => ItemDetailProvider()),
         ChangeNotifierProvider(create: (context) => RatedProvider()),
         ChangeNotifierProvider(create: (context) => NotYetFeedbackProvider()),
-        ChangeNotifierProvider(create: (context) => ChatListProvider()),
         ChangeNotifierProvider(create: (context) => WaitingForTheGoodsProvider()),
         ChangeNotifierProvider(create: (context) => WaitingForConfirmationProvider()),
         ChangeNotifierProvider(create: (context) => ReceivedShipProvider()),

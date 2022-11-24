@@ -5,6 +5,8 @@ import 'package:esmp_project/src/models/store.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/shop/shop_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
+import 'package:esmp_project/src/screens/chat/chat_detail_screen.dart';
 import 'package:esmp_project/src/screens/item/filtter_search.dart';
 import 'package:esmp_project/src/screens/item/item_widget.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
@@ -12,6 +14,7 @@ import 'package:esmp_project/src/screens/report/report_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -227,7 +230,43 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                   ),
                   Row(
                     children: [
-                      IconButton(onPressed: (){}, icon: const Icon(Icons.chat_outlined)),
+                      IconButton(onPressed: ()async{
+                        if(widget.store.firebaseID==null){
+                          showMyAlertDialog(context, "Không thể nhắn tin với shop");
+                          return;
+                        }
+                        await CloudFirestoreService(
+                            uid: FirebaseAuth.instance.currentUser!.uid)
+                            .checkExistRoom(widget.store.firebaseID.toString())
+                            .then((value) async {
+                          if (value != null) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatDetailScreen(roomChat: value)));
+                          } else {
+                            await CloudFirestoreService(
+                                uid: FirebaseAuth.instance.currentUser!.uid)
+                                .createRoom(
+                                otherUid: widget.store.firebaseID.toString())
+                                .then((value) {
+                              if (value != null) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChatDetailScreen(roomChat: value)));
+                              }
+                            }).catchError((error) {
+                              showMyAlertDialog(context, error.toString());
+                            });
+                          }
+                        }).catchError((error) {
+                          log(error.toString());
+                          showMyAlertDialog(context, error.toString());
+                        });
+                      }, icon: const Icon(Icons.chat_outlined)),
                       IconButton(onPressed: (){
                         UserModel? user=context.read<UserProvider>().user;
                         if(user==null){

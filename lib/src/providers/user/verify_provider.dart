@@ -9,6 +9,7 @@ import 'package:esmp_project/src/utils/shared_preferences.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/validations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/validation_item.dart';
@@ -45,7 +46,8 @@ class VerifyProvider extends ChangeNotifier {
           try {
             if(status=='login'){
               String phone = Utils.convertToDB(phoneNumber);
-              ApiResponse apiResponse = await UserRepository.login(phone, token);
+              final fcmToken = await FirebaseMessaging.instance.getToken();
+              ApiResponse apiResponse = await UserRepository.login(phone, token, token);
               if (!apiResponse.isSuccess!) {
                 onFailed(apiResponse.message!);
               } else {
@@ -94,7 +96,8 @@ class VerifyProvider extends ChangeNotifier {
       String token = await getIDToken();
       String phone = Utils.convertToDB(phoneNumber);
       if (status == 'login') {
-        ApiResponse apiResponse = await UserRepository.login(phone, token);
+        final fcmToken = await FirebaseMessaging.instance.getToken();
+        ApiResponse apiResponse = await UserRepository.login(phone, token, fcmToken);
         if (!apiResponse.isSuccess!) {
           onFailed(apiResponse.message);
         } else {

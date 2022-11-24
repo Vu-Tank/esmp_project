@@ -15,6 +15,8 @@ class UserModel{
    Role? role;
    ImageModel? image;
    List<AddressModel>? address;
+   String? firebaseID;
+   String? fcM_Firebase;
 
 
    UserModel({
@@ -29,7 +31,10 @@ class UserModel{
       this.token,
       this.role,
       this.image,
-      this.address});
+      this.address,
+      this.firebaseID,
+     this.fcM_Firebase,
+   });
 
   factory UserModel.fromJson(Map<String, dynamic> json){
     return UserModel(
@@ -45,6 +50,8 @@ class UserModel{
       role: Role.fromJson(json['role']),
       image: ImageModel.fromJson(json['image']),
       address: (json['addresses'] as List).map((model) => AddressModel.fromJson(model)).toList(),
+      firebaseID: json['firebaseID'],
+      fcM_Firebase:json['fcM_Firebase'],
     );
   }
   Map<String, dynamic> toJson(){
@@ -62,6 +69,8 @@ class UserModel{
     data['province']=address![0].province;
     data['district']=address![0].district;
     data['ward']=address![0].ward;
+    data['firebaseID']=firebaseID;
+    data['fcM_Firebase']=fcM_Firebase;
     return data;
   }
 

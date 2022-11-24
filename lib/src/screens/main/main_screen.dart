@@ -8,7 +8,10 @@ import 'package:esmp_project/src/screens/main/account_screen.dart';
 import 'package:esmp_project/src/screens/main/cart_screen.dart';
 import 'package:esmp_project/src/screens/main/shopping_screen.dart';
 import 'package:esmp_project/src/screens/payment_result/waiting_callback_momo.dart';
+import 'package:esmp_project/src/utils/widget/widget.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../utils/widget/no_internet.dart';
@@ -49,6 +52,7 @@ class _MainScreenState extends State<MainScreen> {
     _pageController=PageController(
       initialPage: context.read<MainScreenProvider>().selectedPage,
     );
+    // _handleNotification();
   }
 
   Widget pageUI(BuildContext context){
@@ -84,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
           mainPageProvider.changePage(index);
           _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
         },
-        selectedItemColor: Colors.pinkAccent,
+        selectedItemColor: mainColor,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         items: const [
@@ -96,4 +100,28 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+
+  _handleNotification()async{
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    final fcmToken = await messaging.getToken();
+    log("fcmToken: $fcmToken");
+    messaging.setForegroundNotificationPresentationOptions(badge: true, alert: true, sound: true);//presentation options for Apple notifications when received in the foreground.
+    DateTime time=DateTime.now();
+    FirebaseMessaging.onMessage.listen((message) async {
+      log('Got a message whilst in the FOREGROUND!: ${time.toString()}');
+      log('Got a message whilst in the foreground!');
+      log('Message data: ${message.data['message']}');
+
+      // if (message.notification != null) {
+      //   log('Message also contained a notification: ${message.notification!.body.toString()}');
+      // }
+
+      return;
+    });
+    // }).onData((data) {
+    //   log('Got a DATA message whilst in the FOREGROUND!');
+    //   log('data from stream: ${data.data['message']}: ${time.toString()}');
+    // });
+  }
+
 }

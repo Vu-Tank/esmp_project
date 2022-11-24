@@ -36,15 +36,17 @@ class _OTPScreenState extends State<OTPScreen> {
     });
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(oneSec, (timer) {
-      setState(() {
-        if (_start == 0) {
-          _start = 60;
-          _isResendOTP = false;
-          timer.cancel();
-        } else {
-          _start--;
-        }
-      });
+      if(mounted){
+        setState(() {
+          if (_start == 0) {
+            _start = 60;
+            _isResendOTP = false;
+            timer.cancel();
+          } else {
+            _start--;
+          }
+        });
+      }
     });
   }
 

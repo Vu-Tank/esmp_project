@@ -99,7 +99,7 @@ class _WaitingForConfirmationScreenState
                                     setState(() {
                                       _isLoading=true;
                                     });
-                                    orderProvider.initData(userID: user!.userID!, token: user!.token!).then((value){
+                                    orderProvider.initData(userID: user.userID!, token: user.token!).then((value){
                                       setState(() {
                                         _isLoading=false;
                                       });

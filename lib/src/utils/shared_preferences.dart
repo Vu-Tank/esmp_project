@@ -4,6 +4,7 @@ import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/role.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,6 +44,7 @@ class UserPreferences {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("userID");
     prefs.remove("token");
+    await FirebaseAuth.instance.signOut();
   }
 
   Future<String> getToken() async {

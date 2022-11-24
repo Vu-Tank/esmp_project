@@ -94,7 +94,7 @@ class Utils {
   }
 
   static String getTime(String timeString) {
-    if (timeString.isEmpty) {
+    if (timeString.isEmpty|| timeString=='0') {
       return '';
     }
     DateTime now = DateTime.now();

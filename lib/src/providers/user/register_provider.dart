@@ -10,6 +10,7 @@ import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/validations.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -110,11 +111,13 @@ class RegisterProvider extends ChangeNotifier {
     _user.userName=_fullName.value;
     _user.email=_email.value;
     _user.address![0].context=_addressValid.value;
+    _user.firebaseID=uid;
+    _user.fcM_Firebase=await FirebaseMessaging.instance.getToken();
     ApiResponse apiResponse=await UserRepository.createUser(_user);
     log(apiResponse.message!);
     if(apiResponse.isSuccess!){
-      _user=UserModel(gender: _genders.first,address: [_address!], image: _image);
       CloudFirestoreService(uid: uid).createUserCloud(userName: _user.userName!, imageUrl: _user.image!.path!);
+      _user=UserModel(gender: _genders.first,address: [_address!], image: _image);
       onSuccess();
     }else{
       onFailed(apiResponse.message);

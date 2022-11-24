@@ -28,7 +28,7 @@ class UserRepository {
     return user;
   }
 
-  static Future<ApiResponse> login(String phone, String firebaseToken) async {
+  static Future<ApiResponse> login(String phone, String firebaseToken, String? fcmToken) async {
     phone = Utils.convertToDB(phone);
     ApiResponse apiResponse = ApiResponse();
     try {
@@ -39,6 +39,7 @@ class UserRepository {
           },
           body: jsonEncode(<String, dynamic>{
             'phone': phone,
+            'fcM_Firebase': fcmToken,
           })).timeout(Api.apiTimeOut());
       if (response.statusCode == 200) {
         var body = json.decode(response.body);
@@ -448,6 +449,34 @@ class UserRepository {
       log(error.toString());
       apiResponse.isSuccess = false;
       apiResponse.message = "Lỗi máy chủ";
+    }
+    return apiResponse;
+  }
+  static Future<ApiResponse> logout(int userID,String token) async {
+    ApiResponse apiResponse = ApiResponse();
+    try {
+      final queryParams = {'userID': userID.toString()};
+      String queryString = Uri(queryParameters: queryParams).query;
+      final response = await http.post(Uri.parse('${AppUrl.logout}?$queryString'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          },
+          ).timeout(Api.apiTimeOut());
+      if (response.statusCode == 200) {
+        var body = json.decode(response.body);
+        apiResponse.message = body['message'];
+        apiResponse.isSuccess = body['success'];
+        if (apiResponse.isSuccess!) {
+          // apiResponse.dataResponse = UserModel.fromJson(body['data']);
+        }
+      } else {
+        apiResponse.message = json.decode(response.body)['errors'].toString();
+        apiResponse.isSuccess = false;
+      }
+    } catch (e) {
+      apiResponse.message = e.toString();
+      apiResponse.isSuccess = false;
     }
     return apiResponse;
   }

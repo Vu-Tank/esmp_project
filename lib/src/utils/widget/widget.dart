@@ -49,8 +49,8 @@ TextStyle btnTextStyle = const TextStyle(
   color: Colors.white,
   fontSize: 18,
 );
-Color mainColor= Colors.grey;
-Color btnColor= Colors.grey;
+Color mainColor=  const Color(0xFFeb6440);
+Color btnColor=   const Color(0xFFeb6440);
 
 Future<String?> showMyAlertDialog(BuildContext context, String msg) async {
   String? result = await showDialog<String>(
