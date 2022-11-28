@@ -1,9 +1,7 @@
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/user.dart';
-import 'package:esmp_project/src/models/validation_item.dart';
 import 'package:esmp_project/src/providers/user/edit_profile_provider.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
-import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +21,6 @@ class EditDialog {
         context: context,
         builder: (BuildContext context) {
           final editProvider = Provider.of<EditProfileProvider>(context);
-          String value = "";
           return AlertDialog(
             title: Text(
               title,

@@ -308,7 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               onTap: () async {
-                DateTime? dob = await showDatePicker(
+                await showDatePicker(
                   context: context,
                   initialDate:
                       DateFormat("yyyy-MM-dd").parse(user.dateOfBirth!),

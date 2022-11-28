@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/models/api_response.dart';
@@ -16,14 +15,14 @@ import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/validations.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/Motor_brand.dart';
+import '../../models/motor_brand.dart';
 
 class ItemsProvider extends ChangeNotifier {
   List<Item> _items = [];
   bool hasMore = true;
   final int _limit = 25;
   int pageIndex = 0;
-
+  bool isSearch=false;
   List<Item> get items => [..._items];
 
   void clearItem(){
@@ -39,6 +38,7 @@ class ItemsProvider extends ChangeNotifier {
     // log(address.toString());
     pageIndex = 1;
     SearchItemModel searchItemModel = getSearchModel();
+    searchItemModel.page=1;
     // log(searchItemModel.page.toString());
     ApiResponse apiResponse = await ItemRepository.searchItems(searchItemModel);
     if (apiResponse.isSuccess!) {
@@ -46,9 +46,6 @@ class ItemsProvider extends ChangeNotifier {
       _items = apiResponse.dataResponse as List<Item>;
       if (items.length < _limit) {
         hasMore = false;
-        if (items.isEmpty && pageIndex > 1) {
-          pageIndex--;
-        }
       } else {
         hasMore = true;
       }
@@ -95,7 +92,7 @@ class ItemsProvider extends ChangeNotifier {
       _subCategory.addAll(value.listSub);
       //reset select sub index == 0
       selectedSubCategory = firstSubCategory;
-      log(_subCategory.toString());
+      // log(_subCategory.toString());
     } else {
       selectedSubCategory = firstSubCategory;
       _subCategory.clear();
@@ -105,7 +102,7 @@ class ItemsProvider extends ChangeNotifier {
 
   void selectNewSubCategory(SubCategory value) {
     selectedSubCategory = value;
-    log(value.toString());
+    // log(value.toString());
     notifyListeners();
   }
 
@@ -152,7 +149,7 @@ class ItemsProvider extends ChangeNotifier {
 
   void selectedNewMotor(Motor value) {
     seletedMotor = value;
-    log(value.toString());
+    // log(value.toString());
     notifyListeners();
   }
 
@@ -163,7 +160,7 @@ class ItemsProvider extends ChangeNotifier {
 
   void selectedNewRating(int value) {
     selectedrating = value;
-    log(value.toString());
+    // log(value.toString());
     notifyListeners();
   }
 
@@ -182,7 +179,7 @@ class ItemsProvider extends ChangeNotifier {
 
   void selectedNewSortModel(SortModel value) {
     selectedSortModel = value;
-    log(value.toString());
+    // log(value.toString());
     notifyListeners();
   }
 
@@ -227,19 +224,15 @@ class ItemsProvider extends ChangeNotifier {
   }
 
   String? txtSearch;
-  Future<void> getTxtSearch(String? value) async {
-    txtSearch = value;
-    // notifyListeners();
-  }
 
   //reset
-  void reset() {
+  void reset(){
     if (_category.isNotEmpty) selectNewCategory(_category.first);
     if (_listMotorBrand.isNotEmpty) {
       selectedNewMotorBrand(_listMotorBrand.first);
     }
     selectedNewRating(0);
-    if (_listSortModel.isNotEmpty) (_listSortModel.first);
+    if (_listSortModel.isNotEmpty) selectedNewSortModel(_listSortModel.first);
     minPrice = null;
     maxPrice = null;
     _minPriceValid = ValidationItem(null, null);

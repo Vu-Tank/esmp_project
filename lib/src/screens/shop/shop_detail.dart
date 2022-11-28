@@ -41,7 +41,6 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).viewPadding.top;
-    double width = MediaQuery.of(context).size.width;
     final storeProvider = Provider.of<StoreProvider>(context);
     return Scaffold(
       body: WillPopScope(
@@ -52,106 +51,268 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
             SizedBox(
               height: height,
             ),
+            // Container(
+            //   // height: 100,
+            //   color: mainColor,
+            //   child: Row(
+            //     children: [
+            //       IconButton(
+            //           onPressed: () {
+            //             storeProvider.reset();
+            //             Navigator.pop(context);
+            //           },
+            //           icon:const Icon(Icons.arrow_back)),
+            //       SizedBox(
+            //         height: 80,
+            //         width: width - 100,
+            //         child: Stack(
+            //           alignment: AlignmentDirectional.centerEnd,
+            //           children: <Widget>[
+            //             TextField(
+            //               decoration: const InputDecoration(
+            //                 hintText: 'Tìm kiếm',
+            //                 fillColor: Colors.white,
+            //                 filled: true,
+            //                 contentPadding: EdgeInsets.symmetric(
+            //                     vertical: 10.0, horizontal: 8.0),
+            //                 border: OutlineInputBorder(
+            //                     borderRadius:
+            //                     BorderRadius.all(Radius.circular(5.0))),
+            //               ),
+            //               controller: _searchController,
+            //               onSubmitted: (String? value) async {
+            //                 final filter = context.read<StoreProvider>();
+            //                 filter.reset();
+            //                 LoadingDialog.showLoadingDialog(
+            //                     context, "Vui lòng đợi");
+            //                 var future = Future.wait([
+            //                   filter.getTxtSearch(_searchController.text.trim()),
+            //                 ]);
+            //                 future.then((value) async {
+            //                   LoadingDialog.hideLoadingDialog(context);
+            //                   SearchItemModel? result = filter.getSearchModel();
+            //                   Map<String, dynamic> search = result.toJson();
+            //                   Utils.removeNullAndEmptyParams(search);
+            //                   if (search.isNotEmpty) {
+            //                     if (mounted) {
+            //                       LoadingDialog.showLoadingDialog(
+            //                           context, "Vui lòng đợi");
+            //                     }
+            //                     await storeProvider
+            //                         .applySearch()
+            //                         .catchError((error) {
+            //                       LoadingDialog.hideLoadingDialog(context);
+            //                       showMyAlertDialog(context, error.toString());
+            //                     }).whenComplete(() {
+            //                       LoadingDialog.hideLoadingDialog(context);
+            //                     });
+            //                   }
+            //                 }).catchError((error) {
+            //                   LoadingDialog.hideLoadingDialog(context);
+            //                   if (error.toString().contains('TimeoutException')) {
+            //                     showMyAlertDialog(context, error.toString());
+            //                   }
+            //                 });
+            //               },
+            //             ),
+            //             IconButton(
+            //                 onPressed: () async {
+            //                   final filter = context.read<StoreProvider>();
+            //                   filter.reset();
+            //                   LoadingDialog.showLoadingDialog(
+            //                       context, "Vui lòng đợi");
+            //                   var future = Future.wait([
+            //                     filter
+            //                         .getTxtSearch(_searchController.text.trim()),
+            //                   ]);
+            //                   future.then((value) async {
+            //                     LoadingDialog.hideLoadingDialog(context);
+            //                     SearchItemModel? result = filter.getSearchModel();
+            //                     Map<String, dynamic> search = result.toJson();
+            //                     Utils.removeNullAndEmptyParams(search);
+            //                     if (search.isNotEmpty) {
+            //                       if (mounted) {
+            //                         LoadingDialog.showLoadingDialog(
+            //                             context, "Vui lòng đợi");
+            //                       }
+            //                       await storeProvider
+            //                           .applySearch()
+            //                           .catchError((error) {
+            //                         LoadingDialog.hideLoadingDialog(context);
+            //                         showMyAlertDialog(context, error.toString());
+            //                       }).whenComplete(() {
+            //                         LoadingDialog.hideLoadingDialog(context);
+            //                       });
+            //                     }
+            //                   }).catchError((error) {
+            //                     LoadingDialog.hideLoadingDialog(context);
+            //                     if (error
+            //                         .toString()
+            //                         .contains('TimeoutException')) {
+            //                       showMyAlertDialog(context, error.toString());
+            //                     }
+            //                   });
+            //                 },
+            //                 icon: const Icon(
+            //                   Icons.search,
+            //                   color: Colors.black,
+            //                 )),
+            //           ],
+            //         ),
+            //       ),
+            //       IconButton(
+            //           onPressed: () async {
+            //             final filter = context.read<StoreProvider>();
+            //             LoadingDialog.showLoadingDialog(
+            //                 context, "Vui lòng đợi");
+            //             var future = Future.wait([
+            //               filter.getCategory(),
+            //               filter.getMotorBrand(),
+            //               filter.initSortModel(),
+            //               filter.getTxtSearch(_searchController.text.trim()),
+            //             ]);
+            //             future.then((value) async {
+            //               LoadingDialog.hideLoadingDialog(context);
+            //               SearchItemModel? result = await showDialog(
+            //                   context: context,
+            //                   builder: (context) => const FilterSearchDialog());
+            //               if (result != null) {
+            //                 Map<String, dynamic> search = result.toJson();
+            //                 Utils.removeNullAndEmptyParams(search);
+            //                 if (search.isNotEmpty) {
+            //                   if (mounted) {
+            //                     LoadingDialog.showLoadingDialog(
+            //                         context, "Vui lòng đợi");
+            //                   }
+            //                   await storeProvider
+            //                       .applySearch()
+            //                       .catchError((error) {
+            //                     LoadingDialog.hideLoadingDialog(context);
+            //                     showMyAlertDialog(context, error.toString());
+            //                   }).whenComplete(() {
+            //                     LoadingDialog.hideLoadingDialog(context);
+            //                   });
+            //                 }
+            //               }
+            //             }).catchError((error) {
+            //               LoadingDialog.hideLoadingDialog(context);
+            //               if (error.toString().contains('TimeoutException')) {
+            //                 showMyAlertDialog(context, error.toString());
+            //               }
+            //             });
+            //           },
+            //           icon: const Icon(Icons.filter_alt_rounded)),
+            //     ],
+            //   ),
+            // ),
             Container(
-              // height: 100,
               color: mainColor,
+              height: 70,
+              alignment: Alignment.center,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        if(!storeProvider.isSearch){
+                          storeProvider.reset();
+                          Navigator.pop(context);
+                          return;
+                        }
+                        storeProvider.txtSearch = null;
                         storeProvider.reset();
-                        Navigator.pop(context);
+                        LoadingDialog.showLoadingDialog(
+                            context, "Vui lòng đợi");
+                        await storeProvider.applySearch().then((value) {
+                          if (mounted) {
+                            LoadingDialog.hideLoadingDialog(context);
+                          }
+                          _searchController.clear();
+                          if (controller.hasClients) {
+                            controller.jumpTo(0);
+                          }
+                          storeProvider.isSearch=false;
+                        }).catchError((error) {
+                          log(error.toString());
+                          LoadingDialog.hideLoadingDialog(context);
+                          showMyAlertDialog(context, error.toString());
+                        });
+                        FocusManager.instance.primaryFocus?.unfocus();
                       },
-                      icon:const Icon(Icons.arrow_back)),
-                  SizedBox(
-                    height: 80,
-                    width: width - 100,
+                      icon: const Icon(Icons.arrow_back, color: Colors.white,)),
+
+                  Expanded(
                     child: Stack(
                       alignment: AlignmentDirectional.centerEnd,
                       children: <Widget>[
                         TextField(
-                          decoration: const InputDecoration(
-                            hintText: 'Tìm kiếm',
+                          decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 8.0),
+                            hintText: "Tìm kiếm",
+                            contentPadding: const EdgeInsets.symmetric(vertical:15,horizontal: 10),
                             border: OutlineInputBorder(
-                                borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+
                           ),
                           controller: _searchController,
                           onSubmitted: (String? value) async {
-                            final filter = context.read<StoreProvider>();
+                            if (storeProvider.txtSearch != null) {
+                              if (_searchController.text
+                                  .compareTo(storeProvider.txtSearch!) ==
+                                  0) {
+                                return;
+                              }
+                            }
+                            if (_searchController.text.isEmpty) {
+                              return;
+                            }
+                            final filter = storeProvider;
                             filter.reset();
+                            filter.txtSearch=value;
                             LoadingDialog.showLoadingDialog(
                                 context, "Vui lòng đợi");
-                            var future = Future.wait([
-                              filter.getTxtSearch(_searchController.text.trim()),
-                            ]);
-                            future.then((value) async {
+                            await storeProvider
+                                .applySearch()
+                                .catchError((error) {
                               LoadingDialog.hideLoadingDialog(context);
-                              SearchItemModel? result = filter.getSearchModel();
-                              Map<String, dynamic> search = result.toJson();
-                              Utils.removeNullAndEmptyParams(search);
-                              if (search.isNotEmpty) {
-                                if (mounted) {
-                                  LoadingDialog.showLoadingDialog(
-                                      context, "Vui lòng đợi");
-                                }
-                                await storeProvider
-                                    .applySearch()
-                                    .catchError((error) {
-                                  LoadingDialog.hideLoadingDialog(context);
-                                  showMyAlertDialog(context, error.toString());
-                                }).whenComplete(() {
-                                  LoadingDialog.hideLoadingDialog(context);
-                                });
+                              showMyAlertDialog(context, error.toString());
+                            }).then((_) {
+                              storeProvider.isSearch=true;
+                              if (controller.hasClients) {
+                                controller.jumpTo(0);
                               }
-                            }).catchError((error) {
                               LoadingDialog.hideLoadingDialog(context);
-                              if (error.toString().contains('TimeoutException')) {
-                                showMyAlertDialog(context, error.toString());
-                              }
                             });
                           },
                         ),
                         IconButton(
                             onPressed: () async {
-                              final filter = context.read<StoreProvider>();
+                              if (storeProvider.txtSearch != null) {
+                                if (_searchController.text
+                                    .compareTo(storeProvider.txtSearch!) ==
+                                    0) return;
+                              }
+                              if (_searchController.text.isEmpty) {
+                                return;
+                              }
+                              final filter = storeProvider;
                               filter.reset();
                               LoadingDialog.showLoadingDialog(
                                   context, "Vui lòng đợi");
-                              var future = Future.wait([
-                                filter
-                                    .getTxtSearch(_searchController.text.trim()),
-                              ]);
-                              future.then((value) async {
+                              await storeProvider
+                                  .applySearch()
+                                  .catchError((error) {
                                 LoadingDialog.hideLoadingDialog(context);
-                                SearchItemModel? result = filter.getSearchModel();
-                                Map<String, dynamic> search = result.toJson();
-                                Utils.removeNullAndEmptyParams(search);
-                                if (search.isNotEmpty) {
-                                  if (mounted) {
-                                    LoadingDialog.showLoadingDialog(
-                                        context, "Vui lòng đợi");
-                                  }
-                                  await storeProvider
-                                      .applySearch()
-                                      .catchError((error) {
-                                    LoadingDialog.hideLoadingDialog(context);
-                                    showMyAlertDialog(context, error.toString());
-                                  }).whenComplete(() {
-                                    LoadingDialog.hideLoadingDialog(context);
-                                  });
-                                }
-                              }).catchError((error) {
+                                showMyAlertDialog(context, error.toString());
+                              }).then((_) {
+                                storeProvider.isSearch=true;
+                                if (controller.hasClients) {
+                                  controller.jumpTo(0);}
                                 LoadingDialog.hideLoadingDialog(context);
-                                if (error
-                                    .toString()
-                                    .contains('TimeoutException')) {
-                                  showMyAlertDialog(context, error.toString());
-                                }
+                                FocusManager.instance.primaryFocus?.unfocus();
                               });
                             },
                             icon: const Icon(
@@ -163,20 +324,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                   ),
                   IconButton(
                       onPressed: () async {
-                        final filter = context.read<StoreProvider>();
+                        final filter = storeProvider;
                         LoadingDialog.showLoadingDialog(
                             context, "Vui lòng đợi");
+                        filter.txtSearch=_searchController.text.trim();
                         var future = Future.wait([
                           filter.getCategory(),
                           filter.getMotorBrand(),
                           filter.initSortModel(),
-                          filter.getTxtSearch(_searchController.text.trim()),
                         ]);
                         future.then((value) async {
                           LoadingDialog.hideLoadingDialog(context);
                           SearchItemModel? result = await showDialog(
                               context: context,
-                              builder: (context) => const FilterSearchDialog());
+                              builder: (context) => const FilterSearchDialog(status: 'store',));
                           if (result != null) {
                             Map<String, dynamic> search = result.toJson();
                             Utils.removeNullAndEmptyParams(search);
@@ -190,7 +351,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                                   .catchError((error) {
                                 LoadingDialog.hideLoadingDialog(context);
                                 showMyAlertDialog(context, error.toString());
-                              }).whenComplete(() {
+                              }).then((_) {
+                                storeProvider.isSearch=true;
+                                if (controller.hasClients) {
+                                  controller.jumpTo(0);}
                                 LoadingDialog.hideLoadingDialog(context);
                               });
                             }
@@ -202,7 +366,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                           }
                         });
                       },
-                      icon: const Icon(Icons.filter_alt_rounded)),
+                      icon: const Icon(Icons.filter_alt_rounded, color: Colors.white,size: 30,))
                 ],
               ),
             ),

@@ -93,3 +93,33 @@ Scaffold errorScreen(BuildContext context, String msg) {
     ),
   );
 }
+Future<String?> showConfirmDialog(BuildContext context, String msg) async {
+  String? result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          title: Text(
+            msg,
+            style: textStyleInput,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Không', style: TextStyle(color: btnColor, fontSize: 18),),
+              onPressed: () {
+                Navigator.pop(context, 'Cancel');
+              },
+            ),
+            TextButton(
+              child: Text('Xác nhận', style: TextStyle(color: btnColor, fontSize: 18),),
+              onPressed: () {
+                Navigator.pop(context, 'Ok');
+              },
+            ),
+          ],
+        );
+      });
+  return result;
+}

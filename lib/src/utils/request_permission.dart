@@ -16,21 +16,21 @@ Future<bool> requestCameraPermission(BuildContext context) async {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Camera permission is Denied. Please go to Setting App!'),
-              content: Text('1.Permissions\n' + '2. Camera\n' + '3. Allow'),
+              title:const Text('Quyền máy ảnh bị từ chối. Vui lòng vào Cài đặt ứng dụng!'),
+              content:const Text('1.Quyền\n' + '2. Máy ảnh\n' + '3. Cho phép'),
               actions: [
                 OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancel'),
+                  child: Text('Thoát'),
                 ),
                 OutlinedButton(
                   onPressed: () {
                     openAppSettings();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Accpet'),
+                  child: Text('Chấp nhận'),
                 ),
               ],
             );

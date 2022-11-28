@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esmp_project/src/models/room.dart';
 import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
+import 'package:esmp_project/src/repositoty/firebase_storage.dart';
 import 'package:esmp_project/src/screens/chat/mesage_tile.dart';
+import 'package:esmp_project/src/utils/utils.dart';
+import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
+import 'package:esmp_project/src/utils/widget/show_modal_bottom_sheet_image.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +25,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController messageController = TextEditingController();
   Stream<QuerySnapshot>? chats;
   final ScrollController _controller = ScrollController();
-
+  File? imageFile;
   @override
   void initState() {
     // TODO: implement initState
@@ -74,6 +80,46 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               width: MediaQuery.of(context).size.width,
               // color: mainColor,
               child: Row(children: [
+                GestureDetector(
+                  onTap: () async{
+                    imageFile=await showModalBottomSheetImage(context).catchError((e){
+                      showMyAlertDialog(context, e.toString());
+                    });
+                    if(mounted){
+                      LoadingDialog.showLoadingDialog(context, 'Đang tải ảnh');
+                    }
+                    if(imageFile!=null){
+                      String fileName='${roomChat.roomID}_${Utils.createFile()}';
+                      String? filePath=await FirebaseStorageService().uploadFileChat(imageFile!, fileName).catchError((e){
+                        if(mounted){
+                          LoadingDialog.hideLoadingDialog(context);
+                          showMyAlertDialog(context, e.toString());
+                        }
+                      });
+                      if(filePath!=null){
+                        await sendImage(filePath);
+                      }
+                      if(mounted)LoadingDialog.hideLoadingDialog(context);
+                    }
+                  },
+
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: mainColor,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Center(
+                        child: Icon(
+                          Icons.image_outlined,
+                          color: Colors.white,
+                        )),
+                  ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
                 Expanded(
                     child: TextField(
                   controller: messageController,
@@ -100,7 +146,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     height: 50,
                     width: 50,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
+                      color: mainColor,
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: const Center(
@@ -140,9 +186,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     message: snapshot.data.docs[index]['message'],
                     sender: snapshot.data.docs[index]['sender'],
                     time: snapshot.data.docs[index]['time'],
+                    isImage: snapshot.data.docs[index]['isImage'],
                     sentByMe: FirebaseAuth.instance.currentUser!.uid ==
                         snapshot.data.docs[index]['sender'],
-                    showTime: (int height){
+                    showTime: (int height,){
                       if (_controller.hasClients) {
                         _controller.jumpTo(_controller.offset+height);
                       }
@@ -164,6 +211,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         "message": messageController.text,
         "sender": FirebaseAuth.instance.currentUser!.uid,
         "time": formattedDate,
+        "isImage":false,
       };
       await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
           .sendMessage(widget.roomChat.roomID, chatMessageMap)
@@ -179,5 +227,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         }
       });
     }
+  }
+  sendImage(String filePath)async{
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    Map<String, dynamic> chatMessageMap = {
+      "message": filePath,
+      "sender": FirebaseAuth.instance.currentUser!.uid,
+      "time": formattedDate,
+      "isImage":true,
+    };
+    await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .sendMessage(widget.roomChat.roomID, chatMessageMap)
+        .then((value) {
+      imageFile=null;
+    }).catchError((e) {
+      if (mounted) {
+        showMyAlertDialog(context, e.toString());
+      }
+    });
+
   }
 }

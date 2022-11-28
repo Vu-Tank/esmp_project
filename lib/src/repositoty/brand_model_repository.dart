@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/Motor_brand.dart';
+import 'package:esmp_project/src/models/motor_brand.dart';
 
 import '../constants/api.dart';
 import '../constants/url.dart';

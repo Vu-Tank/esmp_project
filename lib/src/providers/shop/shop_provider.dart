@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/Motor_brand.dart';
+import 'package:esmp_project/src/models/motor_brand.dart';
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/category.dart';
@@ -22,13 +22,14 @@ class StoreProvider extends ChangeNotifier {
   bool hasMore = true;
   final int limit = 25;
   int pageIndex = 0;
+  bool isSearch=false;
 
   List<Item> get items => [..._items];
 
   List<Category> _category = [];
 
   List<Category> get category => _category;
-  Category selectedCategoty =
+  Category selectedCategory =
       Category(categoryID: -1, name: "Tất cả", listSub: []);
 
   Future getCategory() async {
@@ -36,9 +37,9 @@ class StoreProvider extends ChangeNotifier {
       ApiResponse apiResponse = await CategoryRepository.getCategory();
       if (apiResponse.isSuccess!) {
         _category.clear();
-        _category.add(selectedCategoty);
+        _category.add(selectedCategory);
         _category.addAll(apiResponse.dataResponse as List<Category>);
-        selectedCategoty = _category.first;
+        selectedCategory = _category.first;
         notifyListeners();
       } else {
         throw Exception(apiResponse.message);
@@ -55,7 +56,7 @@ class StoreProvider extends ChangeNotifier {
       SubCategory(subCategoryID: -1, subcategoryName: "Tất cả");
 
   void selectNewCategory(Category value) {
-    selectedCategoty = value;
+    selectedCategory = value;
     if (value.categoryID != -1) {
       // xáo dropdown nạp lại dữ liệu
       _subCategory.clear();
@@ -202,7 +203,7 @@ class StoreProvider extends ChangeNotifier {
 
   //reset
   void reset() {
-    if (_category.isNotEmpty) (_category.first);
+    if (_category.isNotEmpty) selectNewCategory(_category.first);
     if (_listMotorBrand.isNotEmpty) {
       selectedNewMotorBrand(_listMotorBrand.first);
     }
@@ -213,7 +214,7 @@ class StoreProvider extends ChangeNotifier {
     _minPriceValid = ValidationItem(null, null);
     _maxPriceValid = ValidationItem(null, null);
     address = null;
-    _items.clear();
+    // _items.clear();
     notifyListeners();
   }
 
@@ -227,11 +228,11 @@ class StoreProvider extends ChangeNotifier {
       minPrice: minPrice,
       maxPrice: maxPrice,
       rate: double.parse(selectedrating.toString()),
-      cateID: (selectedCategoty.categoryID == -1)
+      cateID: (selectedCategory.categoryID == -1)
           ? null
           : (selectedSubCategory.subCategoryID != -1)
               ? null
-              : selectedCategoty.categoryID,
+              : selectedCategory.categoryID,
       subCateID: (selectedSubCategory.subCategoryID == -1)
           ? null
           : selectedSubCategory.subCategoryID,

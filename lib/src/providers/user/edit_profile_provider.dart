@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:esmp_project/src/models/api_response.dart';
-import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/models/validation_item.dart';
 import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
@@ -11,8 +10,6 @@ import 'package:esmp_project/src/utils/validations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../repositoty/firebase_storage.dart';
-import '../../utils/utils.dart';
 
 class EditProfileProvider extends ChangeNotifier {
   ValidationItem validationItem = ValidationItem(null, null);

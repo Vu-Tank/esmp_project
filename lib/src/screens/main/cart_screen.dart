@@ -1,10 +1,7 @@
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/order.dart';
-import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/cart/shopping_cart_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
-import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/screens/order/cart_by_store.dart';
 import 'package:esmp_project/src/screens/order/payment_screen.dart';
@@ -70,27 +67,30 @@ class _CartScreenState extends State<CartScreen> {
                                     index: index,
                                   );
                                 }),
-                            bottomNavigationBar: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                    'Tạm tính ${(cart.selectedIndex != -1) ? Utils.convertPriceVND(cart.order![cart.selectedIndex].getPrice()) : ''}'),
-                                TextButton(
-                                    onPressed: (cart.selectedIndex == -1)
-                                        ? null
-                                        : () {
-                                            log(cart.order![cart.selectedIndex].orderStatus
-                                                .statusName);
-                                            log(cart.order![cart.selectedIndex].orderID.toString());
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PaymentScreen(
-                                                            orderID: cart.order![cart.selectedIndex].orderID)));
-                                          },
-                                    child: const Text('Thanh toán')),
-                              ],
+                            bottomNavigationBar: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                      'Tạm tính ${(cart.selectedIndex != -1) ? Utils.convertPriceVND(cart.order![cart.selectedIndex].getPrice()) : ''}'),
+                                  TextButton(
+                                      onPressed: (cart.selectedIndex == -1)
+                                          ? null
+                                          : () {
+                                              log(cart.order![cart.selectedIndex].orderStatus
+                                                  .statusName);
+                                              log(cart.order![cart.selectedIndex].orderID.toString());
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PaymentScreen(
+                                                              orderID: cart.order![cart.selectedIndex].orderID)));
+                                            },
+                                      child: Text('Thanh toán', style: TextStyle(color: (cartProvider.selectedIndex!=-1)?btnColor:Colors.grey),)),
+                                ],
+                              ),
                             ),
                           );
                         } else {
@@ -111,7 +111,7 @@ class _CartScreenState extends State<CartScreen> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
-                child: Text('Đăng nhập'),
+                child: Text('Đăng nhập', style: btnTextStyle.copyWith(color: btnColor),),
               ),
             ),
     );

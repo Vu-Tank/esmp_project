@@ -98,7 +98,7 @@ class ItemRepository {
         apiResponse.message = json.decode(response.body)['errors'].toString();
       }
     } catch (error) {
-      log(error.toString());
+      // log(error.toString());
       apiResponse.isSuccess = false;
       apiResponse.message = error.toString();
     }
@@ -133,7 +133,7 @@ class ItemRepository {
         apiResponse.message = json.decode(response.body)['errors'].toString();
       }
     } catch (error) {
-      log(error.toString());
+      // log(error.toString());
       apiResponse.isSuccess = false;
       apiResponse.message = error.toString();
     }

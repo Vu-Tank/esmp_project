@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:esmp_project/src/utils/utils.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseStorageService {
@@ -14,6 +13,18 @@ class FirebaseStorageService {
       await imagesRef.putFile(file);
       String? urlDowload = await imagesRef.getDownloadURL();
       return urlDowload;
+    } on FirebaseException catch (e) {
+      log('Load error: ${e.message!}');
+      return null;
+    }
+  }
+  Future<String?> uploadFileChat(File file, String fileName) async {
+    try {
+      Reference storageRef = storage.ref();
+      Reference imagesRef = storageRef.child('imagesChat/$fileName');
+      await imagesRef.putFile(file);
+      String? urlDownload = await imagesRef.getDownloadURL();
+      return urlDownload;
     } on FirebaseException catch (e) {
       log('Load error: ${e.message!}');
       return null;

@@ -1,6 +1,5 @@
-import 'dart:developer';
 
-import 'package:esmp_project/src/models/Motor_brand.dart';
+import 'package:esmp_project/src/models/motor_brand.dart';
 import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/imageModel.dart';
 import 'package:esmp_project/src/models/specificationItem.dart';

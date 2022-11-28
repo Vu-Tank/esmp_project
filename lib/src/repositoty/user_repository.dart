@@ -5,8 +5,6 @@ import 'package:esmp_project/src/constants/api.dart';
 import 'package:esmp_project/src/constants/url.dart';
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/models/api_response.dart';
-import 'package:esmp_project/src/models/imageModel.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import '../models/user.dart';
@@ -351,7 +349,7 @@ class UserRepository {
           "context": addressModel.context,
           "province": addressModel.province,
           "district": addressModel.district,
-          "ward": addressModel.province,
+          "ward": addressModel.ward,
           "latitude": addressModel.latitude,
           "longitude": addressModel.longitude,
           "isActive": true

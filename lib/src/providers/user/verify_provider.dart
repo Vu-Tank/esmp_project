@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:esmp_project/src/models/api_response.dart';
@@ -13,10 +14,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/validation_item.dart';
-import '../../screens/login_register/otp_screen.dart';
 
 class VerifyProvider extends ChangeNotifier {
   ValidationItem _phone = ValidationItem(null, null);
+  String _otp='';
+
+  String get otp => _otp;
 
   ValidationItem get phone => _phone;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -41,26 +44,32 @@ class VerifyProvider extends ChangeNotifier {
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          final user=await _auth.signInWithCredential(credential);
-          String token = await getIDToken();
-          try {
-            if(status=='login'){
-              String phone = Utils.convertToDB(phoneNumber);
-              final fcmToken = await FirebaseMessaging.instance.getToken();
-              ApiResponse apiResponse = await UserRepository.login(phone, token, token);
-              if (!apiResponse.isSuccess!) {
-                onFailed(apiResponse.message!);
-              } else {
-                UserModel user = apiResponse.dataResponse as UserModel;
-                UserPreferences().saveUser(user);
-                onLogin!(user);
-              }
-            }else if(status=='register'){
-              onRegister!(token, user.user?.uid);
-            }
-          } catch (error) {
-            onFailed(error.toString());
+          if(credential.smsCode!=null&&credential.verificationId!=null){
+            _otp=credential.smsCode!;
+            // Timer(const Duration(seconds: 3), () {
+            //   verifyOTP(otp: otp, phoneNumber: phoneNumber, verificationId: credential.verificationId!, status: status, onFailed: onFailed);
+            // });
           }
+          // final user=await _auth.signInWithCredential(credential);
+          // String token = await getIDToken();
+          // try {
+          //   if(status=='login'){
+          //     String phone = Utils.convertToDB(phoneNumber);
+          //     final fcmToken = await FirebaseMessaging.instance.getToken();
+          //     ApiResponse apiResponse = await UserRepository.login(phone, token, fcmToken);
+          //     if (!apiResponse.isSuccess!) {
+          //       onFailed(apiResponse.message!);
+          //     } else {
+          //       UserModel user = apiResponse.dataResponse as UserModel;
+          //       UserPreferences().saveUser(user);
+          //       onLogin!(user);
+          //     }
+          //   }else if(status=='register'){
+          //     onRegister!(token, user.user?.uid);
+          //   }
+          // } catch (error) {
+          //   onFailed(error.toString());
+          // }
         },
         verificationFailed: (error) {
           log("error code: ${error.code}");
@@ -97,6 +106,7 @@ class VerifyProvider extends ChangeNotifier {
       String phone = Utils.convertToDB(phoneNumber);
       if (status == 'login') {
         final fcmToken = await FirebaseMessaging.instance.getToken();
+        log(token);
         ApiResponse apiResponse = await UserRepository.login(phone, token, fcmToken);
         if (!apiResponse.isSuccess!) {
           onFailed(apiResponse.message);

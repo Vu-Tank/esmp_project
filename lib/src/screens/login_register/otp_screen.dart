@@ -55,10 +55,12 @@ class _OTPScreenState extends State<OTPScreen> {
     super.initState();
     reSend();
   }
-
+  // TextEditingController otpController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<VerifyProvider>(context);
+    // otpController.text=provider.otp;
+    // otpController.clear();
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -96,7 +98,12 @@ class _OTPScreenState extends State<OTPScreen> {
                   obscureText: false,
                   keyboardType: TextInputType.number,
                   appContext: context,
-                  onChanged: (value) {},
+                  // controller: otpController,
+                  onChanged: (value) {
+                    setState(() {
+                      _otpCode = value;
+                    });
+                  },
                   onCompleted: (value) {
                     setState(() {
                       _otpCode = value;

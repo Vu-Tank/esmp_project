@@ -150,12 +150,14 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                     if (widget.status == 'edit') {
                       AddressModel? add = mapProvider.getAddress();
                       if (add != null) {
-                        if (mounted)
+                        if (mounted) {
                           context.read<AddressProvider>().setNewAddress(add);
+                        }
                       }
                     }
-                    if (mounted)
+                    if (mounted) {
                       Navigator.pop(context, mapProvider.getAddress());
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: btnColor,

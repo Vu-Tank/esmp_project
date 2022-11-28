@@ -1,16 +1,13 @@
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/item.dart';
 import 'package:esmp_project/src/models/search_item_model.dart';
 import 'package:esmp_project/src/providers/item/items_provider.dart';
 import 'package:esmp_project/src/screens/item/filtter_search.dart';
 import 'package:esmp_project/src/screens/item/item_widget.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
-import 'package:esmp_project/src/utils/widget/my_search.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingScreen extends StatefulWidget {
@@ -24,7 +21,8 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   final controller = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   late bool _isLoading;
-  bool _isSearch = false;
+
+  // bool _isSearch = false;
 
   @override
   void dispose() {
@@ -40,60 +38,63 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     double width = MediaQuery.of(context).size.width;
     final itemProvider = Provider.of<ItemsProvider>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            height: height,
-          ),
-          Container(
-            color: mainColor,
-            height: 70,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                (_isSearch)
-                    ? IconButton(
-                        onPressed: () async {
-                          itemProvider.txtSearch = null;
-                          itemProvider.reset();
-                          LoadingDialog.showLoadingDialog(
-                              context, "Vui lòng đợi");
-                          await itemProvider.initItems().then((value) {
-                            if (mounted) {
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              height: height,
+            ),
+            Container(
+              color: mainColor,
+              height: 70,
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  (itemProvider.isSearch&& itemProvider.txtSearch==null)
+                      ? IconButton(
+                          onPressed: () async {
+                            itemProvider.txtSearch = null;
+                            itemProvider.reset();
+                            LoadingDialog.showLoadingDialog(
+                                context, "Vui lòng đợi");
+                            await itemProvider.initItems().then((value) {
+                              if (mounted) {
+                                LoadingDialog.hideLoadingDialog(context);
+                              }
+                              _searchController.clear();
+                              if (controller.hasClients) {
+                                controller.jumpTo(0);
+                              }
+                              itemProvider.isSearch = false;
+                            }).catchError((error) {
+                              log(error.toString());
                               LoadingDialog.hideLoadingDialog(context);
-                            }
-                            _searchController.clear();
-                            controller.jumpTo(0);
-                            setState(() {
-                              _isSearch = false;
+                              showMyAlertDialog(context, error.toString());
                             });
-                          }).catchError((error) {
-                            LoadingDialog.hideLoadingDialog(context);
-                            showMyAlertDialog(context, error.toString());
-                          });
-                          FocusManager.instance.primaryFocus?.unfocus();
-                        },
-                        icon: const Icon(Icons.arrow_back))
-                    : const SizedBox(
-                        width: 10,
-                      ),
-                Expanded(
-                  child: Stack(
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          icon: const Icon(Icons.arrow_back))
+                      : const SizedBox(
+                          width: 10,
+                        ),
+                  Expanded(
+                    child: Stack(
                       alignment: AlignmentDirectional.centerEnd,
                       children: <Widget>[
                         TextField(
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
-                            contentPadding: const EdgeInsets.symmetric(vertical:15),
+                            hintText: 'Tìm kiếm',
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 10),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.circular(40),
                             ),
-                            
                           ),
                           controller: _searchController,
                           onSubmitted: (String? value) async {
@@ -107,36 +108,22 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                             if (_searchController.text.isEmpty) {
                               return;
                             }
-                            final filter = context.read<ItemsProvider>();
+                            final filter = itemProvider;
                             filter.reset();
+                            filter.txtSearch = value;
                             LoadingDialog.showLoadingDialog(
                                 context, "Vui lòng đợi");
-                            var future = Future.wait([
-                              filter.getTxtSearch(_searchController.text.trim()),
-                            ]);
-                            future.then((value) async {
+                            await itemProvider
+                                .applySearch()
+                                .catchError((error) {
                               LoadingDialog.hideLoadingDialog(context);
-                              if (mounted) {
-                                LoadingDialog.showLoadingDialog(
-                                    context, "Vui lòng đợi");
-                              }
-                              await itemProvider
-                                  .applySearch()
-                                  .catchError((error) {
-                                LoadingDialog.hideLoadingDialog(context);
-                                showMyAlertDialog(context, error.toString());
-                              }).whenComplete(() {
+                              showMyAlertDialog(context, error.toString());
+                            }).then((_) {
+                              itemProvider.isSearch = true;
+                              if (controller.hasClients) {
                                 controller.jumpTo(0);
-                                LoadingDialog.hideLoadingDialog(context);
-                                setState(() {
-                                  _isSearch = true;
-                                });
-                              });
-                            }).catchError((error) {
-                              LoadingDialog.hideLoadingDialog(context);
-                              if (error.toString().contains('TimeoutException')) {
-                                showMyAlertDialog(context, error.toString());
                               }
+                              LoadingDialog.hideLoadingDialog(context);
                             });
                           },
                         ),
@@ -150,45 +137,22 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                               if (_searchController.text.isEmpty) {
                                 return;
                               }
-                              final filter = context.read<ItemsProvider>();
+                              final filter = itemProvider;
                               filter.reset();
                               LoadingDialog.showLoadingDialog(
                                   context, "Vui lòng đợi");
-                              var future = Future.wait([
-                                filter
-                                    .getTxtSearch(_searchController.text.trim()),
-                              ]);
-                              future.then((value) async {
+                              await itemProvider
+                                  .applySearch()
+                                  .catchError((error) {
                                 LoadingDialog.hideLoadingDialog(context);
-                                SearchItemModel? result = filter.getSearchModel();
-                                Map<String, dynamic> search = result.toJson();
-                                Utils.removeNullAndEmptyParams(search);
-                                if (search.isNotEmpty) {
-                                  if (mounted) {
-                                    LoadingDialog.showLoadingDialog(
-                                        context, "Vui lòng đợi");
-                                  }
-                                  await itemProvider
-                                      .applySearch()
-                                      .catchError((error) {
-                                    LoadingDialog.hideLoadingDialog(context);
-                                    showMyAlertDialog(context, error.toString());
-                                  }).whenComplete(() {
-                                    controller.jumpTo(0);
-                                    LoadingDialog.hideLoadingDialog(context);
-                                    setState(() {
-                                      _isSearch = true;
-                                    });
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                  });
+                                showMyAlertDialog(context, error.toString());
+                              }).then((_) {
+                                itemProvider.isSearch = true;
+                                if (controller.hasClients) {
+                                  controller.jumpTo(0);
                                 }
-                              }).catchError((error) {
                                 LoadingDialog.hideLoadingDialog(context);
-                                if (error
-                                    .toString()
-                                    .contains('TimeoutException')) {
-                                  showMyAlertDialog(context, error.toString());
-                                }
+                                FocusManager.instance.primaryFocus?.unfocus();
                               });
                             },
                             icon: const Icon(
@@ -197,69 +161,78 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                             )),
                       ],
                     ),
-                ),
-                IconButton(
-                    onPressed: () async {
-                      final filter = context.read<ItemsProvider>();
-                      LoadingDialog.showLoadingDialog(
-                          context, "Vui lòng đợi");
-                      var future = Future.wait([
-                        filter.getCategory(),
-                        filter.getMotorBrand(),
-                        filter.initSortModel(),
-                        filter.getTxtSearch(_searchController.text.trim()),
-                      ]);
-                      future.then((value) async {
-                        LoadingDialog.hideLoadingDialog(context);
-                        SearchItemModel? result = await showDialog(
-                            context: context,
-                            builder: (context) => const FilterSearchDialog());
-                        if (result != null) {
-                          Map<String, dynamic> search = result.toJson();
-                          Utils.removeNullAndEmptyParams(search);
-                          if (search.isNotEmpty) {
-                            if (mounted) {
-                              LoadingDialog.showLoadingDialog(
-                                  context, "Vui lòng đợi");
-                            }
-                            await itemProvider
-                                .applySearch()
-                                .catchError((error) {
-                              LoadingDialog.hideLoadingDialog(context);
-                              showMyAlertDialog(context, error.toString());
-                            }).whenComplete(() {
-                              controller.jumpTo(0);
-                              LoadingDialog.hideLoadingDialog(context);
-                              setState(() {
-                                _isSearch = true;
+                  ),
+                  IconButton(
+                      onPressed: () async {
+                        final filter = itemProvider;
+                        LoadingDialog.showLoadingDialog(
+                            context, "Vui lòng đợi");
+                        filter.txtSearch = _searchController.text.trim();
+                        var future = Future.wait([
+                          filter.getCategory(),
+                          filter.getMotorBrand(),
+                          filter.initSortModel(),
+                        ]);
+                        future.then((value) async {
+                          LoadingDialog.hideLoadingDialog(context);
+                          SearchItemModel? result = await showDialog(
+                              context: context,
+                              builder: (context) => const FilterSearchDialog(
+                                    status: 'view',
+                                  ));
+                          if (result != null) {
+                            Map<String, dynamic> search = result.toJson();
+                            Utils.removeNullAndEmptyParams(search);
+                            if (search.isNotEmpty) {
+                              if (mounted) {
+                                LoadingDialog.showLoadingDialog(
+                                    context, "Vui lòng đợi");
+                              }
+                              await itemProvider
+                                  .applySearch()
+                                  .catchError((error) {
+                                LoadingDialog.hideLoadingDialog(context);
+                                showMyAlertDialog(context, error.toString());
+                              }).then((_) {
+                                itemProvider.isSearch = true;
+                                if (controller.hasClients) {
+                                  controller.jumpTo(0);
+                                }
+                                LoadingDialog.hideLoadingDialog(context);
                               });
-                            });
+                            }
                           }
-                        }
-                      }).catchError((error) {
-                        LoadingDialog.hideLoadingDialog(context);
-                        if (error.toString().contains('TimeoutException')) {
-                          showMyAlertDialog(context, error.toString());
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.filter_alt_rounded, color: Colors.white,size: 30,))
-              ],
+                        }).catchError((error) {
+                          LoadingDialog.hideLoadingDialog(context);
+                          if (error.toString().contains('TimeoutException')) {
+                            showMyAlertDialog(context, error.toString());
+                          }
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.filter_alt_rounded,
+                        color: Colors.white,
+                        size: 30,
+                      ))
+                ],
+              ),
             ),
-          ),
-          _isLoading
-              ? const Expanded(
+            _isLoading
+                ? const Expanded(
                   child: Center(
-                  child: CircularProgressIndicator(),
-                ))
-              : itemProvider.items.isEmpty
-                  ? Center(
-                      child: Text(
-                        "Không có kết quả trả về",
-                        style: textStyleInput,
-                      ),
+                      child: CircularProgressIndicator(),
+                    ),
+                )
+                : itemProvider.items.isEmpty
+                    ? Expanded(
+                      child: Center(
+                          child: Text(
+                            "Không có kết quả trả về",
+                            style: textStyleInput,
+                          ),
+                        ),
                     )
-                  : Expanded(
+                    : Expanded(
                       child: GridView.builder(
                           // crossAxisCount: 2,
                           // crossAxisSpacing: 10,
@@ -281,8 +254,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                               return ItemWidget(item: item);
                             } else {
                               return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 32),
+                                padding: const EdgeInsets.symmetric(vertical: 32),
                                 child: Center(
                                   child: itemProvider.hasMore
                                       ? const CircularProgressIndicator()
@@ -292,9 +264,10 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                               );
                             }
                           }),
-                    )
-        ],
-      ),
+                    ),
+          ],
+        ),
+
     );
   }
 

@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/feedback.dart';
-import 'package:esmp_project/src/models/order_detail.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/feedback/rated_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/feedback/feedback_screen.dart';
-import 'package:esmp_project/src/screens/feedback/feedback_view_screen.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

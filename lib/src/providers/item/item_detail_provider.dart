@@ -15,7 +15,7 @@ class ItemDetailProvider extends ChangeNotifier {
     if(apiResponse.isSuccess!){
       itemDetail=apiResponse.dataResponse as ItemDetail;
       log(apiResponse.message!);
-      int _pageIndex=1;
+      _pageIndex=1;
       if(itemDetail.listFeedback.length<_limit){
         hasMore=false;
       }else{

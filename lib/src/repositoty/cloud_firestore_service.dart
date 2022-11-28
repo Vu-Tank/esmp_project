@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esmp_project/src/models/room.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class CloudFirestoreService {
@@ -49,6 +48,7 @@ class CloudFirestoreService {
               String recentMessageSender =
                   data['recentMessageSender'].toString();
               String time = data['time'].toString();
+              bool isImage=data['isImage'];
               String receiverName = '';
               String receiverImageUrl = '';
               String receiverUid = '';
@@ -61,6 +61,7 @@ class CloudFirestoreService {
                 if (user.exists) {
                   receiverName = user['userName'].toString();
                   receiverImageUrl = user['imageUrl'].toString();
+                  receiverUid=user['uid'].toString();
                 }
                 return RoomChat(
                     roomID: roomID,
@@ -69,7 +70,10 @@ class CloudFirestoreService {
                     recentMessage: recentMessage,
                     recentMessageSender: recentMessageSender,
                     receiverName: receiverName,
-                    receiverImageUrl: receiverImageUrl);
+                    isImage: isImage,
+                    receiverImageUrl: receiverImageUrl,
+                    receiverUid: receiverUid,
+                );
               });
             }).toList());
     return result;
@@ -85,6 +89,7 @@ class CloudFirestoreService {
       'members': {'user1': '', 'user2': ''},
       'recentMessage': "",
       'recentMessageSender': "",
+      'isImage':false,
       'time': '0'
     });
     await roomDocumentReference.update({
@@ -116,8 +121,11 @@ class CloudFirestoreService {
           time: value['time'],
           recentMessage: value['recentMessage'],
           recentMessageSender: value['recentMessageSender'],
+          isImage:value['isImage'],
           receiverName: receiverName,
-          receiverImageUrl: receiverImageUrl);
+          receiverImageUrl: receiverImageUrl,
+          receiverUid: otherUid,
+      );
     });
     return roomChat;
   }
@@ -167,12 +175,15 @@ class CloudFirestoreService {
       String recentMessage = room!['recentMessage'].toString();
       String recentMessageSender = room!['recentMessageSender'].toString();
       String time = room!['time'].toString();
+      bool isImage=room!['isImage'];
       String receiverName = '';
       String receiverImageUrl = '';
+      String receiverUid='';
       await userCollection.doc(otherUid).get().then((value) {
         if (value.exists) {
           receiverName = value['userName'];
           receiverImageUrl = value['imageUrl'];
+          receiverUid=value['uid'];
           roomChat = RoomChat(
               roomID: roomID,
               createDate: createDate,
@@ -180,7 +191,10 @@ class CloudFirestoreService {
               recentMessage: recentMessage,
               recentMessageSender: recentMessageSender,
               receiverName: receiverName,
-              receiverImageUrl: receiverImageUrl);
+              receiverImageUrl: receiverImageUrl,
+              receiverUid: receiverUid,
+            isImage: isImage,
+          );
         }
       });
     }
@@ -206,6 +220,7 @@ class CloudFirestoreService {
       "recentMessage": chatMessageData['message'],
       "recentMessageSender": chatMessageData['sender'],
       "time": chatMessageData['time'].toString(),
+      "isImage": chatMessageData['isImage'],
     });
   }
 

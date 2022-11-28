@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:esmp_project/src/models/address.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
@@ -111,5 +114,35 @@ class Utils {
     }else{
       return '${time.day} thg ${time.month}, ${time.year}';
     }
+  }
+  static Province searchProvince(List<Province> list, String value){
+    Province province=list.first;
+    for (Province pro in list) {
+      if(pro.name_with_type==value){
+        province=pro;
+        break;
+      }
+    }
+    return province;
+  }
+  static District searchDistrict(List<District> list, String value){
+    District district=list.first;
+    for(District dis in list){
+      if(dis.name_with_type==value){
+        district=dis;
+        break;
+      }
+    }
+    return district;
+  }
+  static Ward searchWard(List<Ward> list, String value){
+    Ward ward=list.first;
+    for(Ward wa in list){
+      if(wa.name_with_type==value){
+        ward=wa;
+        break;
+      }
+    }
+    return ward;
   }
 }

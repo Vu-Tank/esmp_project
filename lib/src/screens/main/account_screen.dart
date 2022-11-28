@@ -7,6 +7,7 @@ import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/room.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/address_repository.dart';
 import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/repositoty/system_repository.dart';
 import 'package:esmp_project/src/repositoty/user_repository.dart';
@@ -451,82 +452,139 @@ class _AccountScreenState extends State<AccountScreen> {
                   // login and register
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
-                    child: (userProvider.user==null)
-                      ?Column(
-                      children: [
-                        SizedBox(
-                          height: 60,
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const LoginScreen()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: btnColor,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                            ),
-                            child: Text(
-                              'Đăng nhập',
-                              style: btnTextStyle,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8.0,),
-                        SizedBox(
-                          height: 60,
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const RegisterScreen()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: btnColor,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                            ),
-                            child: Text(
-                              'Đăng ký',
-                              style: btnTextStyle,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
+                    child: (userProvider.user == null)
+                        ? Column(
+                            children: [
+                              SizedBox(
+                                height: 60,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginScreen()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: btnColor,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                  ),
+                                  child: Text(
+                                    'Đăng nhập',
+                                    style: btnTextStyle,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 8.0,
+                              ),
+                              SizedBox(
+                                height: 60,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RegisterScreen()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: btnColor,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                  ),
+                                  child: Text(
+                                    'Đăng ký',
+                                    style: btnTextStyle,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
                         : SizedBox(
-                      height: 60,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                  const LoginScreen()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: btnColor,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(20))),
-                        ),
-                        child: Text(
-                          'Đăng xuất',
-                          style: btnTextStyle,
-                        ),
-                      ),
-                    ),
-                  )
+                            height: 60,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                String? result = await showConfirmDialog(
+                                    context, "Bạn chắc chắn muốn đăng xuất?");
+                                if (result != null) {
+                                  if (result == 'Ok') {
+                                    if(mounted){
+                                      LoadingDialog.showLoadingDialog(
+                                          context, "Vui lòng đợi");
+                                    }
+                                    ApiResponse apiResponse =
+                                        await UserRepository.logout(
+                                            userProvider.user!.userID!, userProvider.user!.token!);
+                                    if (apiResponse.isSuccess!) {
+                                      FirebaseAuth.instance.signOut();
+                                      UserPreferences().removeUser();
+                                      userProvider.logOut();
+                                      if (mounted) {
+                                        LoadingDialog.hideLoadingDialog(
+                                            context);
+                                        Navigator.pushNamed(context, '/login');
+                                      }
+                                    } else {
+                                      log(apiResponse.message!);
+                                      if (mounted) {
+                                        LoadingDialog.hideLoadingDialog(
+                                            context);
+                                        showMyAlertDialog(
+                                            context, apiResponse.message!);
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: btnColor,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                              ),
+                              child: Text(
+                                'Đăng xuất',
+                                style: btnTextStyle,
+                              ),
+                            ),
+                          ),
+                  ),
+                  // create user
+                  // Padding(
+                  //   padding: const EdgeInsets.only(top: 4.0,bottom: 4.0),
+                  //   child: SizedBox(
+                  //     height: 60,
+                  //     width: double.infinity,
+                  //     child: ElevatedButton(
+                  //       onPressed: ()async{
+                  //         // await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid).createUserCloud(userName: 'tuấn vũ', imageUrl: '').then((value){
+                  //         //   showMyAlertDialog(context, 'thành công');
+                  //         // }).catchError((e){
+                  //         //   showMyAlertDialog(context, e.toString());
+                  //         // });
+                  //         await AddressRepository.getProvince();
+                  //         // await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid).createRoom(otherUid: 'DPlvUCuo5VgQpdU6AcdqSPbo64h2');
+                  //       },
+                  //       style: ElevatedButton.styleFrom(
+                  //         backgroundColor: btnColor,
+                  //         shape: const RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.all(
+                  //                 Radius.circular(20))),
+                  //       ),
+                  //       child: Text(
+                  //         'Tạo ',
+                  //         style: btnTextStyle,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -590,26 +648,31 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 20.0,),
+          const SizedBox(
+            width: 20.0,
+          ),
           Expanded(
-            child:Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const <Widget>[
-                 Text('Chưa đăng nhâp',
+                Text('Chưa đăng nhâp',
                     style:
-                    TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                 SizedBox(height: 8.0,),
-                 Text('Đăng nhập để mở khoá những tính năng thú vị hơn',
-                      style:
-                      TextStyle(fontSize: 16,)),
-
+                        TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 8.0,
+                ),
+                Text('Đăng nhập để mở khoá những tính năng thú vị hơn',
+                    style: TextStyle(
+                      fontSize: 16,
+                    )),
               ],
             ),
           ),
         ],
       ),
-    );;
+    );
+    ;
   }
 
   Widget userWidget(UserModel user) {
@@ -640,28 +703,30 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 20.0,),
+          const SizedBox(
+            width: 20.0,
+          ),
           Expanded(
-            child:Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text('${user.userName}',
-                    style:
-                    const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8.0,),
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold)),
+                const SizedBox(
+                  height: 8.0,
+                ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const ProfileScreen()));
                   },
-                  child:const Text('Xem hồ sơ',
-                      style:
-                       TextStyle(fontSize: 16, color: Colors.white)),
+                  child: const Text('Xem hồ sơ',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
                 )
-
               ],
             ),
           ),

@@ -6,6 +6,8 @@ class RoomChat {
   String recentMessageSender;
   String receiverName;
   String receiverImageUrl;
+  String receiverUid;
+  bool isImage;
 
   RoomChat(
       {required this.roomID,
@@ -14,10 +16,12 @@ class RoomChat {
       required this.recentMessage,
       required this.recentMessageSender,
       required this.receiverName,
-      required this.receiverImageUrl});
+      required this.receiverImageUrl,
+      required this.receiverUid,
+      required this.isImage});
 
   @override
   String toString() {
-    return 'RoomChat{roomID: $roomID, createDate: $createDate, time: $time, recentMessage: $recentMessage, recentMessageSender: $recentMessageSender, receiverName: $receiverName, receiverImageUrl: $receiverImageUrl}';
+    return 'RoomChat{roomID: $roomID, createDate: $createDate, time: $time, recentMessage: $recentMessage, recentMessageSender: $recentMessageSender, receiverName: $receiverName, receiverImageUrl: $receiverImageUrl, receiverUid: $receiverUid, isImage: $isImage}';
   }
 }

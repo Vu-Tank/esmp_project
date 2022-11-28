@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/order/canceled_provider.dart';
 import 'package:esmp_project/src/providers/order/delivered_provider.dart';
 import 'package:esmp_project/src/providers/order/delivering_provider.dart';
@@ -24,15 +23,12 @@ import 'package:esmp_project/src/providers/shop/shop_provider.dart';
 import 'package:esmp_project/src/providers/cart/shopping_cart_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/providers/user/verify_provider.dart';
-import 'package:esmp_project/src/screens/feedback/feedback_screen.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/screens/login_register/register_screen.dart';
 import 'package:esmp_project/src/screens/main/main_screen.dart';
-import 'package:esmp_project/src/screens/payment_result/waiting_callback_momo.dart';
-import 'package:esmp_project/src/screens/report/report_screen.dart';
 import 'package:esmp_project/src/utils/shared_preferences.dart';
 import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -58,13 +54,14 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     var initialzationSettingsAndroid =
-    const AndroidInitializationSettings('online_shop');
+    const AndroidInitializationSettings('@mipmap/launcher_icon');
     var initializationSettings =
     InitializationSettings(android: initialzationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
     DateTime time=DateTime.now();
     FirebaseMessaging.onMessage.listen((message){
       log('Got a message whilst in the FOREGROUND!: ${time.toString()}');
+      log(message.data.toString());
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
@@ -121,8 +118,8 @@ class _MyAppState extends State<MyApp> {
           future: UserPreferences().getUser(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
+              return Scaffold(
+                body: Center(child: CircularProgressIndicator(color: mainColor,)),
               );
             } else if (snapshot.hasError) {
               showSnackBar(context, snapshot.error.toString());
@@ -169,7 +166,7 @@ class _MyAppState extends State<MyApp> {
 
   void getTokenFCM()async{
     await FirebaseMessaging.instance.getToken().then((value){
-      log("Token FCM: ${value}");
+      log("Token FCM: $value");
     });
   }
 }

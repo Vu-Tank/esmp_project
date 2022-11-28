@@ -34,7 +34,7 @@ class _WaitingCallbackMomoState extends State<WaitingCallbackMomo> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: const <Widget>[
             CircularProgressIndicator(),
             SizedBox(height: 50,),
             Text('Đang tiến hành thanh toán', style: TextStyle(

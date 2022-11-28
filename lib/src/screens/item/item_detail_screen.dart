@@ -2,14 +2,12 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/api_response.dart';
-import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/item.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/item/item_detail_provider.dart';
 import 'package:esmp_project/src/providers/cart/item_provider.dart';
 import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
-import 'package:esmp_project/src/repositoty/item_repository.dart';
 import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:esmp_project/src/screens/item/sub_item_bottom_sheet.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';

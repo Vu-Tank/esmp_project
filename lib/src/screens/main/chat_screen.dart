@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/constants/url.dart';
+import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/room.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
+import 'package:esmp_project/src/repositoty/store_repositore.dart';
 import 'package:esmp_project/src/screens/chat/chat_detail_screen.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
@@ -13,7 +15,6 @@ import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -34,24 +35,11 @@ class _ChatScreenState extends State<ChatScreen> {
     UserModel? user = context.read<UserProvider>().user;
     if (user != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // chatProvider
-        //     .initRoom(FirebaseAuth.instance.currentUser!.uid)
-        //     .then((value) {
-        //   setState(() {
-        //     _isLoading = false;
-        //   });
-        // }).catchError((e) {
-        //   if (mounted) {
-        //     setState(() {
-        //       _isLoading = false;
-        //     });
-        //     showMyAlertDialog(context, e.toString());
-        //   }
-        // });
+        log("message");
         CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
             .getRoomsStream()
             .then((value) {
-          if(mounted){
+          if (mounted) {
             setState(() {
               _isLoading = false;
               rooms = value;
@@ -61,25 +49,24 @@ class _ChatScreenState extends State<ChatScreen> {
           log(e.toString());
         });
       });
-      //  getListRoom();
     }
   }
 
-  getListRoom() async {
-    log("message");
-    await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getRoomsStream()
-        .then((value) {
-      setState(() {
-        _isLoading = false;
-        rooms = value;
-        log("message");
-      });
-    }).catchError((e) {
-      log(e.toString());
-    });
-    log("end");
-  }
+  // getListRoom() async {
+  //   log("message");
+  //   await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
+  //       .getRoomsStream()
+  //       .then((value) {
+  //     setState(() {
+  //       _isLoading = false;
+  //       rooms = value;
+  //       log("message");
+  //     });
+  //   }).catchError((e) {
+  //     log(e.toString());
+  //   });
+  //   log("end");
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -101,11 +88,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
-                child: Text('Đăng nhập'),
+                child: Text(
+                  'Đăng nhập',
+                  style: btnTextStyle.copyWith(color: btnColor),
+                ),
               ),
             )
           : _isLoading
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(),
                 )
               : StreamBuilder(
@@ -130,7 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               List<Stream<RoomChat>> listRoom =
                                   snapshot.data as List<Stream<RoomChat>>;
                               return ListView.builder(
-                                itemCount: listRoom.length+1,
+                                itemCount: listRoom.length + 1,
                                 itemBuilder: (context, index) {
                                   if (index < listRoom.length) {
                                     return StreamBuilder(
@@ -271,7 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${(roomChat.recentMessageSender==FirebaseAuth.instance.currentUser!.uid)?'Bạn: ':''}${roomChat.recentMessage}',
+                            '${(roomChat.recentMessageSender == FirebaseAuth.instance.currentUser!.uid) ? 'Bạn: ' : ''}${(roomChat.isImage)?'Hình ảnh':roomChat.recentMessage}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: textStyleLabel,
@@ -287,13 +277,30 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
-      onTap: () {
+      onTap: () async {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ChatDetailScreen(
-                      roomChat: roomChat,
-                    )));
+                  roomChat: roomChat,
+                )));
+        // ApiResponse apiResponse = await StoreRepository.checkStore(
+        //     roomChat.receiverUid, context.read<UserProvider>().user!.token!);
+        // if (apiResponse.isSuccess!) {
+        //   if (mounted) {
+        //     Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //             builder: (context) => ChatDetailScreen(
+        //                   roomChat: roomChat,
+        //                 )));
+        //   }
+        // }else{
+        //   if(mounted){
+        //     // showMyAlertDialog(context, 'không thể trò chuyện với ${roomChat.receiverName}');
+        //     showMyAlertDialog(context, apiResponse.message!);
+        //   }
+        // }
       },
     );
   }

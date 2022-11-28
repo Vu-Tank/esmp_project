@@ -1,19 +1,14 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:esmp_project/src/models/api_response.dart';
-import 'package:esmp_project/src/models/order.dart';
 import 'package:esmp_project/src/providers/cart/shopping_cart_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
-import 'package:esmp_project/src/repositoty/order_repository.dart';
-import 'package:esmp_project/src/repositoty/payment_repository.dart';
 import 'package:esmp_project/src/screens/address/address_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({Key? key, required this.orderID}) : super(key: key);
@@ -28,10 +23,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: context.read<ShoppingCartProvider>().getOrderToPay(
-          token: context
-              .read<UserProvider>()
-              .user!
-              .token!,
+          token: context.read<UserProvider>().user!.token!,
           orderID: widget.orderID),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
@@ -55,7 +47,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         }
       },
     );
-    return _paymentView(context);
   }
 
   _paymentView(BuildContext context) {
@@ -78,16 +69,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                          const AddressScreen(
-                            status: 'select',
-                          ))).then((value) {
+                          builder: (context) => const AddressScreen(
+                                status: 'select',
+                              ))).then((value) {
                     if (value != null) {
                       LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
                       orderProvider
                           .updateSelectedOrder(value, userProvider.user!.token!)
                           .onError((error, stackTrace) =>
-                          showMyAlertDialog(context, error.toString()))
+                              showMyAlertDialog(context, error.toString()))
                           .then((value) {
                         LoadingDialog.hideLoadingDialog(context);
                       });
@@ -105,17 +95,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
-                          Text('Địa chỉ nhận hàng',style: textStyleInputChild,),
                           Text(
-                              '${orderProvider.selectedOrder!
-                                  .name} | ${orderProvider.selectedOrder!
-                                  .tel}\n', style: textStyleInputChild,maxLines: 1,overflow: TextOverflow.fade,),
-                          Text('${orderProvider.selectedOrder!.address}\n',style: textStyleInputChild,maxLines: 1,overflow: TextOverflow.fade,),
+                            'Địa chỉ nhận hàng',
+                            style: textStyleInputChild,
+                          ),
                           Text(
-                              '${orderProvider.selectedOrder!
-                                  .ward}, ${orderProvider.selectedOrder!
-                                  .district}, ${orderProvider.selectedOrder!
-                                  .province}\n', style: textStyleInputChild,maxLines: 1,overflow: TextOverflow.fade,)
+                            '${orderProvider.selectedOrder!.name} | ${orderProvider.selectedOrder!.tel}\n',
+                            style: textStyleInputChild,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                          ),
+                          Text(
+                            '${orderProvider.selectedOrder!.address}\n',
+                            style: textStyleInputChild,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                          ),
+                          Text(
+                            '${orderProvider.selectedOrder!.ward}, ${orderProvider.selectedOrder!.district}, ${orderProvider.selectedOrder!.province}\n',
+                            style: textStyleInputChild,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                          )
                         ],
                       ),
                     ),
@@ -141,7 +142,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                       ],
                     ),
-                    const Divider(color: Colors.black,),
+                    const Divider(
+                      color: Colors.black,
+                    ),
                     ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -149,7 +152,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         itemCount: orderProvider.selectedOrder!.details.length,
                         itemBuilder: (context, index) {
                           final orderDetail =
-                          orderProvider.selectedOrder!.details[index];
+                              orderProvider.selectedOrder!.details[index];
                           return SizedBox(
                             height: 120,
                             width: double.infinity,
@@ -165,21 +168,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     imageUrl: orderDetail.subItemImage,
                                     imageBuilder: (context, imageProvider) =>
                                         Container(
-                                          decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.cover,
-                                              ),
-                                              borderRadius: const BorderRadius
-                                                  .all(
-                                                  Radius.circular(8.0))),
-                                        ),
-                                    placeholder: (context, url) =>
-                                    const Center(
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(8.0))),
+                                    ),
+                                    placeholder: (context, url) => const Center(
                                       child: CircularProgressIndicator(),
                                     ),
                                     errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
+                                        const Icon(Icons.error),
                                   ),
                                 ),
                                 const SizedBox(
@@ -187,8 +188,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 ),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       const SizedBox(
@@ -204,10 +205,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                         height: 8.0,
                                       ),
                                       Text(
-                                        Utils.convertPriceVND(
-                                            orderDetail.pricePurchase *
-                                                (1 - orderDetail
-                                                    .discountPurchase)),
+                                        Utils.convertPriceVND(orderDetail
+                                                .pricePurchase *
+                                            (1 - orderDetail.discountPurchase)),
                                         style: const TextStyle(
                                             color: Colors.red, fontSize: 16),
                                       ),
@@ -215,8 +215,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                         height: 8.0,
                                       ),
                                       // amount
-                                      Text('Số lượng: ${orderDetail.amount}',
-                                        style: textStyleInputChild,),
+                                      Text(
+                                        'Số lượng: ${orderDetail.amount}',
+                                        style: textStyleInputChild,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -252,7 +254,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             height: 100,
                             width: 100,
                             child: Image.asset('assets/images/logo_momo.png')),
-
                       ],
                     )
                   ],
@@ -395,60 +396,68 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Expanded(
-              child: Text(
-                'Tổng Thanh toán: ${Utils.convertPriceVND(
-                    orderProvider.selectedOrder!.feeShip +
-                        orderProvider.selectedOrder!.priceItem)}',
-                maxLines: 1,
-              )),
-          SizedBox(
-            width: 150,
-            child: ElevatedButton(
-              child: const Text('Thanh toán'),
-              onPressed: () async {
-                log(orderProvider.selectedOrder!.orderID.toString());
-                String? result = await showDialog<String>(
-                    context: context,
-                    builder: (context) =>
-                        AlertDialog(
-                          title:
-                          Text('Bạn đã kiểm tra thông tin đơn hàng?'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'Cancel'),
-                              child: const Text('Thoát'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'OK'),
-                              child: const Text('Xác nhận'),
-                            ),
-                          ],
-                        ));
-                if (result != null) {
-                  if (result == 'OK') {
-                    if (mounted) {
-                      LoadingDialog.showLoadingDialog(
-                          context, "Đang thanh toán");
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Expanded(
+                child: Text(
+              'Tổng Thanh toán: ${Utils.convertPriceVND(orderProvider.selectedOrder!.feeShip + orderProvider.selectedOrder!.priceItem)}',
+              maxLines: 1,
+            )),
+            SizedBox(
+              width: 150,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: btnColor,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                ),
+                onPressed: () async {
+                  log(orderProvider.selectedOrder!.orderID.toString());
+                  String? result = await showDialog<String>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text(
+                                'Bạn đã kiểm tra thông tin đơn hàng?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'Cancel'),
+                                child: Text('Thoát',style: btnTextStyle.copyWith(color: btnColor),),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: Text('Xác nhận', style: btnTextStyle.copyWith(color: btnColor),),
+                              ),
+                            ],
+                          ));
+                  if (result != null) {
+                    if (result == 'OK') {
+                      if (mounted) {
+                        LoadingDialog.showLoadingDialog(
+                            context, "Đang thanh toán");
+                      }
+                      await orderProvider.payment(
+                          token: userProvider.user!.token!,
+                          onFailed: (String msg) {
+                            LoadingDialog.hideLoadingDialog(context);
+                            showMyAlertDialog(context, msg);
+                          },
+                          onSuccess: () {
+                            LoadingDialog.hideLoadingDialog(context);
+                          });
                     }
-                    await orderProvider.payment(
-                        token: userProvider.user!.token!,
-                        onFailed: (String msg) {
-                          LoadingDialog.hideLoadingDialog(context);
-                          showMyAlertDialog(context, msg);
-                        },
-                        onSuccess: () {
-                          LoadingDialog.hideLoadingDialog(context);
-                        });
                   }
-                }
-              },
-            ),
-          )
-        ],
+                },
+                child: Text(
+                  'Thanh toán',
+                  style: btnTextStyle,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

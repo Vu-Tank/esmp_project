@@ -127,7 +127,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               child: Text(
                             '${order.store.storeName}\n',
                             maxLines: 1,
-                            style: textStyleInputChild,
+                            style: textStyleInput,
                           )),
                           OutlinedButton(
                               onPressed: () {
@@ -137,9 +137,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                         builder: (context) => ShopDetailScreen(
                                             store: order.store)));
                               },
-                              child: const Text(
+                              child: Text(
                                 'Xem shop',
-                                style: TextStyle(color: Colors.black),
+                                style: textStyleInput.copyWith(color: mainColor),
                               ))
                         ],
                       ),
@@ -270,10 +270,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                     }
                                                   });
                                                 },
-                                                child: const Text(
+                                                child: Text(
                                                   'Đánh giá',
                                                   style: TextStyle(
-                                                      color: Colors.black),
+                                                      color: mainColor),
                                                 ))
                                             : OutlinedButton(
                                                 onPressed: () {
@@ -304,10 +304,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                                 ),
                                                               )));
                                                 },
-                                                child: const Text(
+                                                child:  Text(
                                                   'Xem đánh giá',
                                                   style: TextStyle(
-                                                      color: Colors.black),
+                                                      color: mainColor),
                                                 )),
                                     ],
                                   )),

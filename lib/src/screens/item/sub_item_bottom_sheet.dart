@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
@@ -139,6 +141,11 @@ class _SubItemBottomSheetState extends State<SubItemBottomSheet> {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () async {
+                  UserModel? user=context.read<UserProvider>().user;
+                  if(user==null){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
+                    return;
+                  }
                   LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
                   if (widget.status == 'add_cart') {
                     await sItemProvider.addToCart(
@@ -153,8 +160,8 @@ class _SubItemBottomSheetState extends State<SubItemBottomSheet> {
                           LoadingDialog.hideLoadingDialog(context);
                           showMyAlertDialog(context, msg);
                         },
-                        userID: context.read<UserProvider>().user!.userID!,
-                        token: context.read<UserProvider>().user!.token!);
+                        userID: user.userID!,
+                        token: user.token!);
                   }
                 },
                 style: ElevatedButton.styleFrom(
