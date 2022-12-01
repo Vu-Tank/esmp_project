@@ -26,19 +26,22 @@ class UserRepository {
     return user;
   }
 
-  static Future<ApiResponse> login(String phone, String firebaseToken, String? fcmToken) async {
+  static Future<ApiResponse> login(
+      String phone, String firebaseToken, String? fcmToken) async {
     phone = Utils.convertToDB(phone);
     ApiResponse apiResponse = ApiResponse();
     try {
-      final response = await http.post(Uri.parse(AppUrl.login),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $firebaseToken',
-          },
-          body: jsonEncode(<String, dynamic>{
-            'phone': phone,
-            'fcM_Firebase': fcmToken,
-          })).timeout(Api.apiTimeOut());
+      final response = await http
+          .post(Uri.parse(AppUrl.login),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': 'Bearer $firebaseToken',
+              },
+              body: jsonEncode(<String, dynamic>{
+                'phone': phone,
+                'fcM_Firebase': fcmToken,
+              }))
+          .timeout(Api.apiTimeOut());
       if (response.statusCode == 200) {
         var body = json.decode(response.body);
         apiResponse.message = body['message'];
@@ -62,8 +65,9 @@ class UserRepository {
     try {
       final queryParams = {'phone': phone, 'roleID': '2'};
       String queryString = Uri(queryParameters: queryParams).query;
-      final response =
-          await http.post(Uri.parse('${AppUrl.checkExistPhone}?$queryString')).timeout(Api.apiTimeOut());
+      final response = await http
+          .post(Uri.parse('${AppUrl.checkExistPhone}?$queryString'))
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
@@ -85,14 +89,16 @@ class UserRepository {
   static Future<ApiResponse> createUser(UserModel user) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var response = await http.post(
-        Uri.parse(AppUrl.register),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer ${user.token}',
-        },
-        body: jsonEncode(user.toJson()),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .post(
+            Uri.parse(AppUrl.register),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer ${user.token}',
+            },
+            body: jsonEncode(user.toJson()),
+          )
+          .timeout(Api.apiTimeOut());
       if (response.statusCode == 200) {
         var body = json.decode(response.body);
         apiResponse.message = body['message'];
@@ -112,26 +118,25 @@ class UserRepository {
   }
 
   static Future<ApiResponse> editImage(
-      {required int userId,
-      required String token,
-      required File file}) async {
+      {required int userId, required String token, required File file}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       var uri = Uri.parse(AppUrl.editImage);
-      var streamFile=file.openRead();
-      var stream=http.ByteStream(streamFile);
+      var streamFile = file.openRead();
+      var stream = http.ByteStream(streamFile);
       stream.cast();
-      var length=await file.length();
-      Map<String, String> headers ={
+      var length = await file.length();
+      Map<String, String> headers = {
         'Content-Type': 'multipart/form-data',
         'Authorization': 'Bearer $token',
       };
       var request = http.MultipartRequest('PUT', uri);
       request.headers.addAll(headers);
-      request.fields['UserID']=userId.toString();
-      request.files.add(http.MultipartFile('File',stream,length,filename: file.path.split('/').last));
+      request.fields['UserID'] = userId.toString();
+      request.files.add(http.MultipartFile('File', stream, length,
+          filename: file.path.split('/').last));
       // request.files.add(http.MultipartFile('File',file.readAsBytes().asStream(),file.lengthSync(),filename: file.path.split('/').last));
-      var response=await request.send();
+      var response = await request.send();
 
       log(response.statusCode.toString());
       if (response.statusCode == 200) {
@@ -168,17 +173,19 @@ class UserRepository {
       required int userId}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var response = await http.put(
-        Uri.parse(AppUrl.editUserName),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'userID': userId,
-          'userName': userName,
-        }),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .put(
+            Uri.parse(AppUrl.editUserName),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(<String, dynamic>{
+              'userID': userId,
+              'userName': userName,
+            }),
+          )
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       log(response.statusCode.toString());
       log(body.toString());
@@ -206,17 +213,19 @@ class UserRepository {
       required int userId}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var response = await http.put(
-        Uri.parse(AppUrl.editEmail),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'userID': userId,
-          'userEmail': email,
-        }),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .put(
+            Uri.parse(AppUrl.editEmail),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(<String, dynamic>{
+              'userID': userId,
+              'userEmail': email,
+            }),
+          )
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
@@ -240,9 +249,18 @@ class UserRepository {
       {required int userId, required String token}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      final queryParams = {'userID': userId.toString(),"token" : token,};
+      final queryParams = {
+        'userID': userId.toString(),
+        "token": token,
+      };
       String queryString = Uri(queryParameters: queryParams).query;
-      var response = await http.post(Uri.parse('${AppUrl.refeshtoken}?$queryString')).timeout(Api.apiTimeOut());
+      var response = await http.post(
+        Uri.parse('${AppUrl.refeshtoken}?$queryString'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(Api.apiTimeOut());
       if (response.statusCode == 200) {
         var body = json.decode(response.body);
         apiResponse.message = body['message'];
@@ -260,23 +278,26 @@ class UserRepository {
     }
     return apiResponse;
   }
+
   static Future<ApiResponse> updateGender(
       {required String gender,
-        required String token,
-        required int userId}) async {
+      required String token,
+      required int userId}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var response = await http.put(
-        Uri.parse(AppUrl.editGender),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'userID': userId,
-          'userGender': gender,
-        }),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .put(
+            Uri.parse(AppUrl.editGender),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(<String, dynamic>{
+              'userID': userId,
+              'userGender': gender,
+            }),
+          )
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
@@ -295,23 +316,24 @@ class UserRepository {
     }
     return apiResponse;
   }
+
   static Future<ApiResponse> updateDOB(
-      {required String dob,
-        required String token,
-        required int userId}) async {
+      {required String dob, required String token, required int userId}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var response = await http.put(
-        Uri.parse(AppUrl.editDOB),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'userID': userId,
-          'userBirth': dob,
-        }),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .put(
+            Uri.parse(AppUrl.editDOB),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(<String, dynamic>{
+              'userID': userId,
+              'userBirth': dob,
+            }),
+          )
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
@@ -330,31 +352,33 @@ class UserRepository {
     }
     return apiResponse;
   }
+
   static Future<ApiResponse> updateAddress(
-      {required AddressModel addressModel,
-        required String token}) async {
+      {required AddressModel addressModel, required String token}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       log(addressModel.toString());
-      var response = await http.put(
-        Uri.parse(AppUrl.editAddress),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, dynamic>{
-          "addressID": addressModel.addressID,
-          "userName": addressModel.userName,
-          "phone": addressModel.userPhone,
-          "context": addressModel.context,
-          "province": addressModel.province,
-          "district": addressModel.district,
-          "ward": addressModel.ward,
-          "latitude": addressModel.latitude,
-          "longitude": addressModel.longitude,
-          "isActive": true
-        }),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .put(
+            Uri.parse(AppUrl.editAddress),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(<String, dynamic>{
+              "addressID": addressModel.addressID,
+              "userName": addressModel.userName,
+              "phone": addressModel.userPhone,
+              "context": addressModel.context,
+              "province": addressModel.province,
+              "district": addressModel.district,
+              "ward": addressModel.ward,
+              "latitude": addressModel.latitude,
+              "longitude": addressModel.longitude,
+              "isActive": true
+            }),
+          )
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
@@ -373,37 +397,42 @@ class UserRepository {
     }
     return apiResponse;
   }
+
   static Future<ApiResponse> createAddress(
       {required AddressModel addressModel,
-        required int userID,
-        required String token}) async {
+      required int userID,
+      required String token}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
-      var response = await http.post(
-        Uri.parse(AppUrl.createAddress),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, dynamic>{
-          "userID": userID,
-          "userName": addressModel.userName,
-          "phone": addressModel.userPhone,
-          "contextAddress": addressModel.context,
-          "province": addressModel.province,
-          "district": addressModel.district,
-          "ward": addressModel.ward,
-          "latitude": addressModel.latitude,
-          "longitude": addressModel.longitude
-        }),
-      ).timeout(Api.apiTimeOut());
+      var response = await http
+          .post(
+            Uri.parse(AppUrl.createAddress),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(<String, dynamic>{
+              "userID": userID,
+              "userName": addressModel.userName,
+              "phone": addressModel.userPhone,
+              "contextAddress": addressModel.context,
+              "province": addressModel.province,
+              "district": addressModel.district,
+              "ward": addressModel.ward,
+              "latitude": addressModel.latitude,
+              "longitude": addressModel.longitude
+            }),
+          )
+          .timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
         apiResponse.message = body['message'];
         apiResponse.isSuccess = body['success'];
         if (apiResponse.isSuccess!) {
           log(body['data'].toString());
-          apiResponse.dataResponse = (body['data'] as List).map((model) => AddressModel.fromJson(model)).toList();
+          apiResponse.dataResponse = (body['data'] as List)
+              .map((model) => AddressModel.fromJson(model))
+              .toList();
         }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();
@@ -416,9 +445,9 @@ class UserRepository {
     }
     return apiResponse;
   }
+
   static Future<ApiResponse> deleteAddress(
-      {required int addressID,
-        required String token}) async {
+      {required int addressID, required String token}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {'addressID': addressID.toString()};
@@ -429,7 +458,6 @@ class UserRepository {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-
       ).timeout(Api.apiTimeOut());
       var body = json.decode(response.body);
       if (response.statusCode == 200) {
@@ -450,17 +478,19 @@ class UserRepository {
     }
     return apiResponse;
   }
-  static Future<ApiResponse> logout(int userID,String token) async {
+
+  static Future<ApiResponse> logout(int userID, String token) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {'userID': userID.toString()};
       String queryString = Uri(queryParameters: queryParams).query;
-      final response = await http.post(Uri.parse('${AppUrl.logout}?$queryString'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $token',
-          },
-          ).timeout(Api.apiTimeOut());
+      final response = await http.post(
+        Uri.parse('${AppUrl.logout}?$queryString'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(Api.apiTimeOut());
       if (response.statusCode == 200) {
         var body = json.decode(response.body);
         apiResponse.message = body['message'];

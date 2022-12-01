@@ -20,9 +20,6 @@ class CloudFirestoreService {
         {"uid": uid, 'rooms': [], "userName": userName, "imageUrl": imageUrl});
   }
 
-  Future getRooms() async {
-    return userCollection.doc(uid).snapshots();
-  }
 
   // Future<Stream<List<Future<RoomChat>>>> getRoomsStream() async {
   getRoomsStream() async {
@@ -162,7 +159,7 @@ class CloudFirestoreService {
         log(doc["roomID"]);
       }
       if (value.docs.length == 1) {
-        room = value.docs[1];
+        room = value.docs[0];
       }
     }).catchError((e) {
       log(e.toString());
