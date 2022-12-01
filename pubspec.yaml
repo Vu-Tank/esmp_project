@@ -37,11 +37,31 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^6.0.3
   pin_code_fields: ^7.4.0
-  firebase_core: ^1.22.0
-  firebase_auth: ^3.8.0
+  firebase_core: ^2.1.1
+  firebase_auth: ^4.1.0
   http: ^0.13.5
+  image_picker: ^0.8.5+3
+  permission_handler: ^10.0.1
+  shared_preferences: ^2.0.15
+  google_maps_flutter: ^2.2.0
+  connectivity_plus: ^3.0.2
+  app_settings: ^4.1.8
+  geolocator: ^9.0.2
+  intl: ^0.17.0
+  firebase_storage: ^11.0.3
+  flutter_staggered_grid_view: ^0.6.2
+  flutter_rating_bar: ^4.0.1
+  cached_network_image: ^3.2.2
+  firebase_dynamic_links: ^5.0.4
+  url_launcher: ^6.1.6
+  firebase_core_platform_interface: ^4.5.2
+#  uni_links: ^0.5.1
+  firebase_messaging: ^14.1.0
+  cloud_firestore: ^4.1.0
+  flutter_local_notifications: ^12.0.4
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.11.0
   flutter_test:
     sdk: flutter
 
@@ -54,7 +74,10 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/online_shop.png"
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -64,7 +87,12 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/
+    - assets/images/
+    - assets/hanh_chinh_vn/
+    - assets/hanh_chinh_vn/quan_huyen/
+    - assets/hanh_chinh_vn/xa_phuong/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
