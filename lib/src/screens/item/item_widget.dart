@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/item.dart';
-import 'package:esmp_project/src/repositoty/item_repository.dart';
 import 'package:esmp_project/src/screens/item/item_detail_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
@@ -35,8 +31,9 @@ class ItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator(),),
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
@@ -53,25 +50,25 @@ class ItemWidget extends StatelessWidget {
                     maxLines: 3,
                     overflow: TextOverflow.fade,
                   ),
-                  const SizedBox(
-                    height: 8.0,
-                  ),
-                  Text.rich(TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: (item.discount!=0)?Utils.convertPriceVND(item.price):'',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                        const TextSpan(text: "\n"),
-                        TextSpan(
-                            text: Utils.convertPriceVND(item.price*(1-item.discount)),
-                            style: textStyleError
-                        ),
-                      ]
-                  )),
+                  // const SizedBox(
+                  //   height: 8.0,
+                  // ),
+                  Text.rich(TextSpan(children: <TextSpan>[
+                    TextSpan(
+                      text: (item.discount != 0)
+                          ? Utils.convertPriceVND(item.price)
+                          : '',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    const TextSpan(text: "\n"),
+                    TextSpan(
+                        text: Utils.convertPriceVND(
+                            item.price * (1 - item.discount)),
+                        style: textStyleError),
+                  ])),
                   const SizedBox(
                     height: 8.0,
                   ),
@@ -90,7 +87,11 @@ class ItemWidget extends StatelessWidget {
                           Text(item.rate.toString()),
                         ],
                       ),
-                      Text('Đã bán: ${item.numSold}', maxLines: 1, overflow: TextOverflow.ellipsis,),
+                      Text(
+                        'Đã bán: ${item.numSold}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                   const SizedBox(
