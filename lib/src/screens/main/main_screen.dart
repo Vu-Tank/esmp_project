@@ -8,11 +8,10 @@ import 'package:esmp_project/src/screens/main/cart_screen.dart';
 import 'package:esmp_project/src/screens/main/shopping_screen.dart';
 import 'package:esmp_project/src/screens/payment_result/waiting_callback_momo.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../utils/widget/no_internet.dart';
 import 'chat_screen.dart';
 

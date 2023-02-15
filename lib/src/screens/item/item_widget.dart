@@ -11,10 +11,27 @@ class ItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
       child: InkWell(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
@@ -50,9 +67,9 @@ class ItemWidget extends StatelessWidget {
                     maxLines: 3,
                     overflow: TextOverflow.fade,
                   ),
-                  // const SizedBox(
-                  //   height: 8.0,
-                  // ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
                   Text.rich(TextSpan(children: <TextSpan>[
                     TextSpan(
                       text: (item.discount != 0)
