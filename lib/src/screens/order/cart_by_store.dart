@@ -24,10 +24,47 @@ class _CartByStoreState extends State<CartByStore> {
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<ShoppingCartProvider>(context);
     Order cart = widget.cart;
-    Widget cancelButton = TextButton(
-      onPressed: () {},
-      child: const Text("Không"),
-    );
+    Future<void> _showAlertDialog(int index) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // <-- SEE HERE
+            title: const Text('Xóa sản phẩm'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text('Bạn có chắc là muốn xóa sản phẩm?'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Không'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                  onPressed: () {
+                    LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
+                    cartProvider.deleteSubItem(widget.index, index,
+                        context.read<UserProvider>().user!.token!,
+                        (String msg) {
+                      LoadingDialog.hideLoadingDialog(context);
+                      showMyAlertDialog(context, msg);
+                    }, () {
+                      LoadingDialog.hideLoadingDialog(context);
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Chắc")),
+            ],
+          );
+        },
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -124,31 +161,16 @@ class _CartByStoreState extends State<CartByStore> {
                                       log(orderDetail.orderDetailID.toString());
                                       // LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
 
-                                      AlertDialog(
-                                        content: const Text(
-                                            "Bạn có muốn bỏ sản phẩm?"),
-                                        actions: [
-                                          cancelButton,
-                                          TextButton(
-                                              onPressed: () async {
-                                                await cartProvider
-                                                    .subtractAmount(
-                                                        widget.index,
-                                                        index,
-                                                        context
-                                                            .read<
-                                                                UserProvider>()
-                                                            .user!
-                                                            .token!,
-                                                        (String msg) {
-                                                  // LoadingDialog.hideLoadingDialog(context);
-                                                  showMyAlertDialog(
-                                                      context, msg);
-                                                });
-                                              },
-                                              child: const Text("Chắc"))
-                                        ],
-                                      );
+                                      await cartProvider.subtractAmount(
+                                          widget.index,
+                                          index,
+                                          context
+                                              .read<UserProvider>()
+                                              .user!
+                                              .token!, (String msg) {
+                                        // LoadingDialog.hideLoadingDialog(context);
+                                        showMyAlertDialog(context, msg);
+                                      });
 
                                       // if(mounted)LoadingDialog.hideLoadingDialog(context);
                                     },
@@ -179,18 +201,7 @@ class _CartByStoreState extends State<CartByStore> {
                       IconButton(
                           onPressed: () async {
                             log(orderDetail.orderDetailID.toString());
-                            LoadingDialog.showLoadingDialog(
-                                context, "Vui lòng đợi");
-                            await cartProvider.deleteSubItem(
-                                widget.index,
-                                index,
-                                context.read<UserProvider>().user!.token!,
-                                (String msg) {
-                              LoadingDialog.hideLoadingDialog(context);
-                              showMyAlertDialog(context, msg);
-                            }, () {
-                              LoadingDialog.hideLoadingDialog(context);
-                            });
+                            _showAlertDialog(index);
                           },
                           icon: const Icon(
                             Icons.delete,

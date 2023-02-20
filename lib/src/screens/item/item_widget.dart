@@ -55,7 +55,7 @@ class ItemWidget extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -64,12 +64,12 @@ class ItemWidget extends StatelessWidget {
                   Text(
                     "${item.name} \n\n\n",
                     style: textStyleInputChild,
-                    maxLines: 3,
-                    overflow: TextOverflow.fade,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(
-                    height: 8.0,
-                  ),
+                  // const SizedBox(
+                  //   height: 8.0,
+                  // ),
                   Text.rich(TextSpan(children: <TextSpan>[
                     TextSpan(
                       text: (item.discount != 0)
