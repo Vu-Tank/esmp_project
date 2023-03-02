@@ -26,7 +26,7 @@ class ShoppingCartProvider extends ChangeNotifier {
     if (apiResponse.isSuccess!) {
       _order?.clear();
       _order = apiResponse.dataResponse as List<Order>;
-      selectedIndex=-1;
+      selectedIndex = -1;
       notifyListeners();
     } else {
       throw Exception(apiResponse.message!);
@@ -53,7 +53,7 @@ class ShoppingCartProvider extends ChangeNotifier {
           addressID: address.addressID!,
           token: token);
       if (apiResponse.isSuccess!) {
-        selectedOrder=apiResponse.dataResponse as Order;
+        selectedOrder = apiResponse.dataResponse as Order;
         notifyListeners();
       } else {
         throw Exception(apiResponse.message!);
@@ -70,7 +70,8 @@ class ShoppingCartProvider extends ChangeNotifier {
             _order![indexOrder].details[indexSubItemID].orderDetailID,
         amount: _order![indexOrder].details[indexSubItemID].amount + 1);
     if (apiResponse.isSuccess!) {
-      _order![indexOrder].details[indexSubItemID].amount=apiResponse.dataResponse as int;
+      _order![indexOrder].details[indexSubItemID].amount =
+          apiResponse.dataResponse as int;
       notifyListeners();
     } else {
       onFailed(apiResponse.message);
@@ -102,11 +103,12 @@ class ShoppingCartProvider extends ChangeNotifier {
       if (amount == 1) {
         if (_order![indexOrder].details.length == 1) {
           _order!.removeAt(indexOrder);
-        }else{
-          _order![indexOrder]=apiResponse.dataResponse as Order;
+        } else {
+          _order![indexOrder] = apiResponse.dataResponse as Order;
         }
       } else {
-        _order![indexOrder].details[indexSubItemID].amount=apiResponse.dataResponse as int;
+        _order![indexOrder].details[indexSubItemID].amount =
+            apiResponse.dataResponse as int;
       }
       notifyListeners();
     } else {
@@ -130,7 +132,7 @@ class ShoppingCartProvider extends ChangeNotifier {
       if (_order![indexOrder].details.length == 1) {
         _order!.removeAt(indexOrder);
       } else {
-        _order![indexOrder]=apiResponse.dataResponse as Order;
+        _order![indexOrder] = apiResponse.dataResponse as Order;
       }
       onSuccess();
       notifyListeners();
@@ -140,7 +142,9 @@ class ShoppingCartProvider extends ChangeNotifier {
   }
 
   Future<void> payment(
-      {required String token, required Function onFailed, required Function onSuccess}) async {
+      {required String token,
+      required Function onFailed,
+      required Function onSuccess}) async {
     ApiResponse apiResponse = await PaymentRepository.paymentOrder(
         orderID: selectedOrder!.orderID, token: token);
     if (apiResponse.isSuccess!) {
@@ -160,11 +164,12 @@ class ShoppingCartProvider extends ChangeNotifier {
 
   Future<void> getOrderToPay(
       {required String token, required int orderID}) async {
-    ApiResponse apiResponse=await OrderRepository.getOrder(orderID: orderID, token: token);
-    if(apiResponse.isSuccess!){
-      selectedOrder=apiResponse.dataResponse as Order;
+    ApiResponse apiResponse =
+        await OrderRepository.getOrder(orderID: orderID, token: token);
+    if (apiResponse.isSuccess!) {
+      selectedOrder = apiResponse.dataResponse as Order;
       notifyListeners();
-    }else{
+    } else {
       throw Exception(apiResponse.message);
     }
   }
