@@ -29,7 +29,8 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final cartProvider = Provider.of<ShoppingCartProvider>(context, listen: false);
+    final cartProvider =
+        Provider.of<ShoppingCartProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('Giỏ hàng')),
@@ -50,7 +51,9 @@ class _CartScreenState extends State<CartScreen> {
                   default:
                     if (snapshot.hasError) {
                       return Center(
-                        child: Text(snapshot.error!.toString().replaceAll('Exception:', '')),
+                        child: Text(snapshot.error!
+                            .toString()
+                            .replaceAll('Exception:', '')),
                       );
                     } else {
                       return Consumer<ShoppingCartProvider>(
@@ -68,28 +71,69 @@ class _CartScreenState extends State<CartScreen> {
                                   );
                                 }),
                             bottomNavigationBar: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                      'Tạm tính ${(cart.selectedIndex != -1) ? Utils.convertPriceVND(cart.order![cart.selectedIndex].getPrice()) : ''}'),
-                                  TextButton(
-                                      onPressed: (cart.selectedIndex == -1)
-                                          ? null
-                                          : () {
-                                              log(cart.order![cart.selectedIndex].orderStatus
-                                                  .statusName);
-                                              log(cart.order![cart.selectedIndex].orderID.toString());
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PaymentScreen(
-                                                              orderID: cart.order![cart.selectedIndex].orderID)));
-                                            },
-                                      child: Text('Thanh toán', style: TextStyle(color: (cartProvider.selectedIndex!=-1)?btnColor:Colors.grey),)),
-                                ],
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(5),
+                                      topRight: Radius.circular(5),
+                                      bottomLeft: Radius.circular(5),
+                                      bottomRight: Radius.circular(5)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: const Offset(
+                                          0, 3), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Container(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Text(
+                                          'Tạm tính ${(cart.selectedIndex != -1) ? Utils.convertPriceVND(cart.order![cart.selectedIndex].getPrice()) : ''}'),
+                                    ),
+                                    TextButton(
+                                        onPressed: (cart.selectedIndex == -1)
+                                            ? null
+                                            : () {
+                                                log(cart
+                                                    .order![cart.selectedIndex]
+                                                    .orderStatus
+                                                    .statusName);
+                                                log(cart
+                                                    .order![cart.selectedIndex]
+                                                    .orderID
+                                                    .toString());
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PaymentScreen(
+                                                                orderID: cart
+                                                                    .order![cart
+                                                                        .selectedIndex]
+                                                                    .orderID)));
+                                              },
+                                        child: Text(
+                                          'Thanh toán',
+                                          style: TextStyle(
+                                              color:
+                                                  (cartProvider.selectedIndex !=
+                                                          -1)
+                                                      ? btnColor
+                                                      : Colors.grey),
+                                        )),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -108,10 +152,15 @@ class _CartScreenState extends State<CartScreen> {
           : Center(
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()));
                 },
-                child: Text('Đăng nhập', style: btnTextStyle.copyWith(color: btnColor),),
+                child: Text(
+                  'Đăng nhập',
+                  style: btnTextStyle.copyWith(color: btnColor),
+                ),
               ),
             ),
     );

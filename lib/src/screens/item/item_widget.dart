@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/item.dart';
-import 'package:esmp_project/src/repositoty/item_repository.dart';
 import 'package:esmp_project/src/screens/item/item_detail_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
@@ -15,10 +11,27 @@ class ItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
       child: InkWell(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
@@ -35,13 +48,14 @@ class ItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator(),),
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -50,28 +64,28 @@ class ItemWidget extends StatelessWidget {
                   Text(
                     "${item.name} \n\n\n",
                     style: textStyleInputChild,
-                    maxLines: 3,
-                    overflow: TextOverflow.fade,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(
-                    height: 8.0,
-                  ),
-                  Text.rich(TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: (item.discount!=0)?Utils.convertPriceVND(item.price):'',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                        const TextSpan(text: "\n"),
-                        TextSpan(
-                            text: Utils.convertPriceVND(item.price*(1-item.discount)),
-                            style: textStyleError
-                        ),
-                      ]
-                  )),
+                  // const SizedBox(
+                  //   height: 8.0,
+                  // ),
+                  Text.rich(TextSpan(children: <TextSpan>[
+                    TextSpan(
+                      text: (item.discount != 0)
+                          ? Utils.convertPriceVND(item.price)
+                          : '',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    const TextSpan(text: "\n"),
+                    TextSpan(
+                        text: Utils.convertPriceVND(
+                            item.price * (1 - item.discount)),
+                        style: textStyleError),
+                  ])),
                   const SizedBox(
                     height: 8.0,
                   ),
@@ -90,7 +104,11 @@ class ItemWidget extends StatelessWidget {
                           Text(item.rate.toString()),
                         ],
                       ),
-                      Text('Đã bán: ${item.numSold}', maxLines: 1, overflow: TextOverflow.ellipsis,),
+                      Text(
+                        'Đã bán: ${item.numSold}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                   const SizedBox(

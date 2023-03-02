@@ -21,9 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/url.dart';
-import '../../models/sub_item.dart';
-
 class ItemDetailScreen extends StatefulWidget {
   const ItemDetailScreen({Key? key, required this.itemID}) : super(key: key);
   final int itemID;
@@ -88,7 +85,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               context.read<MainScreenProvider>().changePage(2);
               // Navigator.pop(context);
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => MainScreen()));
+                  MaterialPageRoute(builder: (context) => const MainScreen()));
             },
             icon: const Icon(Icons.shopping_cart),
           ),
@@ -215,7 +212,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             color: Colors.black,
                           ),
                           const Text('Lựa chọn'),
-                          Container(
+                          SizedBox(
                             height: 100,
                             child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
@@ -228,7 +225,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                         10, 10, 10, 0),
                                     child: Column(
                                       children: [
-                                        Container(
+                                        SizedBox(
                                           height: 70,
                                           width: 70,
                                           child: CachedNetworkImage(
@@ -271,7 +268,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
-                          builder: (context) => Container(
+                          builder: (context) => SizedBox(
                             height: MediaQuery.of(context).size.height / 2,
                             child: SubItemBottomSheet(
                               subItems: itemDetail.listSubItem,
@@ -525,66 +522,80 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                           style: textStyleInputChild,
                                         ),
                                         //text
-                                        const SizedBox(height: 5.0,),
+                                        const SizedBox(
+                                          height: 5.0,
+                                        ),
                                         Text(
-                                          (feedback.comment.isEmpty)?'Không có mô tả':feedback.comment,
+                                          (feedback.comment.isEmpty)
+                                              ? 'Không có mô tả'
+                                              : feedback.comment,
                                           style: textStyleInputChild,
                                         ),
-                                        const SizedBox(height: 5.0,),
+                                        const SizedBox(
+                                          height: 5.0,
+                                        ),
                                         //ảnh
-                                        (feedback.imagesFB.isNotEmpty)?
-                                        SizedBox(
-                                          height: 110,
-                                          width: double.infinity,
-                                          child: GridView.builder(
-                                              itemCount:
-                                                  feedback.imagesFB.length,
-                                              scrollDirection: Axis.horizontal,
-                                              shrinkWrap: true,
-                                              gridDelegate:
-                                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                                      crossAxisCount: 1),
-                                              itemBuilder: (context, index) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                    height: 100,
-                                                    width: 100,
-                                                    child: CachedNetworkImage(
-                                                      // item.itemImage,
-                                                      // fit: BoxFit.cover,
-                                                      imageUrl: feedback
-                                                          .imagesFB[index]
-                                                          .path!,
-                                                      imageBuilder: (context,
-                                                              imageProvider) =>
-                                                          Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          image:
-                                                              DecorationImage(
-                                                            image:
-                                                                imageProvider,
-                                                            fit: BoxFit.cover,
+                                        (feedback.imagesFB.isNotEmpty)
+                                            ? SizedBox(
+                                                height: 110,
+                                                width: double.infinity,
+                                                child: GridView.builder(
+                                                    itemCount: feedback
+                                                        .imagesFB.length,
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    shrinkWrap: true,
+                                                    gridDelegate:
+                                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                                            crossAxisCount: 1),
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: SizedBox(
+                                                          height: 100,
+                                                          width: 100,
+                                                          child:
+                                                              CachedNetworkImage(
+                                                            // item.itemImage,
+                                                            // fit: BoxFit.cover,
+                                                            imageUrl: feedback
+                                                                .imagesFB[index]
+                                                                .path!,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            placeholder:
+                                                                (context,
+                                                                        url) =>
+                                                                    const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                            errorWidget: (context,
+                                                                    url,
+                                                                    error) =>
+                                                                const Icon(Icons
+                                                                    .error),
                                                           ),
                                                         ),
-                                                      ),
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              const Center(
-                                                        child:
-                                                            CircularProgressIndicator(),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
-                                                  ),
-                                                );
-                                              }),
-                                        ): Container(),
+                                                      );
+                                                    }),
+                                              )
+                                            : Container(),
                                         // ngày tạo
                                         Text(
                                           feedback.createDate
@@ -606,8 +617,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                                         const LoginScreen()));
                                             return;
                                           }
-                                          if(user.userID==feedback.userID){
-                                            showMyAlertDialog(context, 'Không thể tố cáo đánh giá của mình!');
+                                          if (user.userID == feedback.userID) {
+                                            showMyAlertDialog(context,
+                                                'Không thể tố cáo đánh giá của mình!');
                                             return;
                                           }
                                           Navigator.push(
@@ -687,6 +699,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         .selectedSubItem(itemDetail.listSubItem[0]);
                     context.read<ItemProvider>().amount = 1;
                     LoadingDialog.showLoadingDialog(context, "Vui Lòng Đợi");
+                    inspect(user);
+                    log(user.token.toString());
+                    log(itemDetail.listSubItem[0].subItemID.toString());
                     ApiResponse apiResponse = await OrderRepository.createOder(
                         userID: user.userID!,
                         amount: 1,
@@ -700,6 +715,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     } else {
                       if (mounted) {
                         LoadingDialog.hideLoadingDialog(context);
+                        inspect(apiResponse);
                         showMyAlertDialog(context, apiResponse.message!);
                       }
                     }
@@ -708,7 +724,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
-                      builder: (context) => Container(
+                      builder: (context) => SizedBox(
                         height: MediaQuery.of(context).size.height / 2,
                         child: SubItemBottomSheet(
                           subItems: itemDetail.listSubItem,
@@ -799,7 +815,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     final idProvider = context.read<ItemDetailProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       idProvider.initItemDetail(itemId: widget.itemID).then((value) {
-        if(mounted){
+        if (mounted) {
           setState(() {
             _isLoading = false;
           });

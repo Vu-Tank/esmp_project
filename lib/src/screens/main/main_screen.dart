@@ -8,11 +8,10 @@ import 'package:esmp_project/src/screens/main/cart_screen.dart';
 import 'package:esmp_project/src/screens/main/shopping_screen.dart';
 import 'package:esmp_project/src/screens/payment_result/waiting_callback_momo.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../utils/widget/no_internet.dart';
 import 'chat_screen.dart';
 
@@ -31,10 +30,11 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
         child: pageUI(context),
-        onWillPop: () async{
-          showConfirmDialog(context, "Bạn chắc chán muốn thoát khỏi ứng dụng?").then((value){
-            if(value!=null){
-              if(value=='Ok'){
+        onWillPop: () async {
+          showConfirmDialog(context, "Bạn chắc chán muốn thoát khỏi ứng dụng?")
+              .then((value) {
+            if (value != null) {
+              if (value == 'Ok') {
                 exit(0);
               }
             }
@@ -59,7 +59,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  List<Widget> visiblePageViews = const[
+  List<Widget> visiblePageViews = const [
     ShoppingScreen(),
     ChatScreen(),
     CartScreen(),
@@ -89,13 +89,20 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  bool isOnClick = false;
   Scaffold mainScreen(BuildContext context) {
     final mainPageProvider = Provider.of<MainScreenProvider>(context);
     return Scaffold(
       body: PageView(
         controller: _pageController,
         onPageChanged: (newPage) {
-          mainPageProvider.changePage(newPage);
+          if (isOnClick) {
+            setState(() {
+              isOnClick = false;
+            });
+          } else {
+            mainPageProvider.changePage(newPage);
+          }
         },
         children: visiblePageViews,
       ),
@@ -103,15 +110,18 @@ class _MainScreenState extends State<MainScreen> {
         elevation: 1000.0,
         backgroundColor: Colors.white,
         currentIndex: mainPageProvider.selectedPage,
-        onTap: (int index) async{
+        onTap: (int index) async {
           mainPageProvider.changePage(index);
           // // _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
           // _pageController.jumpToPage(index);
           int pageCurrent = _pageController.page!.round();
           int pageTarget = index;
-          if (pageCurrent == pageTarget){
+          if (pageCurrent == pageTarget) {
             return;
           }
+          setState(() {
+            isOnClick = true;
+          });
           swapChildren(pageCurrent, pageTarget); // Step # 1
           await quickJump(pageCurrent, pageTarget); // Step # 2 and # 3
           WidgetsBinding.instance.addPostFrameCallback(refreshChildren);
@@ -144,10 +154,10 @@ class _MainScreenState extends State<MainScreen> {
   void swapChildren(int pageCurrent, int pageTarget) {
     List<Widget> newVisiblePageViews = [];
     newVisiblePageViews.addAll([
-      ShoppingScreen(),
-      ChatScreen(),
-      CartScreen(),
-      AccountScreen(),
+      const ShoppingScreen(),
+      const ChatScreen(),
+      const CartScreen(),
+      const AccountScreen(),
     ]);
 
     if (pageTarget > pageCurrent) {
@@ -173,9 +183,9 @@ class _MainScreenState extends State<MainScreen> {
     await _pageController.animateToPage(
       quickJumpTarget,
       curve: Curves.easeIn,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
     );
-    if(_pageController.hasClients){
+    if (_pageController.hasClients) {
       _pageController.jumpToPage(pageTarget);
     }
   }
