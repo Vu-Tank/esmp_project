@@ -22,11 +22,11 @@ class StoreProvider extends ChangeNotifier {
   bool hasMore = true;
   final int limit = 25;
   int pageIndex = 0;
-  bool isSearch=false;
+  bool isSearch = false;
 
   List<Item> get items => [..._items];
 
-  List<Category> _category = [];
+  final List<Category> _category = [];
 
   List<Category> get category => _category;
   Category selectedCategory =
@@ -78,7 +78,7 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<MotorBrand> _listMotorBrand = [];
+  final List<MotorBrand> _listMotorBrand = [];
 
   List<MotorBrand> get listMotorBrand => _listMotorBrand;
   MotorBrand selectedMotorBrand =
@@ -99,7 +99,7 @@ class StoreProvider extends ChangeNotifier {
     }
   }
 
-  List<Motor> _motor = [];
+  final List<Motor> _motor = [];
 
   List<Motor> get motor => _motor;
   Motor firstMotor = Motor(motorId: -1, name: "Tất cả", isActive: true);
@@ -223,6 +223,7 @@ class StoreProvider extends ChangeNotifier {
   }
 
   SearchItemModel getSearchModel() {
+    log(txtSearch.toString());
     return SearchItemModel(
       search: (txtSearch == null || txtSearch!.isEmpty) ? null : txtSearch,
       minPrice: minPrice,
@@ -280,7 +281,7 @@ class StoreProvider extends ChangeNotifier {
       ApiResponse apiResponse =
           await ItemRepository.searchItems(searchItemModel);
       if (apiResponse.isSuccess!) {
-        List<Item> items=apiResponse.dataResponse as List<Item>;
+        List<Item> items = apiResponse.dataResponse as List<Item>;
         _items.addAll(items);
         log(_items.toString());
         pageIndex = searchItemModel.page;
@@ -289,7 +290,7 @@ class StoreProvider extends ChangeNotifier {
         } else {
           hasMore = true;
         }
-        if(items.isEmpty){
+        if (items.isEmpty) {
           pageIndex--;
         }
         notifyListeners();

@@ -1,4 +1,3 @@
-
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/item.dart';
@@ -20,25 +19,27 @@ import '../../models/motor_brand.dart';
 class ItemsProvider extends ChangeNotifier {
   List<Item> _items = [];
   bool hasMore = true;
-  final int _limit = 25;
+  final int _limit = 10;
   int pageIndex = 0;
-  bool isSearch=false;
+  bool isSearch = false;
   List<Item> get items => [..._items];
 
-  void clearItem(){
+  void clearItem() {
     _items.clear();
     notifyListeners();
   }
+
   AddressModel? currentAddress;
   Future<ApiResponse> initItems() async {
-      await Utils.determinePosition().then((value){
-        currentAddress=AddressModel(latitude: value.latitude,longitude: value.longitude);
-      }).onError((error, stackTrace) => currentAddress=null);
+    await Utils.determinePosition().then((value) {
+      currentAddress =
+          AddressModel(latitude: value.latitude, longitude: value.longitude);
+    }).onError((error, stackTrace) => currentAddress = null);
 
     // log(address.toString());
     pageIndex = 1;
     SearchItemModel searchItemModel = getSearchModel();
-    searchItemModel.page=1;
+    // searchItemModel.page=1;
     // log(searchItemModel.page.toString());
     ApiResponse apiResponse = await ItemRepository.searchItems(searchItemModel);
     if (apiResponse.isSuccess!) {
@@ -54,7 +55,7 @@ class ItemsProvider extends ChangeNotifier {
     return apiResponse;
   }
 
-  List<Category> _category = [];
+  final List<Category> _category = [];
 
   List<Category> get category => _category;
   Category selectedCategory =
@@ -106,7 +107,7 @@ class ItemsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<MotorBrand> _listMotorBrand = [];
+  final List<MotorBrand> _listMotorBrand = [];
 
   List<MotorBrand> get listMotorBrand => _listMotorBrand;
   MotorBrand selectedMotorBrand =
@@ -127,7 +128,7 @@ class ItemsProvider extends ChangeNotifier {
     }
   }
 
-  List<Motor> _motor = [];
+  final List<Motor> _motor = [];
 
   List<Motor> get motor => _motor;
   Motor firstMotor = Motor(motorId: -1, name: "Tất cả", isActive: true);
@@ -226,7 +227,7 @@ class ItemsProvider extends ChangeNotifier {
   String? txtSearch;
 
   //reset
-  void reset(){
+  void reset() {
     if (_category.isNotEmpty) selectNewCategory(_category.first);
     if (_listMotorBrand.isNotEmpty) {
       selectedNewMotorBrand(_listMotorBrand.first);
@@ -266,9 +267,9 @@ class ItemsProvider extends ChangeNotifier {
               ? null
               : selectedMotorBrand.brandID,
       brandModelID: (seletedMotor.motorId == -1) ? null : seletedMotor.motorId,
-      la: (address!=null)? address!.latitude: currentAddress?.latitude,
+      la: (address != null) ? address!.latitude : currentAddress?.latitude,
       // la: (selectedSortModel.query.isNotEmpty)?null:(address!=null)? address!.latitude: currentAddrress?.latitude,
-      lo: (address!=null)? address!.longitude: currentAddress?.longitude,
+      lo: (address != null) ? address!.longitude : currentAddress?.longitude,
       // lo: (selectedSortModel.query.isNotEmpty)?null:(address!=null)? address!.longitude: currentAddrress?.longitude,
       sortBy: (selectedSortModel.name.compareTo("Tất cả") == 0)
           ? null
@@ -297,11 +298,10 @@ class ItemsProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> addItem() async {
     if (hasMore) {
-      SearchItemModel searchItemModel=getSearchModel();
-      searchItemModel.page=pageIndex+1;
+      SearchItemModel searchItemModel = getSearchModel();
+      searchItemModel.page = pageIndex + 1;
       ApiResponse apiResponse = await ItemRepository.addItems(searchItemModel);
       if (apiResponse.isSuccess!) {
         List<Item> items = apiResponse.dataResponse as List<Item>;
@@ -311,7 +311,7 @@ class ItemsProvider extends ChangeNotifier {
         } else {
           hasMore = true;
         }
-        if(items.isNotEmpty) pageIndex++;
+        if (items.isNotEmpty) pageIndex++;
         notifyListeners();
       }
     }
