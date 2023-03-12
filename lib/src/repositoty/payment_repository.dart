@@ -6,12 +6,17 @@ import 'package:http/http.dart' as http;
 
 import '../constants/api.dart';
 import '../constants/url.dart';
-class PaymentRepository{
-  static Future<ApiResponse> paymentOrder({required int orderID, required String token}) async{
-    ApiResponse apiResponse= ApiResponse();
+
+class PaymentRepository {
+  static Future<ApiResponse> paymentOrder(
+      {required int orderID,
+      required String paymentMethod,
+      required String token}) async {
+    ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {
         'orderID': orderID.toString(),
+        'paymentMethod': paymentMethod,
       };
       String queryString = Uri(queryParameters: queryParams).query;
       var response = await http.get(
@@ -29,7 +34,7 @@ class PaymentRepository{
         apiResponse.isSuccess = body['success'];
         if (apiResponse.isSuccess!) {
           // log( body['data'].toString());
-          apiResponse.dataResponse=body['data']['deeplink'];
+          apiResponse.dataResponse = body['data']['deeplink'];
         }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();
@@ -42,8 +47,10 @@ class PaymentRepository{
     }
     return apiResponse;
   }
-  static Future<ApiResponse> checkPaymentOrder({required String orderID, required String token}) async{
-    ApiResponse apiResponse= ApiResponse();
+
+  static Future<ApiResponse> checkPaymentOrder(
+      {required String orderID, required String token}) async {
+    ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {
         'orderID': orderID,
