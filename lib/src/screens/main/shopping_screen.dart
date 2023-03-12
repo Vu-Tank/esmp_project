@@ -245,7 +245,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                             crossAxisCount: 2,
                             crossAxisSpacing: 10.0,
                             mainAxisSpacing: 10.0,
-                            childAspectRatio: 9 / 11,
+                            childAspectRatio: 9 / 12,
                           ),
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,

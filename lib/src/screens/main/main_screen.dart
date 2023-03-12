@@ -6,13 +6,13 @@ import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/screens/main/account_screen.dart';
 import 'package:esmp_project/src/screens/main/cart_screen.dart';
 import 'package:esmp_project/src/screens/main/shopping_screen.dart';
-import 'package:esmp_project/src/screens/payment_result/waiting_callback_momo.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/widget/no_internet.dart';
+import '../payment_result/waiting_callback_momo.dart';
 import 'chat_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -57,6 +57,19 @@ class _MainScreenState extends State<MainScreen> {
     }).onError((error) {
       log(error.toString());
     });
+    // final PendingDynamicLinkData? initialLink =
+    //     await FirebaseDynamicLinks.instance.getInitialLink();
+    // if (initialLink != null) {
+    //   final Uri uri = initialLink.link;
+    //   final queryParams = uri.queryParameters;
+    //   if (mounted) {
+    //     Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //             builder: (context) =>
+    //                 WaitingCallbackMomo(queryParams: queryParams)));
+    //   }
+    // }
   }
 
   List<Widget> visiblePageViews = const [

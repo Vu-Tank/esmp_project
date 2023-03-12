@@ -1,4 +1,3 @@
-
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/validation_item.dart';
@@ -28,7 +27,7 @@ class AddressProvider extends ChangeNotifier {
     selectedWard = null;
   }
 
-  List<Province> _listProvince = [];
+  final List<Province> _listProvince = [];
 
   List<Province> get listProvince => _listProvince;
   Province? selectedProvince;
@@ -90,7 +89,7 @@ class AddressProvider extends ChangeNotifier {
 
   ValidationItem get addressValid => _addressValid;
 
-  Future<bool> validAddress(String? value) async{
+  Future<bool> validAddress(String? value) async {
     if (selectedProvince == null || selectedProvince!.code == '-1') {
       _addressValid = ValidationItem(null, "Vui lòng chọn tính/ thành phố");
       notifyListeners();
@@ -114,25 +113,24 @@ class AddressProvider extends ChangeNotifier {
     }
     addressModel ??= AddressModel();
     addressModel!.context = value;
-    addressModel!.province= selectedProvince!.name_with_type;
-    addressModel!.district=selectedDistrict!.name_with_type;
-    addressModel!.ward=selectedWard!.name_with_type;
-    String? placeId= await GoogleMapService().getPlaceIdFromText('${addressModel!.context}, ${addressModel!.ward}, ${addressModel!.district}, ${addressModel!.province}');
-    if(placeId==null){
-      _addressValid =
-          ValidationItem(null, "Lỗi, thử lại sau");
+    addressModel!.province = selectedProvince!.name_with_type;
+    addressModel!.district = selectedDistrict!.name_with_type;
+    addressModel!.ward = selectedWard!.name_with_type;
+    String? placeId = await GoogleMapService().getPlaceIdFromText(
+        '${addressModel!.context}, ${addressModel!.ward}, ${addressModel!.district}, ${addressModel!.province}');
+    if (placeId == null) {
+      _addressValid = ValidationItem(null, "Lỗi, thử lại sau");
       notifyListeners();
       return false;
     }
-    GoogleAddress? googleAddress=await GoogleMapService().getPlace(placeId);
-    if(googleAddress==null){
-      _addressValid =
-          ValidationItem(null, "Lỗi, thử lại sau");
+    GoogleAddress? googleAddress = await GoogleMapService().getPlace(placeId);
+    if (googleAddress == null) {
+      _addressValid = ValidationItem(null, "Lỗi, thử lại sau");
       notifyListeners();
       return false;
     }
-    addressModel!.longitude=googleAddress.lng;
-    addressModel!.latitude=googleAddress.lat;
+    addressModel!.longitude = googleAddress.lng;
+    addressModel!.latitude = googleAddress.lat;
     _addressValid = ValidationItem(null, null);
     notifyListeners();
     return true;
@@ -146,6 +144,7 @@ class AddressProvider extends ChangeNotifier {
     _validUserName = Validations.validUserName(value);
     notifyListeners();
     if (_validUserName.value != null) {
+      addressModel ??= AddressModel();
       addressModel?.userName = value;
       return true;
     }
@@ -183,23 +182,24 @@ class AddressProvider extends ChangeNotifier {
       required Function onFailed}) async {
     ApiResponse apiResponse = await UserRepository.createAddress(
         addressModel: addressModel!, userID: userID, token: token);
-    if(apiResponse.isSuccess!){
+    if (apiResponse.isSuccess!) {
       onSuccess(apiResponse.dataResponse as List<AddressModel>);
       resetProvider();
-    }else{
+    } else {
       onFailed(apiResponse.message);
     }
   }
+
   Future<void> updateAddress(
       {required String token,
-        required Function onSuccess,
-        required Function onFailed}) async {
+      required Function onSuccess,
+      required Function onFailed}) async {
     ApiResponse apiResponse = await UserRepository.updateAddress(
         addressModel: addressModel!, token: token);
-    if(apiResponse.isSuccess!){
+    if (apiResponse.isSuccess!) {
       onSuccess(apiResponse.dataResponse as AddressModel);
       resetProvider();
-    }else{
+    } else {
       onFailed(apiResponse.message);
     }
   }
