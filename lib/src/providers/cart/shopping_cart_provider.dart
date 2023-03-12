@@ -145,8 +145,9 @@ class ShoppingCartProvider extends ChangeNotifier {
       {required String token,
       required Function onFailed,
       required Function onSuccess}) async {
+    //MOMO, COD
     ApiResponse apiResponse = await PaymentRepository.paymentOrder(
-        orderID: selectedOrder!.orderID, token: token);
+        orderID: selectedOrder!.orderID, token: token, paymentMethod: 'COD');
     if (apiResponse.isSuccess!) {
       final url = Uri.parse(apiResponse.dataResponse as String);
       log(url.toString());
