@@ -14,6 +14,7 @@ class PaymentRepository {
       required String token}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
+      log("payment$paymentMethod");
       final queryParams = {
         'orderID': orderID.toString(),
         'paymentMethod': paymentMethod,
@@ -34,14 +35,18 @@ class PaymentRepository {
         apiResponse.isSuccess = body['success'];
         if (apiResponse.isSuccess!) {
           // log( body['data'].toString());
-          apiResponse.dataResponse = body['data']['deeplink'];
+          if (paymentMethod == "MOMO") {
+            apiResponse.dataResponse = body['data']['deeplink'];
+          } else {
+            apiResponse.dataResponse = body['data'];
+          }
         }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();
         apiResponse.isSuccess = false;
       }
     } catch (error) {
-      log(error.toString());
+      log("loi$error");
       apiResponse.isSuccess = false;
       apiResponse.message = "Lỗi máy chủ";
     }

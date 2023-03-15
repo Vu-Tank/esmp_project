@@ -1,13 +1,17 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:esmp_project/src/cubit/cubit/payment_method_cubit.dart';
 import 'package:esmp_project/src/providers/cart/shopping_cart_provider.dart';
+import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/address/address_screen.dart';
+import 'package:esmp_project/src/screens/main/main_screen.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -21,37 +25,73 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: context.read<ShoppingCartProvider>().getOrderToPay(
-          token: context.read<UserProvider>().user!.token!,
-          orderID: widget.orderID),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          default:
-            if (snapshot.hasError) {
-              return Scaffold(
+    return BlocProvider(
+      create: (context) => PaymentMethodCubit(),
+      child: FutureBuilder(
+        future: context.read<ShoppingCartProvider>().getOrderToPay(
+            token: context.read<UserProvider>().user!.token!,
+            orderID: widget.orderID),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Scaffold(
                 body: Center(
-                  child: Text(
-                      snapshot.error!.toString().replaceAll('Exception:', '')),
+                  child: CircularProgressIndicator(),
                 ),
               );
-            } else {
-              return _paymentView(context);
-            }
-        }
-      },
+            default:
+              if (snapshot.hasError) {
+                return Scaffold(
+                  body: Center(
+                    child: Text(snapshot.error!
+                        .toString()
+                        .replaceAll('Exception:', '')),
+                  ),
+                );
+              } else {
+                return _paymentView(context);
+              }
+          }
+        },
+      ),
     );
   }
 
   _paymentView(BuildContext context) {
     final userProvider = context.read<UserProvider>();
     final orderProvider = Provider.of<ShoppingCartProvider>(context);
+    late String paymentMedthod;
+    Future<void> _showAlertDialog() async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // <-- SEE HERE
+            title: const Text('Đặt Hàng'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text('Đặt hàng thành công'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    context.read<MainScreenProvider>().changePage(0);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()));
+                  },
+                  child: const Text("Về Trang Chủ")),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thanh toán'),
@@ -243,6 +283,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           "Phương thức thanh toán",
                           style: textStyleInputChild,
                         ),
+                        const Spacer(),
+                        BlocBuilder<PaymentMethodCubit, PaymentMethodState>(
+                          builder: (context, state) {
+                            return Text(
+                                BlocProvider.of<PaymentMethodCubit>(context)
+                                    .state
+                                    .paymentMethod);
+                          },
+                        )
                       ],
                     ),
                     const SizedBox(
@@ -250,10 +299,67 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                     Row(
                       children: <Widget>[
-                        SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: Image.asset('assets/images/logo_momo.png')),
+                        InkWell(
+                          onTap: () {
+                            BlocProvider.of<PaymentMethodCubit>(context)
+                                .momoPayment();
+                            paymentMedthod =
+                                BlocProvider.of<PaymentMethodCubit>(context)
+                                    .state
+                                    .paymentMethod;
+                            log(paymentMedthod);
+                          },
+                          child: BlocBuilder<PaymentMethodCubit,
+                              PaymentMethodState>(
+                            builder: (context, state) {
+                              return Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: state.paymentMethod == "MOMO"
+                                              ? 2
+                                              : 1,
+                                          color: state.paymentMethod == "MOMO"
+                                              ? Colors.black
+                                              : Colors.black12)),
+                                  height: 100,
+                                  width: 100,
+                                  child: Image.asset(
+                                      'assets/images/logo_momo.png'));
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            BlocProvider.of<PaymentMethodCubit>(context)
+                                .codPayment();
+                            paymentMedthod =
+                                BlocProvider.of<PaymentMethodCubit>(context)
+                                    .state
+                                    .paymentMethod;
+                            log(paymentMedthod);
+                          },
+                          child: BlocBuilder<PaymentMethodCubit,
+                              PaymentMethodState>(
+                            builder: (context, state) {
+                              return Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: state.paymentMethod == "COD"
+                                              ? 2
+                                              : 1,
+                                          color: state.paymentMethod == "COD"
+                                              ? Colors.black
+                                              : Colors.black12)),
+                                  height: 100,
+                                  width: 100,
+                                  child: Image.asset(
+                                      'assets/images/logo_cod.png'));
+                            },
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -423,17 +529,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 'Bạn đã kiểm tra thông tin đơn hàng?'),
                             actions: <Widget>[
                               TextButton(
-                                onPressed: () => Navigator.pop(context, 'Cancel'),
-                                child: Text('Thoát',style: btnTextStyle.copyWith(color: btnColor),),
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancel'),
+                                child: Text(
+                                  'Thoát',
+                                  style: btnTextStyle.copyWith(color: btnColor),
+                                ),
                               ),
                               TextButton(
                                 onPressed: () => Navigator.pop(context, 'OK'),
-                                child: Text('Xác nhận', style: btnTextStyle.copyWith(color: btnColor),),
+                                child: Text(
+                                  'Xác nhận',
+                                  style: btnTextStyle.copyWith(color: btnColor),
+                                ),
                               ),
                             ],
                           ));
                   if (result != null) {
                     if (result == 'OK') {
+                      log(paymentMedthod);
                       if (mounted) {
                         LoadingDialog.showLoadingDialog(
                             context, "Đang thanh toán");
@@ -446,7 +560,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           },
                           onSuccess: () {
                             LoadingDialog.hideLoadingDialog(context);
-                          });
+                            if (paymentMedthod == "COD") {
+                              _showAlertDialog();
+                            }
+                          },
+                          paymentMethod: paymentMedthod);
                     }
                   }
                 },

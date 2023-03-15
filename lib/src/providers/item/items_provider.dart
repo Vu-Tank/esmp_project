@@ -283,6 +283,7 @@ class ItemsProvider extends ChangeNotifier {
     SearchItemModel searchItemModel = getSearchModel();
     searchItemModel.page = 1;
     ApiResponse apiResponse = await ItemRepository.searchItems(searchItemModel);
+
     if (apiResponse.isSuccess!) {
       _items.clear();
       _items = apiResponse.dataResponse as List<Item>;

@@ -144,16 +144,21 @@ class ShoppingCartProvider extends ChangeNotifier {
   Future<void> payment(
       {required String token,
       required Function onFailed,
-      required Function onSuccess}) async {
+      required Function onSuccess,
+      required String paymentMethod}) async {
     //MOMO, COD
     ApiResponse apiResponse = await PaymentRepository.paymentOrder(
-        orderID: selectedOrder!.orderID, token: token, paymentMethod: 'COD');
+        orderID: selectedOrder!.orderID,
+        token: token,
+        paymentMethod: paymentMethod);
     if (apiResponse.isSuccess!) {
       final url = Uri.parse(apiResponse.dataResponse as String);
       log(url.toString());
       try {
         onSuccess();
-        await launchUrl(url);
+        if (paymentMethod == "MOMO") {
+          await launchUrl(url);
+        }
       } on Exception catch (e) {
         // TODO
         onFailed(e.toString());

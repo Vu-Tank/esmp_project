@@ -319,7 +319,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                   BorderRadius.all(Radius.circular(8))),
                         ),
                         child: Text(
-                          'Ghé shop',
+                          'Xem shop',
                           style: btnTextStyle,
                         ),
                       ),
@@ -700,6 +700,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     context.read<ItemProvider>().amount = 1;
                     LoadingDialog.showLoadingDialog(context, "Vui Lòng Đợi");
                     inspect(user);
+                    log(itemDetail.itemID.toString());
                     log(user.token.toString());
                     log(itemDetail.listSubItem[0].subItemID.toString());
                     ApiResponse apiResponse = await OrderRepository.createOder(

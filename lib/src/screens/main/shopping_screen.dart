@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:esmp_project/src/models/search_item_model.dart';
+import 'package:esmp_project/src/models/sort_model.dart';
 import 'package:esmp_project/src/providers/item/items_provider.dart';
+import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/item/filtter_search.dart';
 import 'package:esmp_project/src/screens/item/item_widget.dart';
 import 'package:esmp_project/src/utils/utils.dart';
@@ -37,6 +39,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     var height = MediaQuery.of(context).viewPadding.top;
     double width = MediaQuery.of(context).size.width;
     final itemProvider = Provider.of<ItemsProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -53,7 +56,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                (itemProvider.isSearch && itemProvider.txtSearch == null)
+                (itemProvider.isSearch && itemProvider.txtSearch != null)
                     ? IconButton(
                         onPressed: () async {
                           itemProvider.txtSearch = null;
@@ -127,6 +130,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                               }
                               LoadingDialog.hideLoadingDialog(context);
                             });
+                            log(itemProvider.txtSearch.toString());
                           },
                         ),
                       ),
@@ -142,6 +146,10 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                             }
                             final filter = itemProvider;
                             filter.reset();
+                            filter.txtSearch = _searchController.text;
+                            filter.selectedNewSortModel(SortModel(
+                                name: "Giá giảm dần", query: 'price_asc'));
+                            inspect(filter.currentAddress);
                             LoadingDialog.showLoadingDialog(
                                 context, "Vui lòng đợi");
                             await itemProvider
@@ -157,6 +165,8 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                               LoadingDialog.hideLoadingDialog(context);
                               FocusManager.instance.primaryFocus?.unfocus();
                             });
+                            log(itemProvider.isSearch.toString());
+                            inspect(itemProvider.items);
                           },
                           icon: const Icon(
                             Icons.search,
