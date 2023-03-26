@@ -85,8 +85,10 @@ class _ChatScreenState extends State<ChatScreen> {
           ? Center(
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()));
                 },
                 child: Text(
                   'Đăng nhập',
@@ -261,7 +263,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${(roomChat.recentMessageSender == FirebaseAuth.instance.currentUser!.uid) ? 'Bạn: ' : ''}${(roomChat.isImage)?'Hình ảnh':roomChat.recentMessage}',
+                            '${(roomChat.recentMessageSender == FirebaseAuth.instance.currentUser!.uid) ? 'Bạn: ' : ''}${(roomChat.isImage) ? 'Hình ảnh' : roomChat.recentMessage}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: textStyleLabel,
@@ -282,8 +284,8 @@ class _ChatScreenState extends State<ChatScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatDetailScreen(
-                  roomChat: roomChat,
-                )));
+                      roomChat: roomChat,
+                    )));
         // ApiResponse apiResponse = await StoreRepository.checkStore(
         //     roomChat.receiverUid, context.read<UserProvider>().user!.token!);
         // if (apiResponse.isSuccess!) {

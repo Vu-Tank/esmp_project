@@ -2,6 +2,7 @@ import 'package:esmp_project/src/screens/order/Waiting_for_the_goods_screen.dart
 import 'package:esmp_project/src/screens/order/canceled_screen.dart';
 import 'package:esmp_project/src/screens/order/delivered_screen.dart';
 import 'package:esmp_project/src/screens/order/delivering_screen.dart';
+import 'package:esmp_project/src/screens/order/list_service_screen.dart';
 import 'package:esmp_project/src/screens/order/received_ship_screen.dart';
 import 'package:esmp_project/src/screens/order/wait_for_confirmation_screen.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
@@ -19,7 +20,7 @@ class _OrderMainScreenState extends State<OrderMainScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       initialIndex: widget.index,
-      length: 6,
+      length: 7,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -28,9 +29,18 @@ class _OrderMainScreenState extends State<OrderMainScreen> {
               Tab(text: 'Đang xử lý'),
               Tab(text: 'Đã tiếp nhận'),
               Tab(text: 'Chờ lấy hàng'),
-              Tab(text: 'Đang giao',),
-              Tab(text: 'Đã giao',),
-              Tab(text: 'Đã hủy',),
+              Tab(
+                text: 'Đang giao',
+              ),
+              Tab(
+                text: 'Đã giao',
+              ),
+              Tab(
+                text: 'Đã hủy',
+              ),
+              Tab(
+                text: 'Hoàn tiền/Đổi trả',
+              ),
             ],
           ),
           title: const Text('Đơn hàng'),
@@ -53,6 +63,7 @@ class _OrderMainScreenState extends State<OrderMainScreen> {
             DeliveringScreen(),
             DeliveredScreen(),
             CanceledScreen(),
+            ListServiceScreen()
           ],
         ),
       ),

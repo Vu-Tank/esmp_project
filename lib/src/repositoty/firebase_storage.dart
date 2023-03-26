@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -18,6 +19,7 @@ class FirebaseStorageService {
       return null;
     }
   }
+
   Future<String?> uploadFileChat(File file, String fileName) async {
     try {
       Reference storageRef = storage.ref();
@@ -47,9 +49,22 @@ class FirebaseStorageService {
       return url;
     }
   }
-  Future<void> deleteFile(String fileName) async{
+
+  Future<void> deleteFile(String fileName) async {
+    Reference storageRef = storage.ref();
+    Reference urlRef = storageRef.child('images').child(fileName);
+    await urlRef.delete();
+  }
+
+  Future<String?> uploadFileVideo(Uint8List file, String fileName) async {
+    try {
       Reference storageRef = storage.ref();
-      Reference urlRef = storageRef.child('images').child(fileName);
-      await urlRef.delete();
+      Reference videoRef = storageRef.child('video/$fileName');
+      await videoRef.putData(file);
+      String? urlDownload = await videoRef.getDownloadURL();
+      return urlDownload;
+    } on FirebaseException {
+      rethrow;
+    }
   }
 }

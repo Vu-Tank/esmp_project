@@ -150,10 +150,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   Text(
                     ((itemDetail.maxPrice != itemDetail.minPrice)
                         ? '${Utils.convertPriceVND(itemDetail.minPrice - (itemDetail.minPrice * itemDetail.discount * 0.01))}- ${Utils.convertPriceVND(itemDetail.maxPrice - (itemDetail.maxPrice * itemDetail.discount * 0.01))}'
-                        : Utils.convertPriceVND(itemDetail.minPrice -
-                            (itemDetail.minPrice *
-                                itemDetail.discount *
-                                0.01))),
+                        : Utils.convertPriceVND(
+                            itemDetail.minPrice * (1 - itemDetail.discount))),
                     style: const TextStyle(fontSize: 20, color: Colors.red),
                   ),
                   if (itemDetail.discount != 0)
@@ -380,6 +378,20 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               ),
                             );
                           }),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text('Thời gian đổi trả'),
+                            const SizedBox(
+                              width: 220,
+                            ),
+                            Text(itemDetail.listSubItem[0].returnAndExchange
+                                .toString()),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                   // mo ta

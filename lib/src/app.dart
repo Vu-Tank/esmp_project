@@ -7,6 +7,7 @@ import 'package:esmp_project/src/providers/order/delivering_provider.dart';
 import 'package:esmp_project/src/providers/order/received_ship_provider.dart';
 import 'package:esmp_project/src/providers/order/waiting_for_confirmation_provider.dart';
 import 'package:esmp_project/src/providers/order/waiting_for_the_goods_provider.dart';
+import 'package:esmp_project/src/providers/service/service_provider.dart';
 import 'package:esmp_project/src/providers/user/address_provider.dart';
 import 'package:esmp_project/src/providers/internet/connection_provider.dart';
 import 'package:esmp_project/src/providers/user/edit_profile_provider.dart';
@@ -42,8 +43,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-  AndroidNotificationChannel channel =const AndroidNotificationChannel(
+      FlutterLocalNotificationsPlugin();
+  AndroidNotificationChannel channel = const AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
     // 'This channel is used for important notifications.', // description
@@ -54,12 +55,12 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     var initialzationSettingsAndroid =
-    const AndroidInitializationSettings('@mipmap/launcher_icon');
+        const AndroidInitializationSettings('@mipmap/launcher_icon');
     var initializationSettings =
-    InitializationSettings(android: initialzationSettingsAndroid);
+        InitializationSettings(android: initialzationSettingsAndroid);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
-    DateTime time=DateTime.now();
-    FirebaseMessaging.onMessage.listen((message){
+    DateTime time = DateTime.now();
+    FirebaseMessaging.onMessage.listen((message) {
       log('Got a message whilst in the FOREGROUND!: ${time.toString()}');
       log(message.data.toString());
       RemoteNotification? notification = message.notification;
@@ -79,11 +80,13 @@ class _MyAppState extends State<MyApp> {
       }
     });
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     // Future<UserModel?> getUserData() => UserPreferences().getUser();
@@ -105,12 +108,15 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => ItemDetailProvider()),
         ChangeNotifierProvider(create: (context) => RatedProvider()),
         ChangeNotifierProvider(create: (context) => NotYetFeedbackProvider()),
-        ChangeNotifierProvider(create: (context) => WaitingForTheGoodsProvider()),
-        ChangeNotifierProvider(create: (context) => WaitingForConfirmationProvider()),
+        ChangeNotifierProvider(
+            create: (context) => WaitingForTheGoodsProvider()),
+        ChangeNotifierProvider(
+            create: (context) => WaitingForConfirmationProvider()),
         ChangeNotifierProvider(create: (context) => ReceivedShipProvider()),
         ChangeNotifierProvider(create: (context) => DeliveringProvider()),
         ChangeNotifierProvider(create: (context) => DeliveredProvider()),
         ChangeNotifierProvider(create: (context) => CanceledProvider()),
+        ChangeNotifierProvider(create: (context) => ServiceProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -119,7 +125,10 @@ class _MyAppState extends State<MyApp> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
-                body: Center(child: CircularProgressIndicator(color: mainColor,)),
+                body: Center(
+                    child: CircularProgressIndicator(
+                  color: mainColor,
+                )),
               );
             } else if (snapshot.hasError) {
               showSnackBar(context, snapshot.error.toString());
@@ -148,7 +157,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void requestPermission() async{
+  void requestPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
@@ -164,8 +173,8 @@ class _MyAppState extends State<MyApp> {
     log('User granted permission: ${settings.authorizationStatus}');
   }
 
-  void getTokenFCM()async{
-    await FirebaseMessaging.instance.getToken().then((value){
+  void getTokenFCM() async {
+    await FirebaseMessaging.instance.getToken().then((value) {
       log("Token FCM: $value");
     });
   }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:esmp_project/src/providers/order/waiting_for_confirmation_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/order/old_item_widget.dart';
@@ -26,9 +24,10 @@ class _WaitingForConfirmationScreenState
   @override
   void initState() {
     // TODO: implement initState
-    final orderProvider = Provider.of<WaitingForConfirmationProvider>(context, listen: false);
+    final orderProvider =
+        Provider.of<WaitingForConfirmationProvider>(context, listen: false);
     final user = context.read<UserProvider>().user;
-    if(user!=null){
+    if (user != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         orderProvider
             .initData(userID: user.userID!, token: user.token!)
@@ -40,14 +39,16 @@ class _WaitingForConfirmationScreenState
     }
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
-        context.read<WaitingForConfirmationProvider>().addOrder().catchError((error) {
+        context
+            .read<WaitingForConfirmationProvider>()
+            .addOrder()
+            .catchError((error) {
           showMyAlertDialog(context, error.toString());
         });
       }
     });
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -86,24 +87,29 @@ class _WaitingForConfirmationScreenState
                       itemBuilder: (context, index) {
                         if (index < orderProvider.orders.length) {
                           return InkWell(
-                            onTap: (){
+                            onTap: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => OrderDetailScreen(
-                                        order: orderProvider.orders[index],
-                                        status: orderProvider.status.toString(),
-                                      ))).then((value)async{
-                                if(value!=null){
-                                  if(value.toString()=='remove'){
+                                            order: orderProvider.orders[index],
+                                            status:
+                                                orderProvider.status.toString(),
+                                          ))).then((value) async {
+                                if (value != null) {
+                                  if (value.toString() == 'remove') {
                                     setState(() {
-                                      _isLoading=true;
+                                      _isLoading = true;
                                     });
-                                    orderProvider.initData(userID: user.userID!, token: user.token!).then((value){
+                                    orderProvider
+                                        .initData(
+                                            userID: user.userID!,
+                                            token: user.token!)
+                                        .then((value) {
                                       setState(() {
-                                        _isLoading=false;
+                                        _isLoading = false;
                                       });
-                                    }).catchError((e){
+                                    }).catchError((e) {
                                       showMyAlertDialog(context, e.toString());
                                     });
                                   }

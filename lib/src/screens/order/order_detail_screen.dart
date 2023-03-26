@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/order.dart';
@@ -5,6 +7,7 @@ import 'package:esmp_project/src/models/order_detail.dart';
 import 'package:esmp_project/src/screens/feedback/feedback_screen.dart';
 import 'package:esmp_project/src/screens/feedback/feedback_view_screen.dart';
 import 'package:esmp_project/src/screens/order/canceled_order_screen.dart';
+import 'package:esmp_project/src/screens/order/return_exchange_screen.dart';
 import 'package:esmp_project/src/screens/shop/shop_detail.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
@@ -21,9 +24,65 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  bool isChecked = false;
+  List<OrderDetail> listDetail = <OrderDetail>[];
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+
     Order order = widget.order;
+    final shipDay = DateTime.parse(
+        order.orderShip!.createDate.replaceAll(RegExp(r'T'), ' '));
+    final checkReturn = now.difference(shipDay).inDays;
+    Widget? bottomNavigationBar(String status) {
+      switch (status) {
+        case "1":
+          return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: btnColor,
+                padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+              ),
+              onPressed: () async {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CanceledOrderScreen(
+                              orderID: order.orderID,
+                            )));
+              },
+              child: Text(
+                'Huỷ đơn hàng',
+                style: btnTextStyle,
+              ));
+        case "5":
+          // return ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: btnColor,
+          //       padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+          //       shape: const RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.all(Radius.circular(8))),
+          //     ),
+          //     onPressed: () async {
+          //       // Navigator.push(
+          //       //     context,
+          //       //     MaterialPageRoute(
+          //       //         builder: (context) => CanceledOrderScreen(
+          //       //               orderID: order.orderID,
+          //       //             )));
+          //     },
+          //     child: Text(
+          //       'Yêu cầu hoàn tiền/ Trả hàng',
+          //       style: btnTextStyle,
+          //     ));
+          break;
+        default:
+          return null;
+      }
+      return null;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Thông tin đơn hàng', style: appBarTextStyle),
@@ -46,14 +105,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         'Trạng thái: ${order.orderShip!.status}',
                         style: textStyleInput,
                       ),
-                      if(widget.status=='-1')Text(
-                        'Nguyên nhân: ${order.reason}',
-                        style: textStyleInput,
-                      ),
-                      if(widget.status=='-1')Text(
-                        'Thời gian: ${order.pickTime}',
-                        style: textStyleInput,
-                      ),
+                      if (widget.status == '-1')
+                        Text(
+                          'Nguyên nhân: ${order.reason}',
+                          style: textStyleInput,
+                        ),
+                      if (widget.status == '-1')
+                        Text(
+                          'Thời gian: ${order.pickTime}',
+                          style: textStyleInput,
+                        ),
                     ],
                   ),
                 ),
@@ -139,7 +200,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               },
                               child: Text(
                                 'Xem shop',
-                                style: textStyleInput.copyWith(color: mainColor),
+                                style:
+                                    textStyleInput.copyWith(color: mainColor),
                               ))
                         ],
                       ),
@@ -156,161 +218,251 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             OrderDetail detail = order.details[index];
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  //hinhf anh
-                                  SizedBox(
-                                    height: 100,
-                                    width: 100,
-                                    child: CachedNetworkImage(
-                                      // item.itemImage,
-                                      // fit: BoxFit.cover,
-                                      imageUrl: detail.subItemImage,
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8.0))),
-                                      ),
-                                      placeholder: (context, url) =>
-                                          const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
-                                  ),
-                                  //ten
-                                  Expanded(
-                                      child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text("${detail.subItemName}\n",
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis),
-                                      const SizedBox(
-                                        height: 5.0,
-                                      ),
-                                      Text('Số lượng: ${detail.amount}'),
-                                      // tiền
-                                      const SizedBox(
-                                        height: 10.0,
-                                      ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      //hinhf anh
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                            MainAxisAlignment.start,
                                         children: [
-                                          detail.discountPurchase != 0
-                                              ? Text.rich(
-                                                  TextSpan(children: <TextSpan>[
-                                                  TextSpan(
-                                                    text: Utils.convertPriceVND(
-                                                        detail.pricePurchase),
-                                                    style: const TextStyle(
-                                                      color: Colors.grey,
-                                                      decoration: TextDecoration
-                                                          .lineThrough,
-                                                    ),
-                                                  ),
-                                                  const TextSpan(text: "-"),
-                                                  TextSpan(
-                                                    text: Utils.convertPriceVND(
-                                                        detail.pricePurchase *
-                                                            (1 -
-                                                                detail
-                                                                    .discountPurchase)),
-                                                    style: const TextStyle(
-                                                        color: Colors.red),
-                                                  ),
-                                                ]))
-                                              : Text(
-                                                  Utils.convertPriceVND(
-                                                      detail.pricePurchase),
-                                                  style: const TextStyle(
-                                                      color: Colors.red),
-                                                ),
-                                        ],
-                                      ),
-                                      if (widget.status == '5')
-                                        (detail.feedBackDate == null)
-                                            ? OutlinedButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              FeedbackScreen(
-                                                                  orderDetailID:
-                                                                      detail
-                                                                          .orderDetailID))).then(
-                                                      (value) {
-                                                    if (value != null) {
-                                                      FeedbackModel
-                                                          feedbackModel = value
-                                                              as FeedbackModel;
+                                          widget.status == '5'
+                                              ? Checkbox(
+                                                  value: isChecked,
+                                                  onChanged: (value) {
+                                                    if (value!) {
                                                       setState(() {
-                                                        detail.feedbackTitle =
-                                                            feedbackModel
-                                                                .comment;
-                                                        detail.listImageFb =
-                                                            feedbackModel
-                                                                .imagesFB;
-                                                        detail.feedbackRate =
-                                                            feedbackModel.rate;
-                                                        detail.feedBackDate =
-                                                            feedbackModel
-                                                                .createDate;
+                                                        listDetail.add(detail);
+                                                        isChecked = value;
                                                       });
                                                     }
-                                                  });
-                                                },
-                                                child: Text(
-                                                  'Đánh giá',
-                                                  style: TextStyle(
-                                                      color: mainColor),
-                                                ))
-                                            : OutlinedButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              FeedbackViewScreen(
-                                                                feedbackModel:
-                                                                    FeedbackModel(
-                                                                  orderDetaiID:
-                                                                      detail
-                                                                          .orderDetailID,
-                                                                  subItemName:
-                                                                      detail
-                                                                          .subItemName,
-                                                                  subItemImage:
-                                                                      detail
-                                                                          .subItemImage,
-                                                                  rate: detail
-                                                                      .feedbackRate,
-                                                                  createDate: detail
-                                                                      .feedBackDate,
-                                                                  comment: detail
-                                                                      .feedbackTitle,
-                                                                  imagesFB: detail
-                                                                      .listImageFb,
-                                                                ),
-                                                              )));
-                                                },
-                                                child:  Text(
-                                                  'Xem đánh giá',
-                                                  style: TextStyle(
-                                                      color: mainColor),
-                                                )),
+                                                    if (!value) {
+                                                      setState(() {
+                                                        listDetail
+                                                            .remove(detail);
+                                                        isChecked = value;
+                                                      });
+                                                    }
+                                                    log(isChecked.toString());
+                                                    inspect(listDetail);
+                                                  },
+                                                )
+                                              : const SizedBox(),
+                                          SizedBox(
+                                            height: 130,
+                                            width: 130,
+                                            child: CachedNetworkImage(
+                                              // item.itemImage,
+                                              // fit: BoxFit.cover,
+                                              imageUrl: detail.subItemImage,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                8.0))),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      //ten
+                                      Expanded(
+                                          child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text("${detail.subItemName}\n",
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis),
+                                          const SizedBox(
+                                            height: 5.0,
+                                          ),
+                                          Text('Số lượng: ${detail.amount}'),
+                                          Text(
+                                              'Doi tra: ${detail.returnAndExchange}'),
+                                          // tiền
+                                          const SizedBox(
+                                            height: 10.0,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              detail.discountPurchase != 0
+                                                  ? Text.rich(
+                                                      TextSpan(children: <
+                                                          TextSpan>[
+                                                      TextSpan(
+                                                        text: Utils
+                                                            .convertPriceVND(detail
+                                                                .pricePurchase),
+                                                        style: const TextStyle(
+                                                          color: Colors.grey,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .lineThrough,
+                                                        ),
+                                                      ),
+                                                      const TextSpan(text: "-"),
+                                                      TextSpan(
+                                                        text: Utils.convertPriceVND(
+                                                            detail.pricePurchase *
+                                                                (1 -
+                                                                    detail
+                                                                        .discountPurchase)),
+                                                        style: const TextStyle(
+                                                            color: Colors.red),
+                                                      ),
+                                                    ]))
+                                                  : Text(
+                                                      Utils.convertPriceVND(
+                                                          detail.pricePurchase),
+                                                      style: const TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                            ],
+                                          ),
+                                          if (widget.status == '5')
+                                            (detail.feedBackDate == null)
+                                                ? OutlinedButton(
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  FeedbackScreen(
+                                                                      orderDetailID:
+                                                                          detail
+                                                                              .orderDetailID))).then(
+                                                          (value) {
+                                                        if (value != null) {
+                                                          FeedbackModel
+                                                              feedbackModel =
+                                                              value
+                                                                  as FeedbackModel;
+                                                          setState(() {
+                                                            detail.feedbackTitle =
+                                                                feedbackModel
+                                                                    .comment;
+                                                            detail.listImageFb =
+                                                                feedbackModel
+                                                                    .imagesFB;
+                                                            detail.feedbackRate =
+                                                                feedbackModel
+                                                                    .rate;
+                                                            detail.feedBackDate =
+                                                                feedbackModel
+                                                                    .createDate;
+                                                          });
+                                                        }
+                                                      });
+                                                    },
+                                                    child: Text(
+                                                      'Đánh giá',
+                                                      style: TextStyle(
+                                                          color: mainColor),
+                                                    ))
+                                                : OutlinedButton(
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  FeedbackViewScreen(
+                                                                    feedbackModel:
+                                                                        FeedbackModel(
+                                                                      orderDetaiID:
+                                                                          detail
+                                                                              .orderDetailID,
+                                                                      subItemName:
+                                                                          detail
+                                                                              .subItemName,
+                                                                      subItemImage:
+                                                                          detail
+                                                                              .subItemImage,
+                                                                      rate: detail
+                                                                          .feedbackRate,
+                                                                      createDate:
+                                                                          detail
+                                                                              .feedBackDate,
+                                                                      comment:
+                                                                          detail
+                                                                              .feedbackTitle,
+                                                                      imagesFB:
+                                                                          detail
+                                                                              .listImageFb,
+                                                                    ),
+                                                                  )));
+                                                    },
+                                                    child: Text(
+                                                      'Xem đánh giá',
+                                                      style: TextStyle(
+                                                          color: mainColor),
+                                                    )),
+                                        ],
+                                      )),
                                     ],
-                                  )),
+                                  ),
+                                  widget.status == '5'
+                                      ? detail.returnAndExchange == 0
+                                          ? const Text(
+                                              'Sản phẩm không được đổi trả')
+                                          : Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    'Đổi trả trong ${detail.returnAndExchange} ngày'),
+                                                checkReturn <=
+                                                        detail.returnAndExchange
+                                                    ? ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    btnColor),
+                                                        onPressed: () {
+                                                          listDetail.isEmpty
+                                                              ? showMyAlertDialog(
+                                                                  context,
+                                                                  'Chọn sản phẩm để đổi trả')
+                                                              : Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ReturnAndExchangeScreen(
+                                                                            orderDetail:
+                                                                                listDetail,
+                                                                            order:
+                                                                                order,
+                                                                          )));
+                                                        },
+                                                        child: const Text(
+                                                            'Trả hàng/Hoàn tiền'))
+                                                    : const Spacer()
+                                              ],
+                                            )
+                                      : const SizedBox()
                                 ],
                               ),
                             );
@@ -417,7 +569,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           children: <Widget>[
                             Text(
                               'Mã đơn hàng',
-                              style: textStyleLabelChild.copyWith(color: Colors.black),
+                              style: textStyleLabelChild.copyWith(
+                                  color: Colors.black),
                             ),
                             const SizedBox(
                               height: 5.0,
@@ -426,7 +579,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               'Mã giao hàng\n',
                               maxLines: 1,
                               overflow: TextOverflow.fade,
-                              style: textStyleLabelChild.copyWith(color: Colors.black),
+                              style: textStyleLabelChild.copyWith(
+                                  color: Colors.black),
                             ),
                             const SizedBox(
                               height: 5.0,
@@ -445,14 +599,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           children: <Widget>[
                             Text(
                               order.orderID.toString(),
-                              style: textStyleLabelChild.copyWith(color: Colors.black),
+                              style: textStyleLabelChild.copyWith(
+                                  color: Colors.black),
                             ),
                             const SizedBox(
                               height: 5.0,
                             ),
                             Text(
                               '${order.orderShip!.labelID.toString()}\n',
-                              style: textStyleLabelChild.copyWith(color: Colors.black),
+                              style: textStyleLabelChild.copyWith(
+                                  color: Colors.black),
                               maxLines: 1,
                               overflow: TextOverflow.fade,
                             ),
@@ -472,32 +628,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: (widget.status == '1')
-          ? ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: btnColor,
-                padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8))),
-              ),
-              onPressed: () async{
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CanceledOrderScreen(
-                              orderID: order.orderID,
-                            )));
-              },
-              child: Text(
-                'Huỷ đơn hàng',
-                style: btnTextStyle,
-              ))
-          : null,
+      bottomNavigationBar: bottomNavigationBar(widget.status),
     );
   }
 }

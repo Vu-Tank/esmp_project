@@ -60,7 +60,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   _paymentView(BuildContext context) {
     final userProvider = context.read<UserProvider>();
     final orderProvider = Provider.of<ShoppingCartProvider>(context);
-    late String paymentMedthod;
+    String paymentMedthod = 'MOMO';
     Future<void> _showAlertDialog() async {
       return showDialog<void>(
         context: context,
@@ -259,6 +259,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                         'Số lượng: ${orderDetail.amount}',
                                         style: textStyleInputChild,
                                       ),
+                                      const SizedBox(
+                                        height: 8.0,
+                                      ),
+                                      Text(
+                                          'doi tra: ${orderDetail.returnAndExchange}')
                                     ],
                                   ),
                                 ),

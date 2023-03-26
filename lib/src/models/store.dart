@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 class Store {
   int storeID;
   String storeName;
@@ -15,12 +17,20 @@ class Store {
         storeID: json['storeID'],
         storeName: json['storeName'],
         imagePath: json['imagepath'],
-        firebaseID: json['firebaseID']
-    );
+        firebaseID: json['firebaseID']);
   }
 
   @override
   String toString() {
     return 'Store{storeID: $storeID, storeName: $storeName, imagePath: $imagePath}';
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'storeID': storeID,
+      'storeName': storeName,
+      'imagePath': imagePath,
+      'firebaseID': firebaseID,
+    };
   }
 }
