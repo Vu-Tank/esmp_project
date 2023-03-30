@@ -15,9 +15,9 @@ class ServiceRepository {
       required int addressId,
       required int serviceType,
       required String create_Date,
-      required List<String> packingLinkCus,
+      required String packingLinkCus,
       required List<ServiceDetail> list_ServiceDetail,
-      required List<String> reason}) async {
+      required String reason}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       final response = await http
@@ -31,14 +31,14 @@ class ServiceRepository {
                   RegExp(r' '),
                   'T',
                 ),
-                "packingLinkCus": packingLinkCus.toString(),
+                "packingLinkCus": packingLinkCus,
                 "list_ServiceDetail": List<String>.from(
                         list_ServiceDetail.map((e) => e.toJson().toString()))
                     .toString(),
                 "orderID": orderId,
                 "addressID": addressId,
                 "serviceType": serviceType,
-                "text": reason.toString(),
+                "text": reason,
               }))
           .timeout(Api.apiTimeOut());
       log(response.statusCode.toString());

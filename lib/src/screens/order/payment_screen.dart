@@ -259,11 +259,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                         'Số lượng: ${orderDetail.amount}',
                                         style: textStyleInputChild,
                                       ),
-                                      const SizedBox(
-                                        height: 8.0,
-                                      ),
-                                      Text(
-                                          'doi tra: ${orderDetail.returnAndExchange}')
                                     ],
                                   ),
                                 ),

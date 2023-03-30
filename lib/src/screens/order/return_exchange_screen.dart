@@ -32,13 +32,28 @@ class ReturnAndExchangeScreen extends StatefulWidget {
 
 class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
   Uint8List? thumbByte;
+  TextEditingController controller = TextEditingController();
   List<Uint8List> listPick = <Uint8List>[];
   List<ServiceDetail> list = <ServiceDetail>[];
-  List<String> list2 = <String>[];
+  String choosedVideo = "";
   XFile? xFile;
   MediaInfo? video;
+  String reason = '';
+
   List<MediaInfo> listVideo = <MediaInfo>[];
   List<String> text = <String>[];
+  void changeReason() {
+    setState(() {
+      reason = controller.text;
+    });
+  }
+
+  @override
+  void initState() {
+    controller.addListener(changeReason);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double totalMoney = 0;
@@ -47,11 +62,11 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
       'Trả hàng và Hoàn tiền',
       'Đổi Hàng'
     ];
-    TextEditingController controller = TextEditingController();
+
     FocusNode focus = FocusNode();
     final now = DateTime.now();
     final user = context.read<UserProvider>().user;
-    String reason = '';
+    int serType = 1;
     for (var element in widget.orderDetail) {
       totalMoney = (totalMoney +
           (element.pricePurchase * (1 - element.discountPurchase)));
@@ -60,11 +75,11 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
         token: user!.token!,
         orderId: widget.order.orderID,
         addressId: user.address![0].addressID!,
-        serviceType: 2,
+        serviceType: serType,
         create_Date: now.toString(),
-        packingLinkCus: list2,
+        packingLinkCus: choosedVideo,
         list_ServiceDetail: list,
-        reason: text);
+        reason: reason);
 
     return BlocProvider(
         create: (context) => ServiceTypeCubit(),
@@ -78,7 +93,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: SingleChildScrollView(
                     child: SizedBox(
-                        height: 2000,
+                        height: widget.orderDetail.length * 130 + 600,
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,32 +119,41 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       //hinhf anh
-                                      SizedBox(
-                                        height: 100,
-                                        width: 100,
-                                        child: CachedNetworkImage(
-                                          // item.itemImage,
-                                          // fit: BoxFit.cover,
-                                          imageUrl: detail.subItemImage,
-                                          imageBuilder:
-                                              (context, imageProvider) =>
-                                                  Container(
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: imageProvider,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(8.0))),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: 100,
+                                            width: 100,
+                                            child: CachedNetworkImage(
+                                              // item.itemImage,
+                                              // fit: BoxFit.cover,
+                                              imageUrl: detail.subItemImage,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                8.0))),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            ),
                                           ),
-                                          placeholder: (context, url) =>
-                                              const Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.error),
-                                        ),
+                                        ],
                                       ),
                                       //ten
                                       Expanded(
@@ -154,12 +178,6 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                             children: [
                                               const SizedBox(
                                                 height: 5.0,
-                                              ),
-                                              Text(
-                                                widget.order.orderShip!.status
-                                                    .toString(),
-                                                style:
-                                                    TextStyle(color: mainColor),
                                               ),
                                               const Spacer(),
                                               detail.discountPurchase != 0
@@ -229,6 +247,18 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                           BlocProvider.of<ServiceTypeCubit>(
                                                   context)
                                               .changServiceType(value!);
+                                          if (value.compareTo(
+                                                  "Trả hàng và Hoàn tiền") ==
+                                              0) {
+                                            setState(() {
+                                              serType = 1;
+                                            });
+                                          } else {
+                                            setState(() {
+                                              serType = 2;
+                                            });
+                                          }
+                                          log(serType.toString());
                                         },
                                         items: serviceType.map((String value) {
                                           return DropdownMenuItem(
@@ -283,31 +313,25 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                       focus.unfocus();
                                     },
                                     focusNode: focus,
-                                    onEditingComplete: () {
-                                      setState(() {
-                                        text.add(controller.text);
-                                      });
-                                    },
-                                    onChanged: (value) {},
                                   ),
                                   SizedBox(
-                                    height: 200,
-                                    width: 200,
+                                    height: 150,
+                                    width: 150,
                                     child: thumbByte != null
                                         ? Stack(
                                             children: [
                                               Row(
                                                 children: [
                                                   Container(
-                                                      width: 200,
-                                                      height: 200,
+                                                      width: 150,
+                                                      height: 150,
                                                       decoration: BoxDecoration(
                                                           border: Border.all(
                                                               width: 2)),
                                                       child: Image.memory(
                                                         thumbByte!,
-                                                        width: 200,
-                                                        height: 200,
+                                                        width: 150,
+                                                        height: 150,
                                                       )),
                                                 ],
                                               ),
@@ -316,8 +340,8 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                         : InkWell(
                                             onTap: () => selectImageOrVideo(),
                                             child: Container(
-                                                width: 200,
-                                                height: 200,
+                                                width: 150,
+                                                height: 150,
                                                 decoration: BoxDecoration(
                                                     border:
                                                         Border.all(width: 2)),
@@ -340,7 +364,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                             .then((value) {
                                           log(value.toString());
                                           setState(() {
-                                            list2.add(value!);
+                                            choosedVideo = value.toString();
                                             text.add(controller.text);
                                           });
                                           return null;
@@ -403,6 +427,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
+                            Navigator.pop(context);
                             pickVideo();
                           },
                           child: Card(
@@ -451,18 +476,23 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
     }
     final file = File(pickedFile.path);
     final thumbnailByte = await VideoCompress.getByteThumbnail(file.path);
-    await VideoCompress.setLogLevel(0);
-    video = await VideoCompress.compressVideo(
-      file.path,
-      quality: VideoQuality.LowQuality,
-      deleteOrigin: false,
-      includeAudio: true,
-    );
+    LoadingDialog.showLoadingDialog(context, "Vui Lòng Đợi");
+    try {
+      await VideoCompress.setLogLevel(0);
+      video = await VideoCompress.compressVideo(
+        file.path,
+        quality: VideoQuality.LowQuality,
+        deleteOrigin: false,
+        includeAudio: true,
+      );
+    } catch (e) {
+      VideoCompress.cancelCompression();
+    }
     setState(() {
       thumbByte = thumbnailByte;
       xFile = pickedFile;
+      Navigator.pop(context);
     });
-
     inspect(listPick);
   }
 }

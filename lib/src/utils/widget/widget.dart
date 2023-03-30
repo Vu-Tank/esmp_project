@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 InputDecoration buildInputDecoration(
@@ -9,12 +10,12 @@ InputDecoration buildInputDecoration(
       size: 20,
     ),
     errorText: errorText,
-    errorStyle: TextStyle(
+    errorStyle: const TextStyle(
       color: Colors.red,
       fontSize: 15,
     ),
     labelText: hintText,
-    labelStyle: TextStyle(
+    labelStyle: const TextStyle(
       color: Colors.grey,
       fontSize: 18,
     ),
@@ -49,8 +50,8 @@ TextStyle btnTextStyle = const TextStyle(
   color: Colors.white,
   fontSize: 18,
 );
-Color mainColor=  const Color(0xFFeb6440);
-Color btnColor=   const Color(0xFFeb6440);
+Color mainColor = const Color(0xFFeb6440);
+Color btnColor = const Color(0xFFeb6440);
 
 Future<String?> showMyAlertDialog(BuildContext context, String msg) async {
   String? result = await showDialog<String>(
@@ -66,7 +67,10 @@ Future<String?> showMyAlertDialog(BuildContext context, String msg) async {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Thoát', style: TextStyle(color: btnColor, fontSize: 18),),
+              child: Text(
+                'Thoát',
+                style: TextStyle(color: btnColor, fontSize: 18),
+              ),
               onPressed: () {
                 Navigator.pop(context, 'Cancel');
               },
@@ -93,6 +97,7 @@ Scaffold errorScreen(BuildContext context, String msg) {
     ),
   );
 }
+
 Future<String?> showConfirmDialog(BuildContext context, String msg) async {
   String? result = await showDialog<String>(
       context: context,
@@ -107,13 +112,19 @@ Future<String?> showConfirmDialog(BuildContext context, String msg) async {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Không', style: TextStyle(color: btnColor, fontSize: 18),),
+              child: Text(
+                'Không',
+                style: TextStyle(color: btnColor, fontSize: 18),
+              ),
               onPressed: () {
                 Navigator.pop(context, 'Cancel');
               },
             ),
             TextButton(
-              child: Text('Xác nhận', style: TextStyle(color: btnColor, fontSize: 18),),
+              child: Text(
+                'Xác nhận',
+                style: TextStyle(color: btnColor, fontSize: 18),
+              ),
               onPressed: () {
                 Navigator.pop(context, 'Ok');
               },
@@ -122,4 +133,29 @@ Future<String?> showConfirmDialog(BuildContext context, String msg) async {
         );
       });
   return result;
+}
+
+class NewCheckBox extends StatefulWidget {
+  final bool isChecked;
+  final Function callBackfunction;
+  const NewCheckBox({
+    Key? key,
+    required this.isChecked,
+    required this.callBackfunction,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => CheckBoxWidgetState();
+}
+
+class CheckBoxWidgetState extends State<NewCheckBox> {
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: widget.isChecked,
+      onChanged: (value) {
+        widget.callBackfunction(value);
+      },
+    );
+  }
 }
