@@ -64,9 +64,7 @@ class DetailAfterService {
           : null,
       pricePurchase:
           map['pricePurchase'] != null ? map['pricePurchase'] as int : null,
-      discountPurchase: map['discountPurchase'] != null
-          ? map['discountPurchase'] as double
-          : null,
+      discountPurchase: double.parse(map['discountPurchase'].toString()),
       amount: map['amount'] != null ? map['amount'] as int : null,
       sub_ItemID: map['sub_ItemID'] != null ? map['sub_ItemID'] as int : null,
       sub_ItemName:

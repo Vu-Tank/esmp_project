@@ -23,29 +23,24 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     final user = context.read<UserProvider>().user;
-    if (serviceProvider.service.isNotEmpty) {
-      _isLoading = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        serviceProvider
-            .initData(userID: user!.userID!, token: user.token!)
-            .then((value) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-          }
-        }).catchError((error) {
-          showMyAlertDialog(context, error.toString());
-        });
+    _isLoading = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      serviceProvider
+          .initData(userID: user!.userID!, token: user.token!)
+          .then((value) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }).catchError((error) {
+        showMyAlertDialog(context, error.toString());
       });
-    } else {
-      _isLoading = false;
-    }
+    });
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
-        context.read<ServiceProvider>().addData().catchError((error) {
-          showMyAlertDialog(context, error.toString());
-        });
+        context.read<ServiceProvider>().addData();
+        print("abc");
       }
     });
     super.initState();
@@ -59,11 +54,10 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final serviceProvider = Provider.of<ServiceProvider>(context);
-
     return FutureBuilder(builder: (context, snapshot) {
+      final serviceProvider = Provider.of<ServiceProvider>(context);
       final user = context.read<UserProvider>().user;
-      return Column(children: [
+      return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         user == null
             ? Center(
                 child: TextButton(

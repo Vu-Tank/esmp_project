@@ -288,20 +288,17 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   void initState() {
     final itemProvide = Provider.of<ItemsProvider>(context, listen: false);
     // log(itemProvide.items.length.toString());
-    if (itemProvide.items.isEmpty) {
-      _isLoading = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        itemProvide.initItems().then((value) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-          }
-        });
+    _isLoading = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      itemProvide.initItems().then((value) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       });
-    } else {
-      _isLoading = false;
-    }
+    });
+
     if (itemProvide.txtSearch != null && itemProvide.txtSearch!.isNotEmpty) {
       _searchController.text = itemProvide.txtSearch!;
       _searchController.selection =

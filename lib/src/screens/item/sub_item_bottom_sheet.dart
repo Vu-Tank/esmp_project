@@ -54,63 +54,68 @@ class _SubItemBottomSheetState extends State<SubItemBottomSheet> {
               itemBuilder: (context, index) {
                 final subItem = subItems[index];
                 // log('${subItem.subItemID}-${sItemProvider.subItem!.subItemID}');
-                return GestureDetector(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: (subItem.subItemID ==
-                              sItemProvider.subItem!.subItemID)
-                          ? btnColor
-                          : Colors.white,
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    ),
-                    // color: (subItem.subItemID==sItemProvider.subItem!.subItemID)?Colors.lightBlueAccent: Colors.white,
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    child: Row(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: CachedNetworkImage(
-                            imageUrl: subItem.image.path!,
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
+                return subItem.subItem_Status.item_StatusID == 1
+                    ? GestureDetector(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: (subItem.subItemID ==
+                                    sItemProvider.subItem!.subItemID)
+                                ? btnColor
+                                : Colors.white,
+                            border: Border.all(color: Colors.grey),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                          ),
+                          // color: (subItem.subItemID==sItemProvider.subItem!.subItemID)?Colors.lightBlueAccent: Colors.white,
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Row(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: CachedNetworkImage(
+                                  imageUrl: subItem.image.path!,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
                                 ),
                               ),
-                            ),
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        // Image.network(subItem.image.path!),
-                        Flexible(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(subItem.subItemName),
-                              Text('Kho: ${subItem.amount}'),
-                              Text(Utils.convertPriceVND(subItem.price)),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              // Image.network(subItem.image.path!),
+                              Flexible(
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(subItem.subItemName),
+                                    Text('Kho: ${subItem.amount}'),
+                                    Text(Utils.convertPriceVND(subItem.price)),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    sItemProvider.selectedSubItem(subItem);
-                  },
-                );
+                        onTap: () {
+                          sItemProvider.selectedSubItem(subItem);
+                        },
+                      )
+                    : const SizedBox();
               }),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,9 +146,12 @@ class _SubItemBottomSheetState extends State<SubItemBottomSheet> {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () async {
-                  UserModel? user=context.read<UserProvider>().user;
-                  if(user==null){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
+                  UserModel? user = context.read<UserProvider>().user;
+                  if (user == null) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()));
                     return;
                   }
                   LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");

@@ -218,47 +218,51 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
                                   final subItem = itemDetail.listSubItem[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        10, 10, 10, 0),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 70,
-                                          width: 70,
-                                          child: CachedNetworkImage(
-                                            // item.itemImage,
-                                            // fit: BoxFit.cover,
-                                            imageUrl: subItem.image.path!,
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: imageProvider,
-                                                  fit: BoxFit.cover,
+                                  return subItem.subItem_Status.item_StatusID ==
+                                          1
+                                      ? Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 10, 10, 0),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 70,
+                                                width: 70,
+                                                child: CachedNetworkImage(
+                                                  // item.itemImage,
+                                                  // fit: BoxFit.cover,
+                                                  imageUrl: subItem.image.path!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
                                                 ),
                                               ),
-                                            ),
-                                            placeholder: (context, url) =>
-                                                const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
+                                              Text(
+                                                Utils.convertPriceVND(subItem
+                                                        .price -
+                                                    (subItem.price *
+                                                        itemDetail.discount)),
+                                                // style: TextStyle(color: Colors.red),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        Text(
-                                          Utils.convertPriceVND(subItem.price -
-                                              (subItem.price *
-                                                  itemDetail.discount)),
-                                          // style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                        )
+                                      : const SizedBox();
                                 }),
                           ),
                         ],

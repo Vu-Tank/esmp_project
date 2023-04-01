@@ -22,6 +22,39 @@ InputDecoration buildInputDecoration(
   );
 }
 
+List<String> listBank = <String>[
+  'ABBank',
+  'ACB',
+  'Agribank',
+  'Bắc Á',
+  'Bản Việt',
+  'Bảo Việt',
+  'Eximbank',
+  'HDBank',
+  'Indovina',
+  'KienlongBank',
+  'MBBank',
+  'MSB',
+  'Nam A Bank',
+  'OCB',
+  'OceanBank',
+  'PVcomBank',
+  'SacomBank',
+  'SaigonBank',
+  'SCB',
+  'SeABank',
+  'SHB',
+  'Shinhan',
+  'Techcombank',
+  'Timo',
+  'TPBank',
+  'Việt - Nga',
+  'VietBank',
+  'VietcomBank',
+  'ViettinBank',
+  'VPBank',
+  'VIB',
+];
 TextStyle textStyleLabel = const TextStyle(
   color: Colors.grey,
   fontSize: 20,
@@ -52,7 +85,6 @@ TextStyle btnTextStyle = const TextStyle(
 );
 Color mainColor = const Color(0xFFeb6440);
 Color btnColor = const Color(0xFFeb6440);
-
 Future<String?> showMyAlertDialog(BuildContext context, String msg) async {
   String? result = await showDialog<String>(
       context: context,

@@ -8,7 +8,6 @@ class ServiceProvider extends ChangeNotifier {
   List<ServiceOrderDetail> get service => _service;
   int currentPage = 0;
   bool _hasMore = true;
-  final int limited = 10;
 
   bool get hasMore => _hasMore;
   late int _currentUserID;
@@ -22,11 +21,9 @@ class ServiceProvider extends ChangeNotifier {
     if (apiResponse.isSuccess!) {
       _service.clear();
       _service = apiResponse.dataResponse as List<ServiceOrderDetail>;
-      if (_service.length < limited) {
-        _hasMore = false;
-      } else {
-        _hasMore = true;
-      }
+
+      _hasMore = false;
+
       if (_service.isNotEmpty) {
         currentPage = 1;
       }
@@ -37,25 +34,40 @@ class ServiceProvider extends ChangeNotifier {
   }
 
   Future<void> addData() async {
-    if (hasMore) {
-      ApiResponse apiResponse = await ServiceRepository.getDetailAfterService(
-          userID: _currentUserID, page: currentPage + 1, token: _currentToken);
-      if (apiResponse.isSuccess!) {
-        List<ServiceOrderDetail> service =
-            apiResponse.dataResponse as List<ServiceOrderDetail>;
-        _service.addAll(service.toList());
-        if (service.length < limited) {
-          _hasMore = false;
-        } else {
-          _hasMore = true;
-        }
-        if (service.isNotEmpty) {
-          currentPage++;
-        }
-        notifyListeners();
+    ApiResponse apiResponse = await ServiceRepository.getDetailAfterService(
+        userID: _currentUserID, page: currentPage + 1, token: _currentToken);
+    if (apiResponse.isSuccess!) {
+      List<ServiceOrderDetail> service =
+          apiResponse.dataResponse as List<ServiceOrderDetail>;
+      _service.addAll(service.toList());
+      if (service.isEmpty) {
+        _hasMore = false;
       } else {
-        throw Exception(apiResponse.message!);
+        _hasMore = true;
       }
+      if (service.isNotEmpty) {
+        currentPage++;
+      }
+      notifyListeners();
+    } else {
+      throw Exception(apiResponse.message!);
+    }
+  }
+
+  Future<void> getServiceByOrder(
+      {required int userID,
+      required String token,
+      required int orderID}) async {
+    _currentUserID = userID;
+    _currentToken = token;
+    ApiResponse apiResponse = await ServiceRepository.getDetailAfterService(
+        userID: userID, page: 1, token: token, orderID: orderID);
+    if (apiResponse.isSuccess!) {
+      _service.clear();
+      _service = apiResponse.dataResponse as List<ServiceOrderDetail>;
+      notifyListeners();
+    } else {
+      throw Exception(apiResponse.message!);
     }
   }
 }

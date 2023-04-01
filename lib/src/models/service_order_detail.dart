@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:esmp_project/src/models/detail_after_service.dart';
+import 'package:esmp_project/src/models/order_ship.dart';
 import 'package:esmp_project/src/models/service_status.dart';
 import 'package:esmp_project/src/models/service_type.dart';
 import 'package:esmp_project/src/models/store.dart';
@@ -16,6 +17,9 @@ class ServiceOrderDetail {
   ServiceType? serviceType;
   List<DetailAfterService>? details;
   Store? storeView;
+  OrderShip? orderShip;
+  String? pick_Time;
+  String? deliver_time;
   ServiceOrderDetail({
     this.afterBuyServiceID,
     this.orderID,
@@ -24,6 +28,9 @@ class ServiceOrderDetail {
     this.serviceType,
     this.details,
     this.storeView,
+    this.orderShip,
+    this.pick_Time,
+    this.deliver_time,
   });
 
   ServiceOrderDetail copyWith({
@@ -34,6 +41,9 @@ class ServiceOrderDetail {
     ServiceType? serviceType,
     List<DetailAfterService>? details,
     Store? storeView,
+    OrderShip? orderShip,
+    String? pick_Time,
+    String? deliver_time,
   }) {
     return ServiceOrderDetail(
       afterBuyServiceID: afterBuyServiceID ?? this.afterBuyServiceID,
@@ -43,6 +53,9 @@ class ServiceOrderDetail {
       serviceType: serviceType ?? this.serviceType,
       details: details ?? this.details,
       storeView: storeView ?? this.storeView,
+      orderShip: orderShip ?? this.orderShip,
+      pick_Time: pick_Time ?? this.pick_Time,
+      deliver_time: deliver_time ?? this.deliver_time,
     );
   }
 
@@ -53,8 +66,11 @@ class ServiceOrderDetail {
       'create_Date': create_Date,
       'servicestatus': servicestatus?.toMap(),
       'serviceType': serviceType?.toMap(),
-      'details': details!.map((x) => x.toMap()).toList(),
+      'details': details?.map((x) => x.toMap()).toList(),
       'storeView': storeView?.toMap(),
+      'orderShip': orderShip?.toMap(),
+      'pick_Time': pick_Time,
+      'deliver_time': deliver_time,
     };
   }
 
@@ -82,6 +98,12 @@ class ServiceOrderDetail {
       storeView: map['storeView'] != null
           ? Store.fromJson(map['storeView'] as Map<String, dynamic>)
           : null,
+      orderShip: map['orderShip'] != null
+          ? OrderShip.fromJson(map['orderShip'] as Map<String, dynamic>)
+          : null,
+      pick_Time: map['pick_Time'] != null ? map['pick_Time'] as String : null,
+      deliver_time:
+          map['deliver_time'] != null ? map['deliver_time'] as String : null,
     );
   }
 
@@ -92,7 +114,7 @@ class ServiceOrderDetail {
 
   @override
   String toString() {
-    return 'ServiceOrderDetail(afterBuyServiceID: $afterBuyServiceID, orderID: $orderID, create_Date: $create_Date, servicestatus: $servicestatus, serviceType: $serviceType, details: $details, storeView: $storeView)';
+    return 'ServiceOrderDetail(afterBuyServiceID: $afterBuyServiceID, orderID: $orderID, create_Date: $create_Date, servicestatus: $servicestatus, serviceType: $serviceType, details: $details, storeView: $storeView, orderShip: $orderShip, pick_Time: $pick_Time, deliver_time: $deliver_time)';
   }
 
   @override
@@ -105,7 +127,10 @@ class ServiceOrderDetail {
         other.servicestatus == servicestatus &&
         other.serviceType == serviceType &&
         listEquals(other.details, details) &&
-        other.storeView == storeView;
+        other.storeView == storeView &&
+        other.orderShip == orderShip &&
+        other.pick_Time == pick_Time &&
+        other.deliver_time == deliver_time;
   }
 
   @override
@@ -116,6 +141,9 @@ class ServiceOrderDetail {
         servicestatus.hashCode ^
         serviceType.hashCode ^
         details.hashCode ^
-        storeView.hashCode;
+        storeView.hashCode ^
+        orderShip.hashCode ^
+        pick_Time.hashCode ^
+        deliver_time.hashCode;
   }
 }

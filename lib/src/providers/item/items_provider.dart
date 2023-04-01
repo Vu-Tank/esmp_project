@@ -19,7 +19,6 @@ import '../../models/motor_brand.dart';
 class ItemsProvider extends ChangeNotifier {
   List<Item> _items = [];
   bool hasMore = true;
-  final int _limit = 10;
   int pageIndex = 0;
   bool isSearch = false;
   List<Item> get items => [..._items];
@@ -45,11 +44,7 @@ class ItemsProvider extends ChangeNotifier {
     if (apiResponse.isSuccess!) {
       _items.clear();
       _items = apiResponse.dataResponse as List<Item>;
-      if (items.length < _limit) {
-        hasMore = false;
-      } else {
-        hasMore = true;
-      }
+      hasMore = true;
       notifyListeners();
     }
     return apiResponse;
@@ -288,7 +283,7 @@ class ItemsProvider extends ChangeNotifier {
       _items.clear();
       _items = apiResponse.dataResponse as List<Item>;
       pageIndex = searchItemModel.page;
-      if (items.length < _limit) {
+      if (items.isEmpty) {
         hasMore = false;
       } else {
         hasMore = true;
@@ -307,7 +302,7 @@ class ItemsProvider extends ChangeNotifier {
       if (apiResponse.isSuccess!) {
         List<Item> items = apiResponse.dataResponse as List<Item>;
         _items.addAll(items.toList());
-        if (items.length < _limit) {
+        if (items.isEmpty) {
           hasMore = false;
         } else {
           hasMore = true;

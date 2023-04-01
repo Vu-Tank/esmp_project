@@ -64,6 +64,7 @@ class ServiceRepository {
       {required String token,
       int? userID,
       int? storeID,
+      int? orderID,
       int? serviceID,
       int? serviceType,
       int? page}) async {
@@ -72,6 +73,7 @@ class ServiceRepository {
       final queryParams = {
         'userID': userID.toString(),
         'storeID': storeID == null ? "" : storeID.toString(),
+        'orderID': orderID == null ? "" : orderID.toString(),
         'serviceID': serviceID == null ? "" : serviceID.toString(),
         'serviceType': serviceType == null ? "" : serviceType.toString(),
         'page': page == null ? "" : page.toString(),

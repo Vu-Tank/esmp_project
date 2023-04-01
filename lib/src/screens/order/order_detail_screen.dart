@@ -36,17 +36,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     final user = context.read<UserProvider>().user;
-    if (serviceProvider.service.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        serviceProvider
-            .initData(userID: user!.userID!, token: user.token!)
-            .then((value) {
-          while (serviceProvider.hasMore) {
-            serviceProvider.addData();
-          }
-        });
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      serviceProvider
+          .getServiceByOrder(
+              userID: user!.userID!,
+              token: user.token!,
+              orderID: widget.order.orderID)
+          .then((value) {});
+    });
     _isChecked = List<bool>.filled(widget.order.details.length, false);
     super.initState();
   }
@@ -276,6 +273,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                           Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
                                               widget.status == '5' &&
                                                       checkReturn <=
@@ -315,9 +314,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                         },
                                                       ),
                                                     )
-                                                  : const SizedBox(
-                                                      height: 40,
-                                                    ),
+                                                  : const SizedBox(),
                                               SizedBox(
                                                 height: 70,
                                                 width: 70,

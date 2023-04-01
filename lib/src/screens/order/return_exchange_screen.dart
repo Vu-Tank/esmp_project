@@ -33,7 +33,6 @@ class ReturnAndExchangeScreen extends StatefulWidget {
 class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
   Uint8List? thumbByte;
   TextEditingController controller = TextEditingController();
-  List<Uint8List> listPick = <Uint8List>[];
   List<ServiceDetail> list = <ServiceDetail>[];
   String choosedVideo = "";
   XFile? xFile;
@@ -338,7 +337,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                             ],
                                           )
                                         : InkWell(
-                                            onTap: () => selectImageOrVideo(),
+                                            onTap: () => pickVideo(),
                                             child: Container(
                                                 width: 150,
                                                 height: 150,
@@ -350,7 +349,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                                       MainAxisAlignment.center,
                                                   children: const [
                                                     Icon(Icons.add),
-                                                    Text('Thêm Video/Ảnh')
+                                                    Text('Thêm Video')
                                                   ],
                                                 ))),
                                   ),
@@ -369,10 +368,9 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                           });
                                           return null;
                                         });
-
+                                        LoadingDialog.showLoadingDialog(
+                                            context, "Vui Lòng Đợi");
                                         getdata().then((vaule) {
-                                          LoadingDialog.showLoadingDialog(
-                                              context, "Vui Lòng Đợi");
                                           if (vaule.isSuccess!) {
                                             if (mounted) {
                                               LoadingDialog.hideLoadingDialog(
@@ -402,71 +400,71 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                             ]))))));
   }
 
-  Future selectImageOrVideo() {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: SizedBox(
-            height: 200,
-            width: 200,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Text(
-                      'Chọn loại file',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                            pickVideo();
-                          },
-                          child: Card(
-                              child: Column(children: [
-                            Icon(
-                              Icons.video_call_rounded,
-                              size: 70,
-                              color: mainColor,
-                            ),
-                            Text(
-                              "Video",
-                              style: TextStyle(color: mainColor),
-                            )
-                          ])),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Card(
-                              child: Column(children: [
-                            Icon(
-                              Icons.image_rounded,
-                              size: 70,
-                              color: mainColor,
-                            ),
-                            Text(
-                              "Ảnh",
-                              style: TextStyle(color: mainColor),
-                            )
-                          ])),
-                        )
-                      ],
-                    ),
-                  ]),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // Future selectImageOrVideo() {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Dialog(
+  //         shape:
+  //             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //         child: SizedBox(
+  //           height: 200,
+  //           width: 200,
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(12.0),
+  //             child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                 children: [
+  //                   const Text(
+  //                     'Chọn loại file',
+  //                     style:
+  //                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //                   ),
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //                     children: [
+  //                       GestureDetector(
+  //                         onTap: () {
+  //                           Navigator.pop(context);
+  //                           pickVideo();
+  //                         },
+  //                         child: Card(
+  //                             child: Column(children: [
+  //                           Icon(
+  //                             Icons.video_call_rounded,
+  //                             size: 70,
+  //                             color: mainColor,
+  //                           ),
+  //                           Text(
+  //                             "Video",
+  //                             style: TextStyle(color: mainColor),
+  //                           )
+  //                         ])),
+  //                       ),
+  //                       GestureDetector(
+  //                         onTap: () {},
+  //                         child: Card(
+  //                             child: Column(children: [
+  //                           Icon(
+  //                             Icons.image_rounded,
+  //                             size: 70,
+  //                             color: mainColor,
+  //                           ),
+  //                           Text(
+  //                             "Ảnh",
+  //                             style: TextStyle(color: mainColor),
+  //                           )
+  //                         ])),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 ]),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Future pickVideo() async {
     final picker = ImagePicker();
@@ -493,6 +491,5 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
       xFile = pickedFile;
       Navigator.pop(context);
     });
-    inspect(listPick);
   }
 }
