@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:esmp_project/src/models/api_response.dart';
@@ -38,7 +37,7 @@ class FeedbackProvider extends ChangeNotifier {
       required int orderDetailID,
       required String text,
       required Function onSuccess,
-      required Function onFailed }) async {
+      required Function onFailed}) async {
     // log('text: $text');
     ApiResponse apiResponse = await OrderRepository.feedbackOrderDetail(
         orderDetailID: orderDetailID,
@@ -47,7 +46,7 @@ class FeedbackProvider extends ChangeNotifier {
         token: token,
         files: image);
     if (apiResponse.isSuccess!) {
-      FeedbackModel feedbackModel=apiResponse.dataResponse as FeedbackModel;
+      FeedbackModel feedbackModel = apiResponse.dataResponse as FeedbackModel;
       reset();
       onSuccess(feedbackModel);
     } else {

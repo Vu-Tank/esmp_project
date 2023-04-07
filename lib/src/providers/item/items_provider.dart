@@ -283,7 +283,7 @@ class ItemsProvider extends ChangeNotifier {
       _items.clear();
       _items = apiResponse.dataResponse as List<Item>;
       pageIndex = searchItemModel.page;
-      if (items.isEmpty) {
+      if (_items.length < 6) {
         hasMore = false;
       } else {
         hasMore = true;
@@ -295,21 +295,19 @@ class ItemsProvider extends ChangeNotifier {
   }
 
   Future<void> addItem() async {
-    if (hasMore) {
-      SearchItemModel searchItemModel = getSearchModel();
-      searchItemModel.page = pageIndex + 1;
-      ApiResponse apiResponse = await ItemRepository.addItems(searchItemModel);
-      if (apiResponse.isSuccess!) {
-        List<Item> items = apiResponse.dataResponse as List<Item>;
-        _items.addAll(items.toList());
-        if (items.isEmpty) {
-          hasMore = false;
-        } else {
-          hasMore = true;
-        }
-        if (items.isNotEmpty) pageIndex++;
-        notifyListeners();
+    SearchItemModel searchItemModel = getSearchModel();
+    searchItemModel.page = pageIndex + 1;
+    ApiResponse apiResponse = await ItemRepository.addItems(searchItemModel);
+    if (apiResponse.isSuccess!) {
+      List<Item> items = apiResponse.dataResponse as List<Item>;
+      _items.addAll(items.toList());
+      if (items.isEmpty) {
+        hasMore = false;
+      } else {
+        hasMore = true;
       }
+      if (items.isNotEmpty) pageIndex++;
+      notifyListeners();
     }
   }
 }

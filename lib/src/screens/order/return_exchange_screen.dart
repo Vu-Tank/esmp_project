@@ -65,10 +65,11 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
     FocusNode focus = FocusNode();
     final now = DateTime.now();
     final user = context.read<UserProvider>().user;
-    int serType = 1;
+    int serType = 2;
     for (var element in widget.orderDetail) {
       totalMoney = (totalMoney +
-          (element.pricePurchase * (1 - element.discountPurchase)));
+          (element.pricePurchase * (1 - element.discountPurchase)) *
+              element.amount);
     }
     Future<ApiResponse> getdata() => ServiceRepository.createReturnSevice(
         token: user!.token!,
@@ -250,11 +251,11 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                                   "Trả hàng và Hoàn tiền") ==
                                               0) {
                                             setState(() {
-                                              serType = 1;
+                                              serType = 2;
                                             });
                                           } else {
                                             setState(() {
-                                              serType = 2;
+                                              serType = 1;
                                             });
                                           }
                                           log(serType.toString());
@@ -355,6 +356,8 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                   ),
                                   ElevatedButton(
                                       onPressed: () async {
+                                        LoadingDialog.showLoadingDialog(
+                                            context, "Vui Lòng Đợi");
                                         final newfile =
                                             await video!.file!.readAsBytes();
                                         await FirebaseStorageService()
@@ -368,8 +371,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                           });
                                           return null;
                                         });
-                                        LoadingDialog.showLoadingDialog(
-                                            context, "Vui Lòng Đợi");
+
                                         getdata().then((vaule) {
                                           if (vaule.isSuccess!) {
                                             if (mounted) {

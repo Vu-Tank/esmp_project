@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:esmp_project/src/models/address.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +34,7 @@ class Utils {
   static String createFile() {
     DateTime time = DateTime.now();
     String name =
-        time.toString().trim().replaceAllMapped(new RegExp(r'\D'), (match) {
+        time.toString().trim().replaceAllMapped(RegExp(r'\D'), (match) {
       return '';
     });
     return name;
@@ -97,7 +95,7 @@ class Utils {
   }
 
   static String getTime(String timeString) {
-    if (timeString.isEmpty|| timeString=='0') {
+    if (timeString.isEmpty || timeString == '0') {
       return '';
     }
     DateTime now = DateTime.now();
@@ -107,39 +105,42 @@ class Utils {
         now.month == time.month &&
         now.year == time.year) {
       return '${time.hour}:${time.minute}';
-    // } else if (false) {
-    //   return time.weekday.toString();
-    }else if(now.year==time.year){
+      // } else if (false) {
+      //   return time.weekday.toString();
+    } else if (now.year == time.year) {
       return '${time.day} thg ${time.month}';
-    }else{
+    } else {
       return '${time.day} thg ${time.month}, ${time.year}';
     }
   }
-  static Province searchProvince(List<Province> list, String value){
-    Province province=list.first;
+
+  static Province searchProvince(List<Province> list, String value) {
+    Province province = list.first;
     for (Province pro in list) {
-      if(pro.name_with_type==value){
-        province=pro;
+      if (pro.name_with_type == value) {
+        province = pro;
         break;
       }
     }
     return province;
   }
-  static District searchDistrict(List<District> list, String value){
-    District district=list.first;
-    for(District dis in list){
-      if(dis.name_with_type==value){
-        district=dis;
+
+  static District searchDistrict(List<District> list, String value) {
+    District district = list.first;
+    for (District dis in list) {
+      if (dis.name_with_type == value) {
+        district = dis;
         break;
       }
     }
     return district;
   }
-  static Ward searchWard(List<Ward> list, String value){
-    Ward ward=list.first;
-    for(Ward wa in list){
-      if(wa.name_with_type==value){
-        ward=wa;
+
+  static Ward searchWard(List<Ward> list, String value) {
+    Ward ward = list.first;
+    for (Ward wa in list) {
+      if (wa.name_with_type == value) {
+        ward = wa;
         break;
       }
     }

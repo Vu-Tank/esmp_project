@@ -377,11 +377,11 @@ class OrderRepository {
       request.fields['OrderDetaiID'] = orderDetailID.toString();
       request.fields['Rate'] = rate.toString();
       // log('text: $text');
-      if(text.isNotEmpty){
+      if (text.isNotEmpty) {
         request.fields['Text'] = text;
       }
       // request.files.add(http.MultipartFile('File',stream,length,filename: file.path.split('/').last));
-      if(files.isNotEmpty){
+      if (files.isNotEmpty) {
         request.files.addAll(streams);
       }
       var response = await request.send();
@@ -396,7 +396,7 @@ class OrderRepository {
         apiResponse.isSuccess = body['success'];
         if (apiResponse.isSuccess!) {
           log(body['data'].toString());
-          apiResponse.dataResponse=FeedbackModel.fromJson(body['data']);
+          apiResponse.dataResponse = FeedbackModel.fromJson(body['data']);
         }
       } else {
         var responseData = await response.stream.bytesToString(utf8);
@@ -479,7 +479,9 @@ class OrderRepository {
         apiResponse.isSuccess = body['success'];
         if (apiResponse.isSuccess!) {
           // log( body['data'].toString());
-          apiResponse.dataResponse = (body['data'] as List).map((feedback) => FeedbackModel.fromJson(feedback)).toList();
+          apiResponse.dataResponse = (body['data'] as List)
+              .map((feedback) => FeedbackModel.fromJson(feedback))
+              .toList();
         }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();

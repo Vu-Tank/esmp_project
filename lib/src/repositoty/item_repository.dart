@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:esmp_project/src/constants/api.dart';
 import 'package:esmp_project/src/constants/url.dart';
 import 'package:esmp_project/src/models/api_response.dart';
+import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/item.dart';
 import 'package:esmp_project/src/models/search_item_model.dart';
 import 'package:http/http.dart' as http;
@@ -104,8 +105,8 @@ class ItemRepository {
     }
     return apiResponse;
   }
-  static Future<ApiResponse> addItems(
-      SearchItemModel searchItemModel) async {
+
+  static Future<ApiResponse> addItems(SearchItemModel searchItemModel) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       Map<String, dynamic> search = searchItemModel.toJson();
@@ -113,7 +114,7 @@ class ItemRepository {
       // Map<String, String> stringQueryParameters =
       // queryParameters.map((key, value) => MapEntry(key, value?.toString()));
       final queryParams =
-      search.map((key, value) => MapEntry(key, value?.toString()));
+          search.map((key, value) => MapEntry(key, value?.toString()));
       String queryString = Uri(queryParameters: queryParams).query;
       // log(Uri.parse('${AppUrl.seacrchItem}?$queryString').toString());
       var response = await http
@@ -136,6 +137,42 @@ class ItemRepository {
       // log(error.toString());
       apiResponse.isSuccess = false;
       apiResponse.message = error.toString();
+    }
+    return apiResponse;
+  }
+
+  static Future<ApiResponse> getFeedbackItemDetail(
+      {required int itemID, required int page, required String token}) async {
+    ApiResponse apiResponse = ApiResponse();
+    try {
+      final queryParams = {
+        'itemID': itemID.toString(),
+        'page': page.toString(),
+        'role': '2',
+      };
+      String queryString = Uri(queryParameters: queryParams).query;
+      final response = await http
+          .get(Uri.parse('${AppUrl.getFeedbacksItem}?$queryString'), headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      }).timeout(Api.apiTimeOut());
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body);
+        apiResponse.isSuccess = body['success'];
+        apiResponse.message = body['message'];
+        apiResponse.totalPage = int.parse(body['totalPage'].toString());
+        if (apiResponse.isSuccess!) {
+          apiResponse.dataResponse = List<FeedBackData>.from(
+              (body['data'] as List).map<FeedBackData>(
+                  (x) => FeedBackData.fromMap(x as Map<String, dynamic>)));
+        }
+      } else {
+        apiResponse.isSuccess = false;
+        apiResponse.message = json.decode(response.body)['errors'].toString();
+      }
+    } catch (e) {
+      apiResponse.isSuccess = false;
+      apiResponse.message = e.toString();
     }
     return apiResponse;
   }

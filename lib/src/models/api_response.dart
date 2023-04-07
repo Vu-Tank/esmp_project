@@ -1,13 +1,15 @@
 class ApiResponse {
-  Object? dataResponse;
+  dynamic dataResponse;
   String? message;
   bool? isSuccess;
+  int? totalPage;
 
-  ApiResponse({this.dataResponse, this.message, this.isSuccess});
+  ApiResponse(
+      {this.dataResponse, this.message, this.isSuccess, this.totalPage});
 
   @override
   String toString() {
-    return 'ApiResponse{dataResponse: $dataResponse, message: $message, isSuccess: $isSuccess}';
+    return 'ApiResponse{dataResponse: $dataResponse, message: $message, isSuccess: $isSuccess, totalPage: $totalPage}';
   }
 
 // ApiResponse({this.dataResponse, this.isSuccess, this.message});
@@ -21,5 +23,4 @@ class ApiResponse {
   //
   // bool? get IsSuccess=> isSuccess;
   // set IsSuccess(bool? isSuccess1)=> isSuccess=isSuccess1;
-
 }

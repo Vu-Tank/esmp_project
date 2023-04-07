@@ -8,7 +8,7 @@ class LoadingDialog {
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
-          color: Color(0xffffffff),
+          color: const Color(0xffffffff),
           height: 100,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -18,7 +18,7 @@ class LoadingDialog {
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: Text(
                   msg,
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
             ],

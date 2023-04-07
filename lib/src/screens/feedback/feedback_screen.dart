@@ -53,11 +53,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         initialRating: feedback.rating.toDouble(),
                         itemSize: 60.0,
                         direction: Axis.horizontal,
-                        itemBuilder: (context, _) =>
-                        const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
+                        itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
                         onRatingUpdate: (rating) {
                           feedback.updateRating(rating.toInt());
                         }),
@@ -73,7 +72,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             label: Text('lời nhắn'),
                             border: OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(5.0)),
+                                  BorderRadius.all(Radius.circular(5.0)),
                             ))),
                     const SizedBox(
                       height: 20.0,
@@ -84,7 +83,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           showMyAlertDialog(context, "Chọn tối đa 5 bức hình");
                         } else {
                           File? result =
-                          await showModalBottomSheetImage(context);
+                              await showModalBottomSheetImage(context);
                           if (result != null) {
                             feedback.addImage(result);
                           }
@@ -100,75 +99,76 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     ),
                     (feedback.image.isNotEmpty)
                         ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '${feedback.image.length}/5',
-                          style: (feedback.image.length == 5)
-                              ? textStyleError
-                              : textStyleInputChild,
-                        ),
-                        SizedBox(
-                          height: 200,
-                          child: GridView.builder(
-                              itemCount: feedback.image.length,
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 1),
-                              itemBuilder: (context, index) {
-                                File file = feedback.image[index];
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: 100,
-                                    width: 100,
-                                    child: Stack(
-                                      alignment:
-                                      AlignmentDirectional.topEnd,
-                                      children: [
-                                        Image.file(file),
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: Colors.grey,
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.remove,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () {
-                                              feedback.deleteImage(index);
-                                            },
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${feedback.image.length}/5',
+                                style: (feedback.image.length == 5)
+                                    ? textStyleError
+                                    : textStyleInputChild,
+                              ),
+                              SizedBox(
+                                height: 200,
+                                child: GridView.builder(
+                                    itemCount: feedback.image.length,
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 1),
+                                    itemBuilder: (context, index) {
+                                      File file = feedback.image[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: Stack(
+                                            alignment:
+                                                AlignmentDirectional.topEnd,
+                                            children: [
+                                              Image.file(file),
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor: Colors.grey,
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.remove,
+                                                    color: Colors.red,
+                                                  ),
+                                                  onPressed: () {
+                                                    feedback.deleteImage(index);
+                                                  },
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-                      ],
-                    )
+                                      );
+                                    }),
+                              ),
+                            ],
+                          )
                         : Container(),
-                    const SizedBox(height: 40.0,),
+                    const SizedBox(
+                      height: 40.0,
+                    ),
                     SizedBox(
                       height: 53,
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
                           // Navigator.pop(context,'OK');
-                          LoadingDialog.showLoadingDialog(context, "Vui lòng đợi");
-                          await feedback.upLoadFeedback(token: context
-                              .read<UserProvider>()
-                              .user!
-                              .token!,
+                          LoadingDialog.showLoadingDialog(
+                              context, "Vui lòng đợi");
+                          await feedback.upLoadFeedback(
+                              token: context.read<UserProvider>().user!.token!,
                               text: _controller.text.trim(),
-                              onSuccess: (FeedbackModel feedbackModel){
+                              onSuccess: (FeedbackModel feedbackModel) {
                                 LoadingDialog.hideLoadingDialog(context);
-                                Navigator.pop(context,feedbackModel);
+                                Navigator.pop(context, feedbackModel);
                               },
-                              onFailed: (String msg){
+                              onFailed: (String msg) {
                                 LoadingDialog.hideLoadingDialog(context);
                                 showMyAlertDialog(context, msg);
                               },
@@ -176,11 +176,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: btnColor,
-                          padding: const EdgeInsets.only(
-                              top: 12.0, bottom: 12.0),
+                          padding:
+                              const EdgeInsets.only(top: 12.0, bottom: 12.0),
                           shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(8))),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8))),
                         ),
                         child: Text(
                           'Xác nhận',

@@ -35,13 +35,17 @@ class ItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
-              aspectRatio: 18 / 9,
+              aspectRatio: 16 / 9,
               child: CachedNetworkImage(
                 // item.itemImage,
                 // fit: BoxFit.cover,
                 imageUrl: item.itemImage,
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
                     image: DecorationImage(
                       image: imageProvider,
                       fit: BoxFit.cover,
@@ -115,9 +119,17 @@ class ItemWidget extends StatelessWidget {
                     height: 8.0,
                   ),
                   //tỉnh
-                  Text(
-                    item.province,
-                    style: textStyleLabelChild,
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 12,
+                      ),
+                      Text(
+                        item.province,
+                        style: textStyleLabelChild.copyWith(fontSize: 12),
+                      ),
+                    ],
                   ),
                 ],
               ),
