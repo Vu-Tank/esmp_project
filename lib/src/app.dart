@@ -8,6 +8,7 @@ import 'package:esmp_project/src/providers/order/delivering_provider.dart';
 import 'package:esmp_project/src/providers/order/received_ship_provider.dart';
 import 'package:esmp_project/src/providers/order/waiting_for_confirmation_provider.dart';
 import 'package:esmp_project/src/providers/order/waiting_for_the_goods_provider.dart';
+import 'package:esmp_project/src/providers/service/data_exchange_provider.dart';
 import 'package:esmp_project/src/providers/service/service_provider.dart';
 import 'package:esmp_project/src/providers/user/address_provider.dart';
 import 'package:esmp_project/src/providers/internet/connection_provider.dart';
@@ -119,6 +120,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => CanceledProvider()),
         ChangeNotifierProvider(create: (context) => ServiceProvider()),
         ChangeNotifierProvider(create: (context) => ReturnOrderProvider()),
+        ChangeNotifierProvider(create: (context) => DataExchangeProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

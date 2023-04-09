@@ -221,7 +221,7 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
                             );
                           }
                         }),
-                  )
+                  ),
       ]);
     });
   }

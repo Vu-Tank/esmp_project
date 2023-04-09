@@ -1,70 +1,116 @@
-import 'package:esmp_project/src/models/data_exchange.dart';
-import 'package:esmp_project/src/models/order.dart';
+import 'package:esmp_project/src/providers/service/data_exchange_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
-import 'package:esmp_project/src/repositoty/dataexchange_repository.dart';
-import 'package:esmp_project/src/screens/order/add_card_screen.dart';
+import 'package:esmp_project/src/screens/login_register/login_screen.dart';
+import 'package:esmp_project/src/screens/order/data_exchange_detail_screen.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DataExchangeScreen extends StatefulWidget {
-  const DataExchangeScreen({super.key, required this.order});
-  final Order order;
+  const DataExchangeScreen({super.key});
 
   @override
   State<DataExchangeScreen> createState() => _DataExchangeScreenState();
 }
 
 class _DataExchangeScreenState extends State<DataExchangeScreen> {
-  List<DataExchange>? dataExchange;
+  bool _isLoading = true;
+  final controller = ScrollController();
+  List<DataRow> rows = <DataRow>[];
   @override
   void initState() {
-    Order order = widget.order;
     final user = context.read<UserProvider>().user;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await DataExchangeRepository.getDataExchange(
-              token: user!.token!, userID: user.userID!, orderID: order.orderID)
-          .then((value) =>
-              dataExchange = value.dataResponse as List<DataExchange>)
-          .catchError((error) {
+    final dataExchangeProvider =
+        Provider.of<DataExchangeProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      dataExchangeProvider
+          .initData(token: user!.token!, userID: user.userID!)
+          .then((value) {
+        rows = dataExchangeProvider.result.map((exchange) {
+          return DataRow(
+            cells: [
+              DataCell(Text(exchange.exchangeUserID.toString())),
+              DataCell(Text(exchange.orderID.toString())),
+              DataCell(Text(exchange.exchangeStatus!.statusName!)),
+              DataCell(onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DataExchangeDetailScreen(
+                              exchange: exchange,
+                            )));
+              },
+                  Text(
+                    'Chi tiết',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline, color: mainColor),
+                  )),
+            ],
+          );
+        }).toList();
+        if (mounted) {
+          _isLoading = false;
+          setState(() {});
+        }
+      }).catchError((error) {
         showMyAlertDialog(context, error.toString());
       });
     });
+
     super.initState();
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final user = context.read<UserProvider>().user;
+    final dataExchangeProvider = Provider.of<DataExchangeProvider>(context);
+    const textSpan = TextSpan(text: 'IDOrderIDTrạng tháiChi tiết');
+    final textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    textPainter.layout();
+    final textWidth = textPainter.width;
+    double size = (MediaQuery.of(context).size.width - textWidth) / 4 - 14;
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Icon(Icons.payment),
-              const SizedBox(
-                width: 10,
-              ),
-              const Text('Thêm thẻ ngân hàng'),
-              const Spacer(),
-              TextButton(
+        appBar: AppBar(
+          title: Text('Đối soái', style: appBarTextStyle),
+          backgroundColor: mainColor,
+          centerTitle: true,
+        ),
+        body: user == null
+            ? Center(
+                child: TextButton(
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const AddCardScreen()));
+                            builder: (context) => const LoginScreen()));
                   },
-                  child: const Text(
-                    "Thêm",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
-                  ))
-            ],
-          ),
-          Text(dataExchange.toString()),
-        ],
-      ),
-    );
+                  child: const Text('Đăng nhập'),
+                ),
+              )
+            : _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Container(
+                    constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width),
+                    child: DataTable(
+                        columnSpacing: size,
+                        columns: const [
+                          DataColumn(label: Text('ID')),
+                          DataColumn(label: Text('OrderID')),
+                          DataColumn(label: Text('Trạng thái')),
+                          DataColumn(label: Text(''))
+                        ],
+                        rows: rows),
+                  ));
   }
 }

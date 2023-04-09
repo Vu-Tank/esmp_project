@@ -1,6 +1,7 @@
 import 'package:esmp_project/src/providers/order/return_order_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
+import 'package:esmp_project/src/screens/order/data_exchange_screen.dart';
 import 'package:esmp_project/src/screens/order/old_item_widget.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
@@ -54,55 +55,76 @@ class _ReturnOrderScreenState extends State<ReturnOrderScreen> {
     return FutureBuilder(builder: (context, snapshot) {
       final user = context.read<UserProvider>().user;
       return Scaffold(
-          body: user == null
-              ? Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()));
-                    },
-                    child: const Text('Đăng nhập'),
-                  ),
-                )
-              : _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : ListView.builder(
-                      itemCount: orderProvider.orders.length + 1,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      controller: controller,
-                      itemBuilder: (context, index) {
-                        if (index < orderProvider.orders.length) {
-                          return InkWell(
-                            onTap: () {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => DataExchangeScreen(
-                              //               order: orderProvider.orders[index],
-                              //             ))).then((value) async {});
-                            },
-                            child: OldOrder(
-                              order: orderProvider.orders[index],
-                              status: orderProvider.status.toString(),
-                            ),
-                          );
-                        } else {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: Center(
-                              child: orderProvider.hasMore
-                                  ? const CircularProgressIndicator()
-                                  : Text(
-                                      'Có ${orderProvider.orders.length} kết quả'),
-                            ),
-                          );
-                        }
-                      }));
+        body: user == null
+            ? Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()));
+                  },
+                  child: const Text('Đăng nhập'),
+                ),
+              )
+            : _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ListView.builder(
+                    itemCount: orderProvider.orders.length + 1,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    controller: controller,
+                    itemBuilder: (context, index) {
+                      if (index < orderProvider.orders.length) {
+                        return InkWell(
+                          onTap: () {
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) => DataExchangeScreen(
+                            //               order: orderProvider.orders[index],
+                            //             ))).then((value) async {});
+                          },
+                          child: OldOrder(
+                            order: orderProvider.orders[index],
+                            status: orderProvider.status.toString(),
+                          ),
+                        );
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 32),
+                          child: Center(
+                            child: orderProvider.hasMore
+                                ? const CircularProgressIndicator()
+                                : Text(
+                                    'Có ${orderProvider.orders.length} kết quả'),
+                          ),
+                        );
+                      }
+                    }),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: btnColor,
+                padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+              ),
+              onPressed: () async {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const DataExchangeScreen()));
+              },
+              child: Text(
+                'Xem Đối Soái',
+                style: btnTextStyle,
+              )),
+        ),
+      );
     });
   }
 }

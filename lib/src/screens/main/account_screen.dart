@@ -12,6 +12,8 @@ import 'package:esmp_project/src/screens/address/address_screen.dart';
 import 'package:esmp_project/src/screens/chat/chat_detail_screen.dart';
 import 'package:esmp_project/src/screens/feedback/list_feedback_screen.dart';
 import 'package:esmp_project/src/screens/login_register/register_screen.dart';
+import 'package:esmp_project/src/screens/main/terms_conditions_screen.dart';
+import 'package:esmp_project/src/screens/order/data_exchange_screen.dart';
 import 'package:esmp_project/src/screens/order/order.dart';
 import 'package:esmp_project/src/screens/profile/profile_screen.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
@@ -268,6 +270,55 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+                    child: InkWell(
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black12),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.payments_sharp,
+                                  color: Colors.grey,
+                                  size: 30,
+                                ),
+                                Text(
+                                  'Chi tiết đối soái',
+                                  style: textStyleInputChild,
+                                ),
+                              ],
+                            ),
+                            const Icon(
+                              Icons.navigate_next,
+                              color: Colors.grey,
+                              size: 30,
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        if (userProvider.user == null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => const LoginScreen()));
+                          return;
+                        }
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const DataExchangeScreen()));
+                      },
+                    ),
+                  ),
                   // đánh giá
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
@@ -444,7 +495,13 @@ class _AccountScreenState extends State<AccountScreen> {
                           ],
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const TermAndCondititonScreen()));
+                      },
                     ),
                   ),
                   // login and register

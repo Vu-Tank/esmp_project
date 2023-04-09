@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/service_order_detail.dart';
 import 'package:esmp_project/src/providers/service/service_provider.dart';
+import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ class ServiceOrderDetailScreen extends StatefulWidget {
 
 class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
   ServiceOrderDetail? service;
+
   @override
   void initState() {
     super.initState();
@@ -22,12 +24,21 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double totalMoney = 0;
     final serviceProvider = Provider.of<ServiceProvider>(context);
     for (var element in serviceProvider.service) {
       if (element.orderID == widget.orderId) {
         service = element;
+        if (service!.details!.isNotEmpty) {
+          for (var element in service!.details!) {
+            totalMoney = totalMoney +
+                (element.pricePurchase! * (1 - element.discountPurchase!)) *
+                    element.amount!;
+          }
+        }
       }
     }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -68,11 +79,12 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
+                            const Icon(Icons.store),
                             Expanded(
                                 child: Text(
                               '${service!.storeView!.storeName}\n',
                               maxLines: 1,
-                              style: textStyleInput.copyWith(fontSize: 18),
+                              style: textStyleInput.copyWith(fontSize: 16),
                             )),
                           ],
                         ),
@@ -101,8 +113,8 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                                               MainAxisAlignment.center,
                                           children: [
                                             SizedBox(
-                                              height: 70,
-                                              width: 70,
+                                              height: 100,
+                                              width: 100,
                                               child: CachedNetworkImage(
                                                 // item.itemImage,
                                                 // fit: BoxFit.cover,
@@ -147,6 +159,8 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                                             Text(
                                                 "${service!.details![index].sub_ItemName}\n",
                                                 maxLines: 2,
+                                                style: const TextStyle(
+                                                    fontSize: 15),
                                                 overflow:
                                                     TextOverflow.ellipsis),
                                             const SizedBox(
@@ -160,6 +174,37 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                                         )),
                                       ],
                                     ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    const Divider(
+                                      color: Colors.black,
+                                    ),
+                                    if (service!.serviceType!.item_StatusID! ==
+                                        2)
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Tiền hoàn',
+                                              style: TextStyle(
+                                                  color: mainColor,
+                                                  fontSize: 18),
+                                            ),
+                                            const SizedBox(
+                                              width: 8,
+                                            ),
+                                            Text(
+                                                Utils.convertPriceVND(
+                                                    totalMoney),
+                                                style: const TextStyle(
+                                                    fontSize: 20))
+                                          ],
+                                        ),
+                                      )
                                   ],
                                 ),
                               );
@@ -179,21 +224,27 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Dự tính lấy hàng:',
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: mainColor,
+                              ),
                             ),
                             Text(service!.pick_Time ??= 'Đang xử lí',
-                                style: const TextStyle(fontSize: 20)),
+                                style: const TextStyle(fontSize: 17)),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Dự tính giao hàng:',
-                                style: TextStyle(fontSize: 20)),
+                            Text('Dự tính giao hàng:',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: mainColor,
+                                )),
                             Text(service!.deliver_time ??= 'Đang xử lí',
-                                style: const TextStyle(fontSize: 20)),
+                                style: const TextStyle(fontSize: 17)),
                           ],
                         ),
                       ],
@@ -273,13 +324,19 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                                     const SizedBox(
                                       height: 5.0,
                                     ),
-                                    Text(
-                                      service!.orderShip!.createDate
-                                          .replaceAll('T', ' ')
-                                          .toString()
-                                          .split('.')
-                                          .toString(),
-                                      style: textStyleLabelChild,
+                                    Container(
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 200),
+                                      child: Text(
+                                        service!.orderShip!.createDate
+                                            .replaceAll('T', ' ')
+                                            .toString()
+                                            .split('.')
+                                            .toString(),
+                                        style: textStyleLabelChild,
+                                        overflow: TextOverflow.fade,
+                                        maxLines: 1,
+                                      ),
                                     ),
                                     const SizedBox(
                                       height: 5.0,
@@ -298,7 +355,7 @@ class _ServiceOrderDetailState extends State<ServiceOrderDetailScreen> {
                           ),
                         ),
                       )
-                    : const SizedBox()
+                    : const SizedBox(),
               ],
             ),
           ),

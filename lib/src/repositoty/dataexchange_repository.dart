@@ -11,12 +11,14 @@ class DataExchangeRepository {
   static Future<ApiResponse> getDataExchange(
       {required String token,
       required int userID,
-      required int orderID}) async {
+      required int page,
+      int? orderID}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {
         'userID': userID.toString(),
-        'orderID': orderID.toString(),
+        'page': page.toString(),
+        'orderID': orderID == null ? "" : orderID.toString()
       };
       String queryString = Uri(queryParameters: queryParams).query;
       var response = await http.get(

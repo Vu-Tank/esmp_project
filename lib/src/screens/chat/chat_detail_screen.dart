@@ -71,7 +71,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         // mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Expanded(child: chatMessage(),),
+          Expanded(
+            child: chatMessage(),
+          ),
           Container(
             alignment: Alignment.bottomCenter,
             width: MediaQuery.of(context).size.width,
@@ -81,28 +83,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               // color: mainColor,
               child: Row(children: [
                 GestureDetector(
-                  onTap: () async{
-                    imageFile=await showModalBottomSheetImage(context).catchError((e){
+                  onTap: () async {
+                    imageFile = await showModalBottomSheetImage(context)
+                        .catchError((e) {
                       showMyAlertDialog(context, e.toString());
                     });
-                    if(mounted){
+                    if (mounted) {
                       LoadingDialog.showLoadingDialog(context, 'Đang tải ảnh');
                     }
-                    if(imageFile!=null){
-                      String fileName='${roomChat.roomID}_${Utils.createFile()}';
-                      String? filePath=await FirebaseStorageService().uploadFileChat(imageFile!, fileName).catchError((e){
-                        if(mounted){
+                    if (imageFile != null) {
+                      String fileName =
+                          '${roomChat.roomID}_${Utils.createFile()}';
+                      String? filePath = await FirebaseStorageService()
+                          .uploadFileChat(imageFile!, fileName)
+                          .catchError((e) {
+                        if (mounted) {
                           LoadingDialog.hideLoadingDialog(context);
                           showMyAlertDialog(context, e.toString());
                         }
                       });
-                      if(filePath!=null){
+                      if (filePath != null) {
                         await sendImage(filePath);
                       }
-                      if(mounted)LoadingDialog.hideLoadingDialog(context);
+                      if (mounted) LoadingDialog.hideLoadingDialog(context);
                     }
                   },
-
                   child: Container(
                     height: 50,
                     width: 50,
@@ -112,9 +117,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     ),
                     child: const Center(
                         child: Icon(
-                          Icons.image_outlined,
-                          color: Colors.white,
-                        )),
+                      Icons.image_outlined,
+                      color: Colors.white,
+                    )),
                   ),
                 ),
                 const SizedBox(
@@ -124,15 +129,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     child: TextField(
                   controller: messageController,
                   style: const TextStyle(color: Colors.black),
-                  onSubmitted: (_){
+                  onSubmitted: (_) {
                     sendMessage();
                   },
                   decoration: const InputDecoration(
                     hintText: "nhắn tin",
                     hintStyle: TextStyle(color: Colors.black, fontSize: 16),
                     border: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(30))),
+                        borderRadius: BorderRadius.all(Radius.circular(30))),
                   ),
                 )),
                 const SizedBox(
@@ -179,21 +183,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               padding: const EdgeInsets.only(top: 10),
               controller: _controller,
               shrinkWrap: true,
-
               scrollDirection: Axis.vertical,
               itemBuilder: (context, index) {
                 return MessageTile(
-                    message: snapshot.data.docs[index]['message'],
-                    sender: snapshot.data.docs[index]['sender'],
-                    time: snapshot.data.docs[index]['time'],
-                    isImage: snapshot.data.docs[index]['isImage'],
-                    sentByMe: FirebaseAuth.instance.currentUser!.uid ==
-                        snapshot.data.docs[index]['sender'],
-                    showTime: (int height,){
-                      if (_controller.hasClients) {
-                        _controller.jumpTo(_controller.offset+height);
-                      }
-                    },
+                  message: snapshot.data.docs[index]['message'],
+                  sender: snapshot.data.docs[index]['sender'],
+                  time: snapshot.data.docs[index]['time'],
+                  isImage: snapshot.data.docs[index]['isImage'],
+                  sentByMe: FirebaseAuth.instance.currentUser!.uid ==
+                      snapshot.data.docs[index]['sender'],
+                  showTime: (
+                    int height,
+                  ) {
+                    if (_controller.hasClients) {
+                      _controller.jumpTo(_controller.offset + height);
+                    }
+                  },
                 );
               },
             );
@@ -211,7 +216,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         "message": messageController.text,
         "sender": FirebaseAuth.instance.currentUser!.uid,
         "time": formattedDate,
-        "isImage":false,
+        "isImage": false,
       };
       await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
           .sendMessage(widget.roomChat.roomID, chatMessageMap)
@@ -228,24 +233,24 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       });
     }
   }
-  sendImage(String filePath)async{
+
+  sendImage(String filePath) async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
     Map<String, dynamic> chatMessageMap = {
       "message": filePath,
       "sender": FirebaseAuth.instance.currentUser!.uid,
       "time": formattedDate,
-      "isImage":true,
+      "isImage": true,
     };
     await CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid)
         .sendMessage(widget.roomChat.roomID, chatMessageMap)
         .then((value) {
-      imageFile=null;
+      imageFile = null;
     }).catchError((e) {
       if (mounted) {
         showMyAlertDialog(context, e.toString());
       }
     });
-
   }
 }
