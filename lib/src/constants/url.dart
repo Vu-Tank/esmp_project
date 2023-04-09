@@ -44,6 +44,8 @@ class AppUrl {
   static const String checkStore = "$baseUrl/api/Store/check_store";
   static const String getServiceAfterBuy = "$baseUrl/api/AfterBuyService";
   static const String getDataExchange = "$baseUrl/api/DataExchange/user";
+  static const String addCardDataExchange =
+      "$baseUrl/api/DataExchange/user_addcard";
   static const String getFeedbacksItem = "$baseUrl/api/Item/item_feedback";
 
   static const String defaultAvatar =

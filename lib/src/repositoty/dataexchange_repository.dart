@@ -12,13 +12,15 @@ class DataExchangeRepository {
       {required String token,
       required int userID,
       required int page,
-      int? orderID}) async {
+      int? orderID,
+      int? serviceID}) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {
         'userID': userID.toString(),
         'page': page.toString(),
-        'orderID': orderID == null ? "" : orderID.toString()
+        'orderID': orderID == null ? "" : orderID.toString(),
+        'serviceID': serviceID == null ? "" : serviceID.toString()
       };
       String queryString = Uri(queryParameters: queryParams).query;
       var response = await http.get(
@@ -60,7 +62,7 @@ class DataExchangeRepository {
     ApiResponse apiResponse = ApiResponse();
     try {
       final response = await http
-          .post(Uri.parse(AppUrl.getServiceAfterBuy),
+          .put(Uri.parse(AppUrl.addCardDataExchange),
               headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
                 'Authorization': 'Bearer $token',

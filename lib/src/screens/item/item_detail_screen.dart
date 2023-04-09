@@ -10,7 +10,9 @@ import 'package:esmp_project/src/providers/item/item_detail_provider.dart';
 import 'package:esmp_project/src/providers/cart/item_provider.dart';
 import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
 import 'package:esmp_project/src/repositoty/order_repository.dart';
+import 'package:esmp_project/src/screens/chat/chat_detail_screen.dart';
 import 'package:esmp_project/src/screens/item/sub_item_bottom_sheet.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/screens/main/main_screen.dart';
@@ -19,6 +21,7 @@ import 'package:esmp_project/src/screens/shop/shop_detail.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -731,8 +734,43 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             Material(
               color: Colors.white,
               child: InkWell(
-                onTap: () {
+                onTap: () async {
                   //print('called on tap');
+                  if (itemDetail.store.firebaseID == null) {
+                    showMyAlertDialog(context, "Không thể nhắn tin với shop");
+                    return;
+                  }
+                  await CloudFirestoreService(
+                          uid: FirebaseAuth.instance.currentUser!.uid)
+                      .checkExistRoom(itemDetail.store.firebaseID.toString())
+                      .then((value) async {
+                    if (value != null) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatDetailScreen(roomChat: value)));
+                    } else {
+                      await CloudFirestoreService(
+                              uid: FirebaseAuth.instance.currentUser!.uid)
+                          .createRoom(
+                              otherUid: itemDetail.store.firebaseID.toString())
+                          .then((value) {
+                        if (value != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ChatDetailScreen(roomChat: value)));
+                        }
+                      }).catchError((error) {
+                        showMyAlertDialog(context, error.toString());
+                      });
+                    }
+                  }).catchError((error) {
+                    log(error.toString());
+                    showMyAlertDialog(context, error.toString());
+                  });
                 },
                 child: SizedBox(
                   height: kToolbarHeight,

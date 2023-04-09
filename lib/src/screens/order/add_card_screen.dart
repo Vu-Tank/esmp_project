@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/dataexchange_repository.dart';
+import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,29 +61,46 @@ class _AddCardScreenState extends State<AddCardScreen> {
               width: 150,
               child: ElevatedButton(
                 onPressed: () {
-                  // LoadingDialog.showLoadingDialog(context, "Vui Lòng Đợi");
-                  // DataExchangeRepository.addCard(
-                  //         token: user!.token!,
-                  //         exchangeUserID: widget.exchangeUserID,
-                  //         bankName: bankName,
-                  //         cardNum: controller2.text,
-                  //         cardHoldName: controller1.text)
-                  //     .then((value) async {
-                  //   if (value.isSuccess!) {
-                  //     if (mounted) {
-                  //       LoadingDialog.hideLoadingDialog(context);
-                  //       showMyAlertDialog(context, value.message!)
-                  //           .then((_) => Navigator.pop(context, bankName));
-                  //     }
-                  //   } else {
-                  //     if (mounted) {
-                  //       LoadingDialog.hideLoadingDialog(context);
-                  //       inspect(value);
-                  //       showMyAlertDialog(context, value.message!);
-                  //     }
-                  //   }
-                  // });
-                  Navigator.pop(context, "$bankName-${controller2.text}");
+                  if (!listBank.contains(bankName) || bankName == '') {
+                    showMyAlertDialog(context,
+                        'Tên ngân hàng không đúng hoặc không hỗ trợ \n Vui lòng thử lại');
+                  } else if (controller1.text.isEmpty ||
+                      controller2.text.isEmpty) {
+                    showMyAlertDialog(
+                        context, 'Vui lòng điền đầy đủ thông tin');
+                  } else {
+                    LoadingDialog.showLoadingDialog(context, "Vui Lòng Đợi");
+                    DataExchangeRepository.addCard(
+                            token: user!.token!,
+                            exchangeUserID: widget.exchangeUserID,
+                            bankName: bankName,
+                            cardNum: controller2.text,
+                            cardHoldName: controller1.text)
+                        .then((value) async {
+                      if (value.isSuccess!) {
+                        if (mounted) {
+                          LoadingDialog.hideLoadingDialog(context);
+                          showMyAlertDialog(context, value.message!).then((_) =>
+                              Navigator.pop(
+                                  context, "$bankName-${controller2.text}"));
+                        }
+                      } else {
+                        if (mounted) {
+                          LoadingDialog.hideLoadingDialog(context);
+                          inspect(value);
+                          showMyAlertDialog(context,
+                              'Đã có lỗi! \n Vui lòng thử lại sau');
+                        }
+                      }
+                    });
+                  }
+                  // if (controller1.text.isEmpty ||
+                  //     controller2.text.isEmpty ||
+                  //     !listBank.contains(bankName)) {
+                  //   showMyAlertDialog(context, 'Vui lòng điền đầy đú');
+                  // } else {
+                  //   Navigator.pop(context, "$bankName-${controller2.text}");
+                  // }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: mainColor,

@@ -30,7 +30,9 @@ class _DataExchangeScreenState extends State<DataExchangeScreen> {
           return DataRow(
             cells: [
               DataCell(Text(exchange.exchangeUserID.toString())),
-              DataCell(Text(exchange.orderID.toString())),
+              DataCell(Text(exchange.orderID != null
+                  ? exchange.orderID.toString()
+                  : exchange.afterBuyServiceID.toString())),
               DataCell(Text(exchange.exchangeStatus!.statusName!)),
               DataCell(onTap: () {
                 Navigator.push(
@@ -71,7 +73,7 @@ class _DataExchangeScreenState extends State<DataExchangeScreen> {
   Widget build(BuildContext context) {
     final user = context.read<UserProvider>().user;
     final dataExchangeProvider = Provider.of<DataExchangeProvider>(context);
-    const textSpan = TextSpan(text: 'IDOrderIDTrạng tháiChi tiết');
+    const textSpan = TextSpan(text: 'IDMã đơnTrạng tháiChi tiết');
     final textPainter =
         TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
@@ -106,7 +108,7 @@ class _DataExchangeScreenState extends State<DataExchangeScreen> {
                         columnSpacing: size,
                         columns: const [
                           DataColumn(label: Text('ID')),
-                          DataColumn(label: Text('OrderID')),
+                          DataColumn(label: Text('Mã đơn')),
                           DataColumn(label: Text('Trạng thái')),
                           DataColumn(label: Text(''))
                         ],

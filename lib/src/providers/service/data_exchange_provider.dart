@@ -60,11 +60,17 @@ class DataExchangeProvider extends ChangeNotifier {
   Future<void> getDataExchangeById(
       {required int userID,
       required String token,
-      required int orderID}) async {
+      int? orderID,
+      int? serviceID}) async {
     _currentUserID = userID;
     _currentToken = token;
+
     ApiResponse apiResponse = await DataExchangeRepository.getDataExchange(
-        userID: userID, token: token, page: 1, orderID: orderID);
+        userID: userID,
+        token: token,
+        page: 1,
+        orderID: orderID,
+        serviceID: serviceID);
     if (apiResponse.isSuccess!) {
       _result.clear();
       _result = apiResponse.dataResponse as List<DataExchange>;
