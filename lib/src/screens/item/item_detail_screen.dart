@@ -83,9 +83,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     double height = MediaQuery.of(context).size.height;
     // log(itemDetail.listFeedback.toString());
     return BlocProvider(
-      create: (context) => ItemFeedbackCubit()
-        ..loadFeedback(
-            itemID: widget.itemID, page: 1, token: userProvider.user!.token!),
+      create: (context) =>
+          ItemFeedbackCubit()..loadFeedback(itemID: widget.itemID, page: 1),
       child: Scaffold(
         appBar: AppBar(
           // title: Text(itemDetail.name),

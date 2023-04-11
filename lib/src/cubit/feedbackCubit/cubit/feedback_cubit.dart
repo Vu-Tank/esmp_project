@@ -8,12 +8,13 @@ part 'feedback_state.dart';
 
 class ItemFeedbackCubit extends Cubit<ItemFeedbackState> {
   ItemFeedbackCubit() : super(ItemFeedbackInitial());
-  loadFeedback(
-      {required int itemID, required int page, required String token}) async {
+  loadFeedback({required int itemID, required int page}) async {
     if (isClosed) return;
     emit(ItemFeedbackLoading());
     ApiResponse apiResponse = await ItemRepository.getFeedbackItemDetail(
-        itemID: itemID, page: page, token: token);
+      itemID: itemID,
+      page: page,
+    );
     if (apiResponse.isSuccess!) {
       if (isClosed) return;
       emit(ItemFeedbackLoaded(

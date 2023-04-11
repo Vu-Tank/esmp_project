@@ -88,6 +88,7 @@ class ItemRepository {
         var body = json.decode(response.body);
         apiResponse.isSuccess = body['success'];
         apiResponse.message = body['message'];
+        apiResponse.totalPage = int.parse(body['totalPage'].toString());
         if (apiResponse.isSuccess!) {
           // log(body['data'].toString());
           apiResponse.dataResponse = (body['data'] as List)
@@ -141,8 +142,10 @@ class ItemRepository {
     return apiResponse;
   }
 
-  static Future<ApiResponse> getFeedbackItemDetail(
-      {required int itemID, required int page, required String token}) async {
+  static Future<ApiResponse> getFeedbackItemDetail({
+    required int itemID,
+    required int page,
+  }) async {
     ApiResponse apiResponse = ApiResponse();
     try {
       final queryParams = {
@@ -152,10 +155,8 @@ class ItemRepository {
       };
       String queryString = Uri(queryParameters: queryParams).query;
       final response = await http
-          .get(Uri.parse('${AppUrl.getFeedbacksItem}?$queryString'), headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
-      }).timeout(Api.apiTimeOut());
+          .get(Uri.parse('${AppUrl.getFeedbacksItem}?$queryString'))
+          .timeout(Api.apiTimeOut());
       if (response.statusCode == 200) {
         final body = json.decode(response.body);
         apiResponse.isSuccess = body['success'];

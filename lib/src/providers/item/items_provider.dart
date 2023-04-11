@@ -283,7 +283,7 @@ class ItemsProvider extends ChangeNotifier {
       _items.clear();
       _items = apiResponse.dataResponse as List<Item>;
       pageIndex = searchItemModel.page;
-      if (_items.length < 6) {
+      if (apiResponse.totalPage == 1) {
         hasMore = false;
       } else {
         hasMore = true;

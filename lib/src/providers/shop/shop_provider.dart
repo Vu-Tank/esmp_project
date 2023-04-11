@@ -20,7 +20,6 @@ class StoreProvider extends ChangeNotifier {
   int? storeID;
   List<Item> _items = [];
   bool hasMore = true;
-  final int limit = 25;
   int pageIndex = 0;
   bool isSearch = false;
 
@@ -260,14 +259,12 @@ class StoreProvider extends ChangeNotifier {
     ApiResponse apiResponse = await ItemRepository.searchItems(searchItemModel);
     if (apiResponse.isSuccess!) {
       _items = apiResponse.dataResponse as List<Item>;
-      log(limit.toString());
       pageIndex = searchItemModel.page;
-      if (_items.length < limit) {
+      if (apiResponse.totalPage == 1) {
         hasMore = false;
       } else {
         hasMore = true;
       }
-      log(hasMore.toString());
       notifyListeners();
     } else {
       throw Exception(apiResponse.message);
@@ -285,7 +282,7 @@ class StoreProvider extends ChangeNotifier {
         _items.addAll(items);
         log(_items.toString());
         pageIndex = searchItemModel.page;
-        if (items.length < limit) {
+        if (items.isEmpty) {
           hasMore = false;
         } else {
           hasMore = true;
