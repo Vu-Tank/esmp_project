@@ -29,6 +29,7 @@ import 'package:esmp_project/src/providers/user/verify_provider.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/screens/login_register/register_screen.dart';
 import 'package:esmp_project/src/screens/main/main_screen.dart';
+import 'package:esmp_project/src/utils/request_permission.dart';
 import 'package:esmp_project/src/utils/shared_preferences.dart';
 import 'package:esmp_project/src/utils/widget/showSnackBar.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
@@ -173,7 +174,7 @@ class _MyAppState extends State<MyApp> {
       provisional: false,
       sound: true,
     );
-
+    requestLocationPermission(context);
     log('User granted permission: ${settings.authorizationStatus}');
   }
 

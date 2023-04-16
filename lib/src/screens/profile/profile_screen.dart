@@ -103,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       token: user.token!,
                       userImage: user.image!.fileName!,
                       onSuccess: (UserModel user) {
-                        CloudFirestoreService(uid: FirebaseAuth.instance.currentUser!.uid).updateUserImage(user.image!.path!);
+                        CloudFirestoreService(
+                                uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateUserImage(user.image!.path!);
                         userProvider.setUser(user);
                         setState(() {
                           image = result;
@@ -395,7 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Ngày tham gia
             InkWell(
               child: Container(
-                decoration:const BoxDecoration(
+                decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: Colors.black12),
                     top: BorderSide(color: Colors.black12),
@@ -471,13 +473,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               TextButton.icon(
                 onPressed: () async {
-                  if (await requestPhotosPermission()) {
-                    await pickImage(ImageSource.gallery);
-                    onSuccess();
-                    if (mounted) Navigator.pop(context);
-                  } else {
-                    log("ko cấp quyền đc");
-                  }
+                  // if (await requestPhotosPermission(context)) {
+                  await pickImage(ImageSource.gallery);
+                  onSuccess();
+                  if (mounted) Navigator.pop(context);
+                  // } else {
+                  //   log("ko cấp quyền đc");
+                  // }
                 },
                 icon: const Icon(Icons.image),
                 label: const Text("Thư viện"),

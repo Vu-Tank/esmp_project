@@ -6,9 +6,11 @@ import 'package:esmp_project/src/models/order.dart';
 import 'package:esmp_project/src/models/order_detail.dart';
 import 'package:esmp_project/src/providers/service/service_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:esmp_project/src/screens/feedback/feedback_screen.dart';
 import 'package:esmp_project/src/screens/feedback/feedback_view_screen.dart';
 import 'package:esmp_project/src/screens/order/canceled_order_screen.dart';
+import 'package:esmp_project/src/screens/order/payment_screen.dart';
 import 'package:esmp_project/src/screens/order/return_exchange_screen.dart';
 import 'package:esmp_project/src/screens/shop/shop_detail.dart';
 import 'package:esmp_project/src/utils/utils.dart';
@@ -92,7 +94,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-
+    final user = context.read<UserProvider>().user;
     Order order = widget.order;
     final shipDay = DateTime.parse(
         order.orderShip!.createDate.replaceAll(RegExp(r'T'), ' '));
@@ -101,50 +103,65 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     Widget? bottomNavigationBar(String status) {
       switch (status) {
         case "1":
-          return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: btnColor,
-                padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8))),
-              ),
-              onPressed: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CanceledOrderScreen(
-                              orderID: order.orderID,
-                            )));
-              },
-              child: Text(
-                'Huỷ đơn hàng',
-                style: btnTextStyle,
-              ));
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: btnColor,
+                  padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                ),
+                onPressed: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CanceledOrderScreen(
+                                orderID: order.orderID,
+                              )));
+                },
+                child: Text(
+                  'Huỷ đơn hàng',
+                  style: btnTextStyle,
+                )),
+          );
         case "5":
-          // return ElevatedButton(
-          //     style: ElevatedButton.styleFrom(
-          //       backgroundColor: btnColor,
-          //       padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
-          //       shape: const RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.all(Radius.circular(8))),
-          //     ),
-          //     onPressed: () async {
-          //       // Navigator.push(
-          //       //     context,
-          //       //     MaterialPageRoute(
-          //       //         builder: (context) => CanceledOrderScreen(
-          //       //               orderID: order.orderID,
-          //       //             )));
-          //     },
-          //     child: Text(
-          //       'Yêu cầu hoàn tiền/ Trả hàng',
-          //       style: btnTextStyle,
-          //     ));
-          break;
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: btnColor,
+                  padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                ),
+                onPressed: () async {
+                  await OrderRepository.getReOrder(
+                          orderID: order.orderID, token: user!.token!)
+                      .then((value) {
+                    Order orderNew = value.dataResponse as Order;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentScreen(
+                                  orderID: orderNew.orderID,
+                                )));
+                  });
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => PaymentScreen(
+
+                  //             )));
+                },
+                child: Text(
+                  'Mua lại',
+                  style: btnTextStyle,
+                )),
+          );
         default:
           return null;
       }
-      return null;
     }
 
     return Scaffold(

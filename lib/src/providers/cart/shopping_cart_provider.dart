@@ -179,4 +179,75 @@ class ShoppingCartProvider extends ChangeNotifier {
       throw Exception(apiResponse.message);
     }
   }
+
+  Future<void> addAmountWhenPayment(int orderID, int orderDetatailID, int index,
+      String token, Function onFailed) async {
+    // _order![indexOrder].details[indexsubItemID].amount=_order![indexOrder].details[indexsubItemID].amount+1;
+    ApiResponse apiResponse = await OrderRepository.updateAmountOrder(
+        token: token,
+        orderDetailID: orderDetatailID,
+        amount: selectedOrder!.details[index].amount + 1);
+    if (apiResponse.isSuccess!) {
+      // apiResponse =
+      //     await OrderRepository.getOrder(orderID: orderID, token: token);
+      // if (apiResponse.isSuccess!) {
+      //   selectedOrder = apiResponse.dataResponse as Order;
+      //   notifyListeners();
+      // } else {
+      //   throw Exception(apiResponse.message);
+      // }
+      selectedOrder!.details[index].amount = apiResponse.dataResponse as int;
+      double price = 0;
+      for (var element in selectedOrder!.details) {
+        price = price +
+            (element.pricePurchase * (1 - element.discountPurchase)) *
+                element.amount;
+      }
+      selectedOrder!.priceItem = price;
+      notifyListeners();
+    } else {
+      onFailed(apiResponse.message);
+    }
+  }
+
+  Future<void> subtractAmountWhenPayment(int orderID, int orderDetatailID,
+      int index, String token, Function onFailed) async {
+    int amount = selectedOrder!.details[index].amount;
+    ApiResponse apiResponse = ApiResponse();
+    if (amount == 1) {
+      if (selectedOrder!.details.length == 1) {
+        apiResponse = await OrderRepository.removeOrder(
+            token: token, orderID: selectedOrder!.orderID);
+      } else {
+        apiResponse = await OrderRepository.removeOrderDetail(
+            token: token, orderDetailID: orderDetatailID);
+      }
+    } else {
+      apiResponse = await OrderRepository.updateAmountOrder(
+          token: token,
+          orderDetailID: orderDetatailID,
+          amount: selectedOrder!.details[index].amount - 1);
+    }
+    if (apiResponse.isSuccess!) {
+      if (amount == 1) {
+        if (selectedOrder!.details.length == 1) {
+          selectedOrder = null;
+        } else {
+          selectedOrder = apiResponse.dataResponse as Order;
+        }
+      } else {
+        selectedOrder!.details[index].amount = apiResponse.dataResponse as int;
+        double price = 0;
+        for (var element in selectedOrder!.details) {
+          price = price +
+              (element.pricePurchase * (1 - element.discountPurchase)) *
+                  element.amount;
+        }
+        selectedOrder!.priceItem = price;
+      }
+      notifyListeners();
+    } else {
+      onFailed(apiResponse.message);
+    }
+  }
 }
