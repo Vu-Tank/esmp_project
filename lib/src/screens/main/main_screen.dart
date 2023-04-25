@@ -106,7 +106,11 @@ class _MainScreenState extends State<MainScreen> {
   Scaffold mainScreen(BuildContext context) {
     final mainPageProvider = Provider.of<MainScreenProvider>(context);
     return Scaffold(
-      body: PageView(
+      body: PageView.builder(
+        itemCount: visiblePageViews.length,
+        itemBuilder: (context, index) {
+          return visiblePageViews[index];
+        },
         controller: _pageController,
         onPageChanged: (newPage) {
           if (isOnClick) {
@@ -117,7 +121,6 @@ class _MainScreenState extends State<MainScreen> {
             mainPageProvider.changePage(newPage);
           }
         },
-        children: visiblePageViews,
       ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 1000.0,

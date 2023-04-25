@@ -2,16 +2,13 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/cubit/feedbackCubit/cubit/feedback_cubit.dart';
-import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/item.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/item/item_detail_provider.dart';
-import 'package:esmp_project/src/providers/cart/item_provider.dart';
 import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/repositoty/cloud_firestore_service.dart';
-import 'package:esmp_project/src/repositoty/order_repository.dart';
 import 'package:esmp_project/src/screens/chat/chat_detail_screen.dart';
 import 'package:esmp_project/src/screens/item/sub_item_bottom_sheet.dart';
 import 'package:esmp_project/src/screens/login_register/login_screen.dart';
@@ -19,7 +16,6 @@ import 'package:esmp_project/src/screens/main/main_screen.dart';
 import 'package:esmp_project/src/screens/report/report_screen.dart';
 import 'package:esmp_project/src/screens/shop/shop_detail.dart';
 import 'package:esmp_project/src/utils/utils.dart';
-import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -210,93 +206,89 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         ),
                       ],
                     ),
-                    if (itemDetail.listSubItem.length > 1)
-                      InkWell(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const SizedBox(
-                              height: 8.0,
-                            ),
-                            const Divider(
-                              color: Colors.black,
-                            ),
-                            const Text('Lựa chọn'),
-                            SizedBox(
-                              height: 100,
-                              child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: itemDetail.listSubItem.length,
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) {
-                                    final subItem =
-                                        itemDetail.listSubItem[index];
-                                    return subItem
-                                                .subItem_Status.item_StatusID ==
-                                            1
-                                        ? Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                10, 10, 10, 0),
-                                            child: Column(
-                                              children: [
-                                                SizedBox(
-                                                  height: 70,
-                                                  width: 70,
-                                                  child: CachedNetworkImage(
-                                                    // item.itemImage,
-                                                    // fit: BoxFit.cover,
-                                                    imageUrl:
-                                                        subItem.image.path!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
+
+                    InkWell(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 8.0,
+                          ),
+                          const Divider(
+                            color: Colors.black,
+                          ),
+                          const Text('Lựa chọn'),
+                          SizedBox(
+                            height: 100,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: itemDetail.listSubItem.length,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  final subItem = itemDetail.listSubItem[index];
+                                  return subItem.subItem_Status.item_StatusID ==
+                                          1
+                                      ? Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 10, 10, 0),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 70,
+                                                width: 70,
+                                                child: CachedNetworkImage(
+                                                  // item.itemImage,
+                                                  // fit: BoxFit.cover,
+                                                  imageUrl: subItem.image.path!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
                                                       ),
                                                     ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                    errorWidget: (context, url,
-                                                            error) =>
-                                                        const Icon(Icons.error),
                                                   ),
+                                                  placeholder: (context, url) =>
+                                                      const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
                                                 ),
-                                                Text(
-                                                  Utils.convertPriceVND(subItem
-                                                          .price -
-                                                      (subItem.price *
-                                                          itemDetail.discount)),
-                                                  // style: TextStyle(color: Colors.red),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : const SizedBox();
-                                  }),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) => SizedBox(
-                              height: MediaQuery.of(context).size.height / 2,
-                              child: SubItemBottomSheet(
-                                subItems: itemDetail.listSubItem,
-                                status: 'add_cart',
-                                title: 'Thêm vào giỏ hàng',
-                              ),
-                            ),
-                          );
-                        },
+                                              ),
+                                              Text(
+                                                Utils.convertPriceVND(subItem
+                                                        .price -
+                                                    (subItem.price *
+                                                        itemDetail.discount)),
+                                                // style: TextStyle(color: Colors.red),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : const SizedBox();
+                                }),
+                          ),
+                        ],
                       ),
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => SizedBox(
+                            height: MediaQuery.of(context).size.height / 2,
+                            child: SubItemBottomSheet(
+                              subItems: itemDetail.listSubItem,
+                              status: 'add_cart',
+                              title: 'Thêm vào giỏ hàng',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                     const Divider(
                       color: Colors.black,
                     ),
@@ -376,7 +368,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             primary: false,
                             itemCount: itemDetail.listSpecification.length,
                             itemBuilder: (context, index) {
-                              double width = MediaQuery.of(context).size.width;
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
@@ -390,9 +381,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                         style: textStyleInputChild,
                                       ),
                                     ),
-                                    Text(
-                                      itemDetail.listSpecification[index].value,
-                                      style: textStyleInputChild,
+                                    SizedBox(
+                                      width: width / 2 - 50,
+                                      child: Text(
+                                        itemDetail
+                                            .listSpecification[index].value,
+                                        style: textStyleInputChild,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -403,12 +400,24 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const Text('Thời gian đổi trả'),
-                              const SizedBox(
-                                width: 220,
+                              SizedBox(
+                                  width: width / 2,
+                                  child: Text(
+                                    'Thời gian đổi trả',
+                                    style: textStyleInputChild,
+                                  )),
+                              SizedBox(
+                                width: width / 2 - 50,
+                                child: Text(
+                                  itemDetail.listSubItem[0].returnAndExchange ==
+                                          0
+                                      ? 'Không đổi trả'
+                                      : '${itemDetail.listSubItem[0].returnAndExchange}',
+                                  style: textStyleInputChild,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
                               ),
-                              Text(itemDetail.listSubItem[0].returnAndExchange
-                                  .toString()),
                             ],
                           ),
                         )
@@ -800,63 +809,62 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         MaterialPageRoute(
                             builder: (context) => const LoginScreen()));
                   } else {
-                    if (itemDetail.listSubItem.length == 1) {
-                      context
-                          .read<ItemProvider>()
-                          .selectedSubItem(itemDetail.listSubItem[0]);
-                      context.read<ItemProvider>().amount = 1;
-                      LoadingDialog.showLoadingDialog(
-                          context, "Vui Lòng Đợi");
-                      inspect(user);
-                      log(itemDetail.itemID.toString());
-                      log(user.token.toString());
-                      log(itemDetail.listSubItem[0].subItemID.toString());
-                      ApiResponse apiResponse =
-                          await OrderRepository.createOder(
-                              userID: user.userID!,
-                              amount: 1,
-                              subItemID: itemDetail.listSubItem[0].subItemID,
-                              token: user.token!);
-                      if (apiResponse.isSuccess!) {
-                        if (mounted) {
-                          LoadingDialog.hideLoadingDialog(context);
-                          showMyAlertDialog(context, apiResponse.message!);
-                        }
-                      } else {
-                        if (mounted) {
-                          LoadingDialog.hideLoadingDialog(context);
-                          inspect(apiResponse);
-                          showMyAlertDialog(context, apiResponse.message!);
-                        }
-                      }
-                    } else {
-                      // _showBottomSheet(context, itemDetail.listSubItem);
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => SizedBox(
-                          height: MediaQuery.of(context).size.height / 2,
-                          child: SubItemBottomSheet(
-                            subItems: itemDetail.listSubItem,
-                            status: 'add_cart',
-                            title: 'Thêm vào giỏ hàng',
-                          ),
+                    // if (itemDetail.listSubItem.length == 1) {
+                    //   context
+                    //       .read<ItemProvider>()
+                    //       .selectedSubItem(itemDetail.listSubItem[0]);
+                    //   context.read<ItemProvider>().amount = 1;
+                    //   LoadingDialog.showLoadingDialog(
+                    //       context, "Vui Lòng Đợi");
+                    //   inspect(user);
+                    //   log(itemDetail.itemID.toString());
+                    //   log(user.token.toString());
+                    //   log(itemDetail.listSubItem[0].subItemID.toString());
+                    //   ApiResponse apiResponse =
+                    //       await OrderRepository.createOder(
+                    //           userID: user.userID!,
+                    //           amount: 1,
+                    //           subItemID: itemDetail.listSubItem[0].subItemID,
+                    //           token: user.token!);
+                    //   if (apiResponse.isSuccess!) {
+                    //     if (mounted) {
+                    //       LoadingDialog.hideLoadingDialog(context);
+                    //       showMyAlertDialog(context, apiResponse.message!);
+                    //     }
+                    //   } else {
+                    //     if (mounted) {
+                    //       LoadingDialog.hideLoadingDialog(context);
+                    //       inspect(apiResponse);
+                    //       showMyAlertDialog(context, apiResponse.message!);
+                    //     }
+                    //   }
+                    // } else {
+                    // _showBottomSheet(context, itemDetail.listSubItem);
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: SubItemBottomSheet(
+                          subItems: itemDetail.listSubItem,
+                          status: 'add_cart',
+                          title: 'Thêm vào giỏ hàng',
                         ),
-                      );
-                      // isScrollControlled: true,
-                      // builder: (_) => showSubItemAddToCart(
-                      //     context: context,
-                      //     subItems: itemDetail.listSubItem,
-                      //     status: 'add_cart',
-                      //     title: 'Thêm vào giỏ hàng',
-                      //     onSuccess: () {
-                      //       Navigator.pop(context);
-                      //     },
-                      //     onFailed: (String msg) {
-                      //       LoadingDialog.hideLoadingDialog(context);
-                      //       showMyAlertDialog(context, msg);
-                      //     }));
-                    }
+                      ),
+                    );
+                    // isScrollControlled: true,
+                    // builder: (_) => showSubItemAddToCart(
+                    //     context: context,
+                    //     subItems: itemDetail.listSubItem,
+                    //     status: 'add_cart',
+                    //     title: 'Thêm vào giỏ hàng',
+                    //     onSuccess: () {
+                    //       Navigator.pop(context);
+                    //     },
+                    //     onFailed: (String msg) {
+                    //       LoadingDialog.hideLoadingDialog(context);
+                    //       showMyAlertDialog(context, msg);
+                    //     }));
                   }
                 },
                 child: SizedBox(

@@ -44,7 +44,11 @@ class ItemsProvider extends ChangeNotifier {
     if (apiResponse.isSuccess!) {
       _items.clear();
       _items = apiResponse.dataResponse as List<Item>;
-      hasMore = true;
+      if (apiResponse.totalPage == 1) {
+        hasMore = false;
+      } else {
+        hasMore = true;
+      }
       notifyListeners();
     }
     return apiResponse;

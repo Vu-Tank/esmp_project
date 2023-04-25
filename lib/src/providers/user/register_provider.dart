@@ -23,7 +23,7 @@ class RegisterProvider extends ChangeNotifier {
     'Nữ',
   ];
   static final ImageModel _image =
-      ImageModel(path: AppUrl.defaultAvatar, fileName: 'defaultAvatar.png');
+      ImageModel(path: AppUrl.noAvatar, fileName: 'defaultAvatar.png');
   UserModel _user =
       UserModel(gender: _genders.first, address: [], image: _image);
 
@@ -35,7 +35,7 @@ class RegisterProvider extends ChangeNotifier {
     _user.phone = Utils.convertToDB(phone);
   }
 
-  List<Province> _listProvince = [];
+  final List<Province> _listProvince = [];
 
   List<Province> get listProvince => _listProvince;
   Province? selectedProvince;
@@ -188,7 +188,7 @@ class RegisterProvider extends ChangeNotifier {
       return false;
     }
     log("message: $addressString");
-    AddressModel myAddress=AddressModel(
+    AddressModel myAddress = AddressModel(
       context: addressString,
       province: selectedProvince!.name_with_type,
       district: selectedDistrict!.name_with_type,
@@ -197,7 +197,7 @@ class RegisterProvider extends ChangeNotifier {
       latitude: address.lat,
     );
     log(myAddress.toString());
-    _user.address=[myAddress];
+    _user.address = [myAddress];
     log("contex: ${_user.address![0].toString()}");
     ApiResponse apiResponse = await UserRepository.createUser(_user);
     log(apiResponse.message!);
@@ -230,8 +230,8 @@ class RegisterProvider extends ChangeNotifier {
     _email = ValidationItem(null, null);
     _dob = ValidationItem(null, null);
     _listProvince.clear();
-    selectedProvince=null;
-    selectedWard=null;
-    selectedDistrict=null;
+    selectedProvince = null;
+    selectedWard = null;
+    selectedDistrict = null;
   }
 }

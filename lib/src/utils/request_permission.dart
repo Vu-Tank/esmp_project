@@ -118,3 +118,16 @@ Future<bool> requestLocationPermission(BuildContext context) async {
     return false;
   }
 }
+
+Future<bool> requestLocation() async {
+  PermissionStatus status = await Permission.location.status;
+  if (status.isGranted) {
+    return true;
+  } else {
+    status = await Permission.location.request();
+    if (status.isGranted) {
+      return true;
+    } else if (status.isPermanentlyDenied) {}
+    return false;
+  }
+}

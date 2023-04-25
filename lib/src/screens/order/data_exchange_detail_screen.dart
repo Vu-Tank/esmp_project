@@ -193,6 +193,31 @@ class _DataExchangeDetailScreenState extends State<DataExchangeDetailScreen> {
                                         decoration: TextDecoration.underline,
                                         fontSize: 17),
                                   )),
+                            if (exchange.exchangeStatus!.item_StatusID! == 2 ||
+                                exchange.exchangeStatus!.item_StatusID! == 3 &&
+                                    exchange.bankName != null)
+                              TextButton(
+                                  onPressed: () async {
+                                    try {
+                                      bankName = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddCardScreen(
+                                                    exchangeUserID: exchange
+                                                        .exchangeUserID!,
+                                                  )));
+                                    } catch (Exception) {
+                                      return;
+                                    }
+                                    setState(() {});
+                                  },
+                                  child: const Text(
+                                    'Sửa >',
+                                    style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        fontSize: 17),
+                                  )),
                           ],
                         ),
                         const SizedBox(

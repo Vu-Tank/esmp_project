@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/models/user.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
@@ -105,6 +103,10 @@ class _SubItemBottomSheetState extends State<SubItemBottomSheet> {
                                     Text(subItem.subItemName),
                                     Text('Kho: ${subItem.amount}'),
                                     Text(Utils.convertPriceVND(subItem.price)),
+                                    subItem.returnAndExchange == 0
+                                        ? const Text('Không đổi trả')
+                                        : Text(
+                                            'Đổi trả trong: ${subItem.returnAndExchange} ngày'),
                                   ],
                                 ),
                               ),

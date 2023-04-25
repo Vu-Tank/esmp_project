@@ -1,18 +1,11 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:esmp_project/src/constants/url.dart';
 import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/providers/user/register_provider.dart';
-import 'package:esmp_project/src/repositoty/address_repository.dart';
-import 'package:esmp_project/src/repositoty/firebase_storage.dart';
-import 'package:esmp_project/src/screens/google_map/google_map_Screen.dart';
+import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
-import 'package:esmp_project/src/utils/widget/show_modal_bottom_sheet_image.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../utils/utils.dart';
 
 class RegisterInfoScreen extends StatefulWidget {
   const RegisterInfoScreen(
@@ -378,13 +371,24 @@ class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
                             isValid = false;
                           }
                           if (isValid) {
-                            LoadingDialog.showLoadingDialog(context, 'Vui lòng đợi');
-                            if(isValid){
-                              await registerProvider.registerUser(widget.token,widget.uid,_addressController.text.trim() ,() {
+                            LoadingDialog.showLoadingDialog(
+                                context, 'Vui lòng đợi');
+                            if (isValid) {
+                              await registerProvider.registerUser(
+                                  widget.token,
+                                  widget.uid,
+                                  _addressController.text.trim(), () {
                                 LoadingDialog.hideLoadingDialog(context);
+                                showMyAlertDialog(
+                                    context, 'Đăng ký thành công');
                                 registerProvider.reset();
                                 Navigator.pop(context);
                                 Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginScreen()));
                               }, (String error) {
                                 LoadingDialog.hideLoadingDialog(context);
                                 showMyAlertDialog(context, error.toString());

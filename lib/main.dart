@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:esmp_project/src/app.dart';
+import 'package:esmp_project/src/utils/request_permission.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -26,15 +27,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 handleNotifications() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
+  await messaging
+      .requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      )
+      .then((_) => requestLocation());
   messaging.setForegroundNotificationPresentationOptions(
       badge: true, alert: true, sound: true);
 
