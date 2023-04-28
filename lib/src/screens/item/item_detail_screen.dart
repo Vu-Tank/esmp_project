@@ -876,7 +876,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     children: <Widget>[
                       const Icon(Icons.add_shopping_cart),
                       Text(
-                        'Thêm và giỏ hàng',
+                        'Thêm vào giỏ hàng',
                         textAlign: TextAlign.center,
                         style: textStyleInputChild,
                       ),

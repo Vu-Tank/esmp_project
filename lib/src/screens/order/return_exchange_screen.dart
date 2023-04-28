@@ -247,8 +247,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                           BlocProvider.of<ServiceTypeCubit>(
                                                   context)
                                               .changServiceType(value!);
-                                          if (value.compareTo(
-                                                  "Trả hàng và Hoàn tiền") ==
+                                          if (value.compareTo(serviceType[0]) ==
                                               0) {
                                             setState(() {
                                               serType = 2;

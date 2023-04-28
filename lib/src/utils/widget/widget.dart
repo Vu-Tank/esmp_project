@@ -65,7 +65,7 @@ TextStyle textStyleLabelChild = const TextStyle(
 );
 TextStyle textStyleInput = const TextStyle(
   color: Colors.black,
-  fontSize: 20,
+  fontSize: 18,
 );
 TextStyle textStyleInputChild = const TextStyle(
   color: Colors.black,
@@ -92,7 +92,7 @@ Future<String?> showMyAlertDialog(BuildContext context, String msg) async {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              borderRadius: BorderRadius.all(Radius.circular(16.0))),
           title: Text(
             msg,
             style: textStyleInput,
@@ -137,7 +137,7 @@ Future<String?> showConfirmDialog(BuildContext context, String msg) async {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              borderRadius: BorderRadius.all(Radius.circular(16.0))),
           title: Text(
             msg,
             style: textStyleInput,

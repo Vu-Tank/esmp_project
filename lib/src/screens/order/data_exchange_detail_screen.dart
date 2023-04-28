@@ -50,6 +50,14 @@ class _DataExchangeDetailScreenState extends State<DataExchangeDetailScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    isLoading = true;
+    getDataExchange();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final dataExchangeProvider = Provider.of<DataExchangeProvider>(context);
     final exchange = dataExchangeProvider.result[0];

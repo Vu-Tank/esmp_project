@@ -1,11 +1,17 @@
+import 'dart:developer';
+
 import 'package:esmp_project/src/utils/widget/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:esmp_project/src/providers/user/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class InformationEsmpScreen extends StatelessWidget {
   const InformationEsmpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    log(userProvider.user!.token.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('Liên Hệ')),

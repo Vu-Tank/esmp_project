@@ -303,8 +303,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 itemCount: order.details.length,
                                 itemBuilder: (ctx, index) {
                                   OrderDetail detail = order.details[index];
-
-                                  if (checkReturn <= detail.returnAndExchange) {
+                                  if (detail.returnAndExchange == 0) {
+                                    canReturn = 0;
+                                  } else if (checkReturn <
+                                      detail.returnAndExchange) {
                                     canReturn++;
                                   } else {
                                     canReturn = 0;

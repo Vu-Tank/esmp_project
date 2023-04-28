@@ -101,18 +101,22 @@ class _DataExchangeScreenState extends State<DataExchangeScreen> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : Container(
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width),
-                    child: DataTable(
-                        columnSpacing: size,
-                        columns: const [
-                          DataColumn(label: Text('ID')),
-                          DataColumn(label: Text('Mã đơn')),
-                          DataColumn(label: Text('Trạng thái')),
-                          DataColumn(label: Text(''))
-                        ],
-                        rows: rows),
-                  ));
+                : rows.isEmpty
+                    ? const Center(
+                        child: Text('Chưa có dữ liệu'),
+                      )
+                    : Container(
+                        constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width),
+                        child: DataTable(
+                            columnSpacing: size,
+                            columns: const [
+                              DataColumn(label: Text('ID')),
+                              DataColumn(label: Text('Mã đơn')),
+                              DataColumn(label: Text('Trạng thái')),
+                              DataColumn(label: Text(''))
+                            ],
+                            rows: rows),
+                      ));
   }
 }
