@@ -48,6 +48,7 @@ class AppUrl {
       "$baseUrl/api/DataExchange/user_addcard";
   static const String getFeedbacksItem = "$baseUrl/api/Item/item_feedback";
   static const String getReOrder = "$baseUrl/api/Order/order_fast";
+  static const String getOrderShip = "$baseUrl/api/Ship/ship_status";
   static const String noAvatar = "assets/no_avatar.jpg";
   static const String defaultAvatar =
       'https://firebasestorage.googleapis.com/v0/b/esmp-4b85e.appspot.com/o/images%2F2-5d887447-257a-4b45-8fbd-11e299762b65?alt=media&token=acc782a0-8136-4eaa-8276-1969870e7937&fbclid=IwAR1shI39pPfYmmtXidiGUUc17ggW-p2MdFLAe4Dszr_38lz_I9jOX2cRRdY';

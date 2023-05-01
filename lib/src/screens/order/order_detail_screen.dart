@@ -1,6 +1,11 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:esmp_project/src/models/order_ship.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
 import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/order.dart';
 import 'package:esmp_project/src/models/order_detail.dart';
@@ -15,8 +20,7 @@ import 'package:esmp_project/src/screens/order/return_exchange_screen.dart';
 import 'package:esmp_project/src/screens/shop/shop_detail.dart';
 import 'package:esmp_project/src/utils/utils.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({Key? key, required this.order, required this.status})
@@ -30,6 +34,7 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   List<OrderDetail> listDetail = <OrderDetail>[];
+  late ListShip listShip;
   int canReturn = 0;
   List<int> isReturn = <int>[];
   List<bool> _isChecked = <bool>[];
@@ -40,10 +45,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     Order order = widget.order;
 
     final user = context.read<UserProvider>().user;
-
+    await OrderRepository.getOrderShip(
+            orderID: order.orderID, token: user!.token!)
+        .then((value) {
+      listShip = value.dataResponse;
+    });
     await Provider.of<ServiceProvider>(context, listen: false)
         .getServiceByOrder(
-            userID: user!.userID!, token: user.token!, orderID: order.orderID)
+            userID: user.userID!, token: user.token!, orderID: order.orderID)
         .then((value) {
       final serviceProvider =
           Provider.of<ServiceProvider>(context, listen: false);
@@ -64,12 +73,59 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           }
         }
       }
+
       if (mounted) {
         setState(() {
           isLoading = false;
         });
       }
     });
+  }
+
+  getListShip(ListShip list) {
+    List<Widget> listShip = [];
+    for (int i = list.orderShip!.length - 1; i >= 0; i--) {
+      listShip.add(TimelineTile(
+        alignment: TimelineAlign.start,
+        isFirst: i == list.orderShip!.length - 1,
+        isLast: i == 0,
+        endChild: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+              height: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    list.orderShip![i].status!,
+                    style: TextStyle(
+                        color: i != list.orderShip!.length - 1
+                            ? Colors.grey
+                            : Colors.black),
+                  ),
+                  Text(
+                    list.orderShip![i].create_Date!
+                        .replaceAll('T', ' ')
+                        .toString()
+                        .split('.')[0],
+                    style: TextStyle(
+                        color: i != list.orderShip!.length - 1
+                            ? Colors.grey
+                            : Colors.black),
+                  )
+                ],
+              )),
+        ),
+        indicatorStyle: const IndicatorStyle(
+          width: 20,
+          height: 20,
+          padding: EdgeInsets.all(8),
+          indicator: Icon(Icons.circle),
+        ),
+      ));
+    }
+    return listShip;
   }
 
   @override
@@ -758,15 +814,28 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   const SizedBox(
                                     height: 5.0,
                                   ),
-                                  Container(
-                                    constraints:
-                                        const BoxConstraints(maxWidth: 200),
-                                    child: Text(
-                                      '${order.orderShip!.labelID.toString()}\n',
-                                      style: textStyleLabelChild.copyWith(
-                                          color: Colors.black),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                  GestureDetector(
+                                    onLongPress: () {
+                                      Clipboard.setData(ClipboardData(
+                                              text: order.orderShip!.labelID))
+                                          .then((result) {
+                                        const snackBar = SnackBar(
+                                          content: Text('Copied to Clipboard'),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      });
+                                    },
+                                    child: Container(
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 200),
+                                      child: Text(
+                                        '${order.orderShip!.labelID.toString()}\n',
+                                        style: textStyleLabelChild.copyWith(
+                                            color: Colors.black),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(
@@ -786,11 +855,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: getListShip(listShip),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
             ),
-      bottomNavigationBar: bottomNavigationBar(widget.status),
+      bottomNavigationBar:
+          isLoading ? null : bottomNavigationBar(widget.status),
     );
   }
 }

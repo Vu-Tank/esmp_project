@@ -38,6 +38,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
   XFile? xFile;
   MediaInfo? video;
   String reason = '';
+  int serType = 2;
 
   List<MediaInfo> listVideo = <MediaInfo>[];
   List<String> text = <String>[];
@@ -65,7 +66,6 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
     FocusNode focus = FocusNode();
     final now = DateTime.now();
     final user = context.read<UserProvider>().user;
-    int serType = 2;
     for (var element in widget.orderDetail) {
       totalMoney = (totalMoney +
           (element.pricePurchase * (1 - element.discountPurchase)) *

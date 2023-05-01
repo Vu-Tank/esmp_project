@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:esmp_project/src/models/feedback.dart';
 import 'package:esmp_project/src/models/order.dart';
+import 'package:esmp_project/src/models/order_ship.dart';
 
 import '../constants/api.dart';
 import '../constants/url.dart';
@@ -519,6 +520,43 @@ class OrderRepository {
         if (apiResponse.isSuccess!) {
           // log( body['data'].toString());
           apiResponse.dataResponse = Order.fromJson(body['data']);
+        }
+      } else {
+        apiResponse.message = json.decode(response.body)['errors'].toString();
+        apiResponse.isSuccess = false;
+      }
+    } catch (error) {
+      log(error.toString());
+      apiResponse.isSuccess = false;
+      apiResponse.message = "Lỗi máy chủ";
+    }
+    return apiResponse;
+  }
+
+  static Future<ApiResponse> getOrderShip(
+      {required int orderID, required String token}) async {
+    ApiResponse apiResponse = ApiResponse();
+    try {
+      final queryParams = {
+        'orderID': orderID.toString(),
+      };
+      String queryString = Uri(queryParameters: queryParams).query;
+      var response = await http.get(
+        Uri.parse('${AppUrl.getOrderShip}?$queryString'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(Api.apiTimeOut());
+
+      // log(response.statusCode.toString());
+      var body = json.decode(response.body);
+      if (response.statusCode == 200) {
+        apiResponse.message = body['message'];
+        apiResponse.isSuccess = body['success'];
+        if (apiResponse.isSuccess!) {
+          // log( body['data'].toString());
+          apiResponse.dataResponse = ListShip.fromMap(body['data']);
         }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();
