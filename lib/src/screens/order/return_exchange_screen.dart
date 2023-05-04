@@ -41,7 +41,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
   MediaInfo? video;
   String reason = '';
   int serType = 2;
-  late AddressModel address;
+  AddressModel? address;
   List<MediaInfo> listVideo = <MediaInfo>[];
   List<String> text = <String>[];
   void changeReason() {
@@ -76,7 +76,8 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
     Future<ApiResponse> getdata() => ServiceRepository.createReturnSevice(
         token: user!.token!,
         orderId: widget.order.orderID,
-        addressId: address.addressID!,
+        addressId:
+            address == null ? user.address![0].addressID! : address!.addressID!,
         serviceType: serType,
         create_Date: now.toString(),
         packingLinkCus: choosedVideo,
@@ -126,7 +127,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                         address = value;
                                       });
                                     }
-                                    log(address.addressID.toString());
+                                    log(address!.addressID.toString());
                                   });
                                 },
                                 child: Row(
