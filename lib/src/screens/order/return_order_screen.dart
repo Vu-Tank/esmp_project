@@ -4,6 +4,7 @@ import 'package:esmp_project/src/screens/login_register/login_screen.dart';
 import 'package:esmp_project/src/screens/order/data_exchange_screen.dart';
 import 'package:esmp_project/src/screens/order/old_item_widget.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
+import 'package:esmp_project/src/screens/order/order_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -80,12 +81,16 @@ class _ReturnOrderScreenState extends State<ReturnOrderScreen> {
                       if (index < orderProvider.orders.length) {
                         return InkWell(
                           onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => DataExchangeScreen(
-                            //               order: orderProvider.orders[index],
-                            //             ))).then((value) async {});
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OrderDetailScreen(
+                                          order: orderProvider.orders[index],
+                                          status:
+                                              orderProvider.status.toString(),
+                                        ))).then((value) async {
+                              if (value != null) {}
+                            });
                           },
                           child: OldOrder(
                             order: orderProvider.orders[index],

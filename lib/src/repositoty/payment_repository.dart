@@ -77,7 +77,7 @@ class PaymentRepository {
         apiResponse.isSuccess = body['success'];
         if (apiResponse.isSuccess!) {
           // log( body['data'].toString());
-          // apiResponse.dataResponse=body['data']['deeplink'];
+          apiResponse.dataResponse = body['data'] as int;
         }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();

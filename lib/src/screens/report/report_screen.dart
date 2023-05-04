@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({Key? key, required this.status, required this.id}) : super(key: key);
+  const ReportScreen({Key? key, required this.status, required this.id})
+      : super(key: key);
   final String status;
   final int id;
   @override
@@ -17,12 +18,25 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
-  final TextEditingController _controller=TextEditingController();
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    String title = '';
+    if (widget.status == 'store') {
+      title = 'Tố cáo cửa hàng';
+    } else if (widget.status == 'item') {
+      title = 'Tố cáo sản phẩm';
+    } else if (widget.status == 'feedback') {
+      title = 'Tố cáo';
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tố cáo ${widget.id}',style: appBarTextStyle,),
+        centerTitle: true,
+        title: Text(
+          title,
+          style: appBarTextStyle,
+        ),
         backgroundColor: mainColor,
       ),
       body: Padding(
@@ -30,8 +44,13 @@ class _ReportScreenState extends State<ReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("Miêu tả tố cáo", style: textStyleInputChild,),
-            const SizedBox(height: 10.0,),
+            Text(
+              "Miêu tả tố cáo",
+              style: textStyleInputChild,
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
             TextField(
                 controller: _controller,
                 keyboardType: TextInputType.multiline,
@@ -39,40 +58,52 @@ class _ReportScreenState extends State<ReportScreen> {
                 maxLength: 100,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(5.0)),
-                    ))),
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                ))),
           ],
         ),
       ),
       bottomNavigationBar: ElevatedButton(
         onPressed: () async {
-          if(_controller.text.trim().isEmpty){
+          if (_controller.text.trim().isEmpty) {
             showMyAlertDialog(context, "Vui lòng nhập miêu tả tố cáo");
             return;
           }
-          if(_controller.text.trim().length<=10){
-            showMyAlertDialog(context, "Vui lòng nhập nhiều hơn 10 ký tự.");
+          if (_controller.text.trim().length <= 10) {
+            showMyAlertDialog(
+                context, "Vui lòng nhập nhiều hơn 10 ký tự.");
             return;
           }
-          UserModel user= context.read<UserProvider>().user!;
-          ApiResponse apiResponse=ApiResponse();
+          UserModel user = context.read<UserProvider>().user!;
+          ApiResponse apiResponse = ApiResponse();
           LoadingDialog.showLoadingDialog(context, 'Vui lòng chờ');
-          if(widget.status=='store'){
-            apiResponse=await ReportRepository.reportStore(storeID: widget.id, userID: user.userID!, text: _controller.text.trim(), token: user.token!);
-          }else if(widget.status=='item'){
-            apiResponse=await ReportRepository.reportItem(itemID: widget.id, userID: user.userID!, text: _controller.text.trim(), token: user.token!);
-          }else if(widget.status=='feedback'){
-            apiResponse=await ReportRepository.reportFeedback(orderDetailID: widget.id, userID: user.userID!, text: _controller.text.trim(), token: user.token!);
+          if (widget.status == 'store') {
+            apiResponse = await ReportRepository.reportStore(
+                storeID: widget.id,
+                userID: user.userID!,
+                text: _controller.text.trim(),
+                token: user.token!);
+          } else if (widget.status == 'item') {
+            apiResponse = await ReportRepository.reportItem(
+                itemID: widget.id,
+                userID: user.userID!,
+                text: _controller.text.trim(),
+                token: user.token!);
+          } else if (widget.status == 'feedback') {
+            apiResponse = await ReportRepository.reportFeedback(
+                orderDetailID: widget.id,
+                userID: user.userID!,
+                text: _controller.text.trim(),
+                token: user.token!);
           }
-          if(apiResponse.isSuccess!){
-            if(mounted){
+          if (apiResponse.isSuccess!) {
+            if (mounted) {
               LoadingDialog.hideLoadingDialog(context);
               showSnackBar(context, apiResponse.message!);
               Navigator.pop(context);
             }
-          }else{
-            if(mounted){
+          } else {
+            if (mounted) {
               LoadingDialog.hideLoadingDialog(context);
               showMyAlertDialog(context, apiResponse.message!);
             }
@@ -80,11 +111,9 @@ class _ReportScreenState extends State<ReportScreen> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: btnColor,
-          padding: const EdgeInsets.only(
-              top: 12.0, bottom: 12.0),
+          padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                  Radius.circular(8))),
+              borderRadius: BorderRadius.all(Radius.circular(8))),
         ),
         child: Text(
           'Xác nhận',

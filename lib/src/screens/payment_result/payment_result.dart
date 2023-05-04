@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/repositoty/payment_repository.dart';
@@ -14,14 +17,43 @@ class PaymentResult extends StatefulWidget {
 }
 
 class _PaymentResultState extends State<PaymentResult> {
+  late Timer _timer;
+  late Future<ApiResponse> _data;
+  int checkPay = 1;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    if (checkPay == 3) {
+      _timer.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _data = checkPaymentOrder();
+    if (checkPay == 3) {
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        setState(() {
+          _data = checkPaymentOrder();
+        });
+      });
+    }
+  }
+
+  Future<ApiResponse> checkPaymentOrder() async {
+    return await PaymentRepository.checkPaymentOrder(
+        orderID: widget.queryParams['orderID'],
+        token: context.read<UserProvider>().user!.token!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
         child: FutureBuilder(
-          future: PaymentRepository.checkPaymentOrder(
-              orderID: widget.queryParams['orderID'],
-              token: context.read<UserProvider>().user!.token!),
+          future: _data,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -37,11 +69,13 @@ class _PaymentResultState extends State<PaymentResult> {
                   );
                 } else {
                   if (snapshot.data!.isSuccess!) {
+                    checkPay = snapshot.data!.dataResponse!;
                     return Padding(
                       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                       child: Column(
                         // crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Expanded(
                             child: Icon(
@@ -58,30 +92,34 @@ class _PaymentResultState extends State<PaymentResult> {
                           const SizedBox(
                             height: 100,
                           ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 53,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                context
-                                    .read<MainScreenProvider>()
-                                    .changePage(0);
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                        const MainScreen()));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: btnColor,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
+                          if (checkPay != 3)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 53,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    context
+                                        .read<MainScreenProvider>()
+                                        .changePage(0);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MainScreen()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: btnColor,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
+                                  ),
+                                  child: Text("Về màn hình chính",
+                                      style: btnTextStyle),
+                                ),
                               ),
-                              child: Text("Về màn hình chính",
-                                  style: btnTextStyle),
-                            ),
-                          )
+                            )
                         ],
                       ),
                     );
@@ -91,6 +129,7 @@ class _PaymentResultState extends State<PaymentResult> {
                       child: Column(
                         // crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Expanded(
                             child: Icon(
@@ -107,30 +146,34 @@ class _PaymentResultState extends State<PaymentResult> {
                           const SizedBox(
                             height: 100,
                           ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 53,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                context
-                                    .read<MainScreenProvider>()
-                                    .changePage(0);
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                        const MainScreen()));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: btnColor,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
+                          if (checkPay != 3)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 53,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    context
+                                        .read<MainScreenProvider>()
+                                        .changePage(0);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MainScreen()));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: btnColor,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
+                                  ),
+                                  child: Text("Về màn hình chính",
+                                      style: btnTextStyle),
+                                ),
                               ),
-                              child: Text("Về màn hình chính",
-                                  style: btnTextStyle),
-                            ),
-                          )
+                            )
                         ],
                       ),
                     );
@@ -139,7 +182,7 @@ class _PaymentResultState extends State<PaymentResult> {
             }
           },
         ),
-        onWillPop: ()async{
+        onWillPop: () async {
           context.read<MainScreenProvider>().changePage(0);
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const MainScreen()));

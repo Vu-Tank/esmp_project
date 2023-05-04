@@ -19,6 +19,53 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   // bool isCheck = false;
+  Future<void> _showAlertDialog(int orderId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // <-- SEE HERE
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          title: Center(
+            child: Text(
+              'Thông báo',
+              style: textStyleInput.copyWith(color: mainColor),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  'Cửa hàng khác nhau thì phí dịch vụ cũng sẽ khác nhau!!',
+                  style: textStyleInput,
+                ),
+              ],
+            ),
+          ),
+
+          actions: <Widget>[
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Hủy")),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              PaymentScreen(orderID: orderId)));
+                },
+                child: const Text("OK")),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -113,15 +160,18 @@ class _CartScreenState extends State<CartScreen> {
                                                     .order![cart.selectedIndex]
                                                     .orderID
                                                     .toString());
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            PaymentScreen(
-                                                                orderID: cart
-                                                                    .order![cart
-                                                                        .selectedIndex]
-                                                                    .orderID)));
+                                                _showAlertDialog(cart
+                                                    .order![cart.selectedIndex]
+                                                    .orderID);
+                                                // Navigator.push(
+                                                //     context,
+                                                //     MaterialPageRoute(
+                                                //         builder: (context) =>
+                                                //             PaymentScreen(
+                                                //                 orderID: cart
+                                                //                     .order![cart
+                                                //                         .selectedIndex]
+                                                //                     .orderID)));
                                               },
                                         child: Text(
                                           'Thanh toán',

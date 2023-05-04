@@ -253,7 +253,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               ),
                             if (widget.status == '-1')
                               Text(
-                                'Thời gian: ${order.pickTime}',
+                                'Thời gian: ${order.pickTime!.replaceAll('T', ' ').toString().split('.')[0]}',
                                 style: textStyleInput,
                               ),
                           ],
