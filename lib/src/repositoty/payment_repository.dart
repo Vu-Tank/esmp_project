@@ -75,10 +75,11 @@ class PaymentRepository {
         log(body.toString());
         apiResponse.message = body['message'];
         apiResponse.isSuccess = body['success'];
-        if (apiResponse.isSuccess!) {
-          // log( body['data'].toString());
-          apiResponse.dataResponse = body['data'] as int;
-        }
+        apiResponse.dataResponse = int.tryParse(body['data'].toString());
+        // if (apiResponse.isSuccess!) {
+        //   // log( body['data'].toString());
+        //   apiResponse.dataResponse = int.tryParse(body['data']);
+        // }
       } else {
         apiResponse.message = json.decode(response.body)['errors'].toString();
         apiResponse.isSuccess = false;

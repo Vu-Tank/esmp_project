@@ -127,7 +127,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                                         address = value;
                                       });
                                     }
-                                    log(address!.addressID.toString());
+                                    log(address.toString());
                                   });
                                 },
                                 child: Row(
