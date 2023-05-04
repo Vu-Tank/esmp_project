@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:esmp_project/src/cubit/ServiceTypeCubit/cubit/service_type_cubit.dart';
+import 'package:esmp_project/src/models/address.dart';
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/models/order.dart';
 import 'package:esmp_project/src/models/order_detail.dart';
@@ -10,6 +11,7 @@ import 'package:esmp_project/src/models/service_detail.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
 import 'package:esmp_project/src/repositoty/firebase_storage.dart';
 import 'package:esmp_project/src/repositoty/service_repository.dart';
+import 'package:esmp_project/src/screens/address/address_screen.dart';
 import 'package:esmp_project/src/screens/main/main_screen.dart';
 import 'package:esmp_project/src/utils/widget/loading_dialog.dart';
 import 'package:esmp_project/src/utils/widget/widget.dart';
@@ -39,7 +41,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
   MediaInfo? video;
   String reason = '';
   int serType = 2;
-
+  late AddressModel address;
   List<MediaInfo> listVideo = <MediaInfo>[];
   List<String> text = <String>[];
   void changeReason() {
@@ -74,7 +76,7 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
     Future<ApiResponse> getdata() => ServiceRepository.createReturnSevice(
         token: user!.token!,
         orderId: widget.order.orderID,
-        addressId: user.address![0].addressID!,
+        addressId: address.addressID!,
         serviceType: serType,
         create_Date: now.toString(),
         packingLinkCus: choosedVideo,
@@ -93,11 +95,83 @@ class _ReturnAndExchangeScreenState extends State<ReturnAndExchangeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: SingleChildScrollView(
                     child: SizedBox(
-                        height: widget.orderDetail.length * 130 + 600,
+                        height: widget.orderDetail.length * 130 + 700,
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AddressScreen(
+                                                status: 'select',
+                                              ))).then((value) {
+                                    if (value != null) {
+                                      // LoadingDialog.showLoadingDialog(
+                                      //     context, "Vui lòng đợi");
+                                      // orderProvider
+                                      //     .updateSelectedOrder(
+                                      //         value, userProvider.user!.token!)
+                                      //     .onError((error, stackTrace) =>
+                                      //         showMyAlertDialog(
+                                      //             context, error.toString()))
+                                      //     .then((value) {
+                                      //   LoadingDialog.hideLoadingDialog(context);
+                                      // });
+
+                                      setState(() {
+                                        address = value;
+                                      });
+                                    }
+                                    log(address.addressID.toString());
+                                  });
+                                },
+                                child: Row(
+                                  children: <Widget>[
+                                    const Icon(
+                                      Icons.location_on_outlined,
+                                      color: Colors.pinkAccent,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          Text(
+                                            'Địa chỉ nhận hàng',
+                                            style: textStyleInputChild,
+                                          ),
+                                          Text(
+                                            '${user!.userName!} | ${user.phone}\n',
+                                            style: textStyleInputChild,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                          Text(
+                                            '${widget.order.address}\n',
+                                            style: textStyleInputChild,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                          Text(
+                                            '${widget.order.ward}, ${widget.order.district}, ${widget.order.province}\n',
+                                            style: textStyleInputChild,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.fade,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(Icons.navigate_next),
+                                  ],
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.grey.withOpacity(0.3),
+                                thickness: 10,
+                              ),
                               ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,

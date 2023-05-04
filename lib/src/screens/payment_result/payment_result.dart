@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:developer';
 import 'package:esmp_project/src/models/api_response.dart';
 import 'package:esmp_project/src/providers/main_screen_provider.dart';
 import 'package:esmp_project/src/providers/user/user_provider.dart';
@@ -18,8 +18,7 @@ class PaymentResult extends StatefulWidget {
 
 class _PaymentResultState extends State<PaymentResult> {
   late Timer _timer;
-  late Future<ApiResponse> _data;
-  int checkPay = 1;
+  int checkPay = 0;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -29,14 +28,25 @@ class _PaymentResultState extends State<PaymentResult> {
     super.dispose();
   }
 
+  Future<void> checkPPay() async {
+    await PaymentRepository.checkPaymentOrder(
+            orderID: widget.queryParams['orderID'],
+            token: context.read<UserProvider>().user!.token!)
+        .then((value) async {
+      checkPay = value.dataResponse;
+      setState(() {});
+    });
+    log(checkPay.toString());
+  }
+
   @override
   void initState() {
     super.initState();
-    _data = checkPaymentOrder();
+    checkPPay();
     if (checkPay == 3) {
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
         setState(() {
-          _data = checkPaymentOrder();
+          checkPaymentOrder();
         });
       });
     }
@@ -53,7 +63,7 @@ class _PaymentResultState extends State<PaymentResult> {
     return Scaffold(
       body: WillPopScope(
         child: FutureBuilder(
-          future: _data,
+          future: checkPaymentOrder(),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -69,7 +79,6 @@ class _PaymentResultState extends State<PaymentResult> {
                   );
                 } else {
                   if (snapshot.data!.isSuccess!) {
-                    checkPay = snapshot.data!.dataResponse!;
                     return Padding(
                       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                       child: Column(
