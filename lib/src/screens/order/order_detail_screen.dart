@@ -248,12 +248,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ),
                             if (widget.status == '-1')
                               Text(
-                                'Nguyên nhân: ${order.reason}',
+                                'Nguyên nhân: ${(order.reason != null) ? order.reason : order.orderShip!.reason}',
                                 style: textStyleInput,
                               ),
                             if (widget.status == '-1')
                               Text(
-                                'Thời gian: ${order.pickTime!.replaceAll('T', ' ').toString().split('.')[0]}',
+                                'Thời gian: ${order.orderShip!.createDate.replaceAll('T', ' ').toString().split('.')[0]}',
                                 style: textStyleInput,
                               ),
                           ],
@@ -359,11 +359,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 itemCount: order.details.length,
                                 itemBuilder: (ctx, index) {
                                   OrderDetail detail = order.details[index];
+                                  log(detail.timeReturn.toString());
                                   if (detail.returnAndExchange == 0) {
                                     canReturn = 0;
-                                  } else if (checkReturn <
-                                      detail.returnAndExchange) {
-                                    canReturn++;
+                                  } else if (detail.timeReturn != null) {
+                                    if (DateTime.now().isBefore(
+                                        Utils.converDateTime(
+                                            detail.timeReturn)!)) {
+                                      canReturn++;
+                                    }
                                   } else {
                                     canReturn = 0;
                                   }
@@ -386,9 +390,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     widget.status == '5' &&
-                                                            checkReturn <=
-                                                                detail
-                                                                    .returnAndExchange
+                                                            canReturn != 0
                                                         ? Transform.scale(
                                                             scale: 0.7,
                                                             // child: NewCheckBox(

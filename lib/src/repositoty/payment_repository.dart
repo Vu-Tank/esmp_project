@@ -67,7 +67,7 @@ class PaymentRepository {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(Api.apiTimeOut());
+      );
 
       // log(response.statusCode.toString());
       var body = json.decode(response.body);

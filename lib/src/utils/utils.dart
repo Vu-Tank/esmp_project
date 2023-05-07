@@ -146,4 +146,12 @@ class Utils {
     }
     return ward;
   }
+
+  static DateTime? converDateTime(String? value) {
+    if (value == null) {
+      return null;
+    } else {
+      return DateTime.parse(value.replaceAll(RegExp(r'T'), ' '));
+    }
+  }
 }

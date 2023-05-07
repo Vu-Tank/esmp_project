@@ -33,6 +33,7 @@ class AppUrl {
   static const String getOrder = "$baseUrl/api/Order/order_info";
   static const String payment = "$baseUrl/api/Payment/order_pay_url";
   static const String checkPayment = "$baseUrl/api/Order/check_pay";
+  static const String checkPaymenttest = "$baseUrl/api/Payment/check_pay";
   static const String cancelOrder = "$baseUrl/api/Payment/cancel_order";
   static const String feedbackOrder = "$baseUrl/api/Order/feedback";
   static const String reportItem = "$baseUrl/api/Report/item_report";
@@ -43,6 +44,7 @@ class AppUrl {
   static const String logout = "$baseUrl/api/user/logout";
   static const String checkStore = "$baseUrl/api/Store/check_store";
   static const String getServiceAfterBuy = "$baseUrl/api/AfterBuyService";
+  static const String pingAdmin = "$baseUrl/api/AfterBuyService/warning";
   static const String getDataExchange = "$baseUrl/api/DataExchange/user";
   static const String addCardDataExchange =
       "$baseUrl/api/DataExchange/user_addcard";

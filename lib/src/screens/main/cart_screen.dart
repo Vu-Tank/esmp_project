@@ -107,16 +107,34 @@ class _CartScreenState extends State<CartScreen> {
                           builder: (context, cart, __) {
                         if (cart.order!.isNotEmpty) {
                           return Scaffold(
-                            body: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: cart.order?.length,
-                                itemBuilder: (context, index) {
-                                  return CartByStore(
-                                    cart: cart.order![index],
-                                    index: index,
-                                  );
-                                }),
+                            body: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (cart.order!.isNotEmpty)
+                                  Container(
+                                    color: Colors.amber[50],
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Chọn đơn hàng để thanh toán!!',
+                                        style: textStyleInputChild,
+                                      ),
+                                    ),
+                                  ),
+                                ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: cart.order?.length,
+                                    itemBuilder: (context, index) {
+                                      return CartByStore(
+                                        cart: cart.order![index],
+                                        index: index,
+                                      );
+                                    }),
+                              ],
+                            ),
                             bottomNavigationBar: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),

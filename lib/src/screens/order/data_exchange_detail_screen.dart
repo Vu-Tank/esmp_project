@@ -64,7 +64,7 @@ class _DataExchangeDetailScreenState extends State<DataExchangeDetailScreen> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: const Text('Đối Soái'),
+        title: const Text('Đối Soát'),
         backgroundColor: mainColor,
         centerTitle: true,
       ),

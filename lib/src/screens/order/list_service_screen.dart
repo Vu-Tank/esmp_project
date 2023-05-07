@@ -18,9 +18,7 @@ class ListServiceScreen extends StatefulWidget {
 class _ListServiceScreenState extends State<ListServiceScreen> {
   late bool _isLoading;
   final controller = ScrollController();
-  @override
-  void initState() {
-    // TODO: implement initState
+  Future<void> loadData() async {
     final serviceProvider =
         Provider.of<ServiceProvider>(context, listen: false);
     final user = context.read<UserProvider>().user;
@@ -38,6 +36,12 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
         showMyAlertDialog(context, error.toString());
       });
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    loadData();
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         context.read<ServiceProvider>().addData();
@@ -96,7 +100,15 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
                                         builder: (context) =>
                                             ServiceOrderDetailScreen(
                                                 orderId: serviceProvider
-                                                    .service[index].orderID!)));
+                                                    .service[index]
+                                                    .orderID!))).then((value) {
+                                  if (value != null && value == 'Cancel') {
+                                    setState(() {
+                                      _isLoading = true;
+                                      loadData();
+                                    });
+                                  }
+                                });
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),

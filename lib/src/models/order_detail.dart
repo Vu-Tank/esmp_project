@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:esmp_project/src/models/imageModel.dart';
 
 class OrderDetail {
@@ -13,6 +14,7 @@ class OrderDetail {
   String subItemImage;
   int itemID;
   int returnAndExchange;
+  String? timeReturn;
   List<ImageModel>? listImageFb;
 
   OrderDetail(
@@ -28,6 +30,7 @@ class OrderDetail {
       required this.subItemImage,
       required this.itemID,
       required this.returnAndExchange,
+      this.timeReturn,
       this.listImageFb});
 
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
@@ -51,11 +54,13 @@ class OrderDetail {
           : null,
       feedBackDate: json['feedBack_Date'],
       feedbackTitle: json['feedback_Title'],
+      timeReturn:
+          json['timeReturn'] != null ? json['timeReturn'] as String : null,
     );
   }
 
   @override
   String toString() {
-    return 'OrderDetail{orderDetailID: $orderDetailID, pricePurchase: $pricePurchase, discountPurchase: $discountPurchase, amount: $amount, feedbackTitle: $feedbackTitle, feedbackRate: $feedbackRate, feedBackDate: $feedBackDate, subItemID: $subItemID, subItemName: $subItemName, subItemImage: $subItemImage, itemID: $itemID, listImageFb: $listImageFb, returnAndExchange: $returnAndExchange}';
+    return 'OrderDetail(orderDetailID: $orderDetailID, pricePurchase: $pricePurchase, discountPurchase: $discountPurchase, amount: $amount, feedbackTitle: $feedbackTitle, feedbackRate: $feedbackRate, feedBackDate: $feedBackDate, subItemID: $subItemID, subItemName: $subItemName, subItemImage: $subItemImage, itemID: $itemID, returnAndExchange: $returnAndExchange, timeReturn: $timeReturn, listImageFb: $listImageFb)';
   }
 }

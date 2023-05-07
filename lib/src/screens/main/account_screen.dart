@@ -288,7 +288,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   size: 30,
                                 ),
                                 Text(
-                                  'Chi tiết đối soái',
+                                  'Chi tiết đối soát',
                                   style: textStyleInputChild,
                                 ),
                               ],
@@ -711,9 +711,7 @@ class _AccountScreenState extends State<AccountScreen> {
               child: CachedNetworkImage(
                 // item.itemImage,
                 // fit: BoxFit.cover,
-                imageUrl: user.image!.path! == null
-                    ? AppUrl.noAvatar
-                    : user.image!.path!,
+                imageUrl: user.image!.path! ?? AppUrl.noAvatar,
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
                     border: Border.all(width: 3, color: Colors.white),
